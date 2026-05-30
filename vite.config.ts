@@ -25,10 +25,10 @@ export default defineConfig({
   // For Vercel we ship dist/server inside a serverless function WITHOUT node_modules,
   // so every SSR dependency must be inlined into the bundle. ssr.noExternal: true
   // tells Vite to bundle all node_modules deps instead of externalizing them.
-  vite:
-    target === "vercel"
-      ? {
-          ssr: { noExternal: true },
-        }
-      : undefined,
+  vite: {
+    ...(target === "vercel" ? { ssr: { noExternal: true } } : {}),
+    server: {
+      allowedHosts: true,
+    },
+  },
 });

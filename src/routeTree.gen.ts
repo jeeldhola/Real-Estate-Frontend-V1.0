@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TasksRouteImport } from './routes/tasks'
+import { Route as SignupRouteImport } from './routes/signup'
 import { Route as PropertyManagersRouteImport } from './routes/property-managers'
 import { Route as PipelineRouteImport } from './routes/pipeline'
 import { Route as MeetingsRouteImport } from './routes/meetings'
@@ -19,11 +20,17 @@ import { Route as EmailTemplatesRouteImport } from './routes/email-templates'
 import { Route as AgencyOfficesRouteImport } from './routes/agency-offices'
 import { Route as AccountManagersRouteImport } from './routes/account-managers'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as PropertyManagersManagerIdRouteImport } from './routes/property-managers_.$managerId'
 import { Route as AgencyOfficesOfficeIdRouteImport } from './routes/agency-offices_.$officeId'
 
 const TasksRoute = TasksRouteImport.update({
   id: '/tasks',
   path: '/tasks',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SignupRoute = SignupRouteImport.update({
+  id: '/signup',
+  path: '/signup',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PropertyManagersRoute = PropertyManagersRouteImport.update({
@@ -71,6 +78,12 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PropertyManagersManagerIdRoute =
+  PropertyManagersManagerIdRouteImport.update({
+    id: '/property-managers_/$managerId',
+    path: '/property-managers/$managerId',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AgencyOfficesOfficeIdRoute = AgencyOfficesOfficeIdRouteImport.update({
   id: '/agency-offices_/$officeId',
   path: '/agency-offices/$officeId',
@@ -87,8 +100,10 @@ export interface FileRoutesByFullPath {
   '/meetings': typeof MeetingsRoute
   '/pipeline': typeof PipelineRoute
   '/property-managers': typeof PropertyManagersRoute
+  '/signup': typeof SignupRoute
   '/tasks': typeof TasksRoute
   '/agency-offices/$officeId': typeof AgencyOfficesOfficeIdRoute
+  '/property-managers/$managerId': typeof PropertyManagersManagerIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -100,8 +115,10 @@ export interface FileRoutesByTo {
   '/meetings': typeof MeetingsRoute
   '/pipeline': typeof PipelineRoute
   '/property-managers': typeof PropertyManagersRoute
+  '/signup': typeof SignupRoute
   '/tasks': typeof TasksRoute
   '/agency-offices/$officeId': typeof AgencyOfficesOfficeIdRoute
+  '/property-managers/$managerId': typeof PropertyManagersManagerIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -114,8 +131,10 @@ export interface FileRoutesById {
   '/meetings': typeof MeetingsRoute
   '/pipeline': typeof PipelineRoute
   '/property-managers': typeof PropertyManagersRoute
+  '/signup': typeof SignupRoute
   '/tasks': typeof TasksRoute
   '/agency-offices_/$officeId': typeof AgencyOfficesOfficeIdRoute
+  '/property-managers_/$managerId': typeof PropertyManagersManagerIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -129,8 +148,10 @@ export interface FileRouteTypes {
     | '/meetings'
     | '/pipeline'
     | '/property-managers'
+    | '/signup'
     | '/tasks'
     | '/agency-offices/$officeId'
+    | '/property-managers/$managerId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -142,8 +163,10 @@ export interface FileRouteTypes {
     | '/meetings'
     | '/pipeline'
     | '/property-managers'
+    | '/signup'
     | '/tasks'
     | '/agency-offices/$officeId'
+    | '/property-managers/$managerId'
   id:
     | '__root__'
     | '/'
@@ -155,8 +178,10 @@ export interface FileRouteTypes {
     | '/meetings'
     | '/pipeline'
     | '/property-managers'
+    | '/signup'
     | '/tasks'
     | '/agency-offices_/$officeId'
+    | '/property-managers_/$managerId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -169,8 +194,10 @@ export interface RootRouteChildren {
   MeetingsRoute: typeof MeetingsRoute
   PipelineRoute: typeof PipelineRoute
   PropertyManagersRoute: typeof PropertyManagersRoute
+  SignupRoute: typeof SignupRoute
   TasksRoute: typeof TasksRoute
   AgencyOfficesOfficeIdRoute: typeof AgencyOfficesOfficeIdRoute
+  PropertyManagersManagerIdRoute: typeof PropertyManagersManagerIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -180,6 +207,13 @@ declare module '@tanstack/react-router' {
       path: '/tasks'
       fullPath: '/tasks'
       preLoaderRoute: typeof TasksRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/signup': {
+      id: '/signup'
+      path: '/signup'
+      fullPath: '/signup'
+      preLoaderRoute: typeof SignupRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/property-managers': {
@@ -245,6 +279,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/property-managers_/$managerId': {
+      id: '/property-managers_/$managerId'
+      path: '/property-managers/$managerId'
+      fullPath: '/property-managers/$managerId'
+      preLoaderRoute: typeof PropertyManagersManagerIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/agency-offices_/$officeId': {
       id: '/agency-offices_/$officeId'
       path: '/agency-offices/$officeId'
@@ -265,8 +306,10 @@ const rootRouteChildren: RootRouteChildren = {
   MeetingsRoute: MeetingsRoute,
   PipelineRoute: PipelineRoute,
   PropertyManagersRoute: PropertyManagersRoute,
+  SignupRoute: SignupRoute,
   TasksRoute: TasksRoute,
   AgencyOfficesOfficeIdRoute: AgencyOfficesOfficeIdRoute,
+  PropertyManagersManagerIdRoute: PropertyManagersManagerIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -1,4 +1,4 @@
-export type OfficeStatus = "Active" | "Lapsing" | "Inactive";
+export type OfficeStatus = "Active" | "Lapsing" | "Inactive" | "Archived";
 
 export const PIPELINE_STAGES = [
   "Identified",

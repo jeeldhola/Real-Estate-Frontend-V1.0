@@ -1,77 +1,89 @@
-import { createFileRoute, Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { useEffect, useState, type FormEvent } from "react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useState, type FormEvent } from "react";
 import { useAuth } from "@/lib/auth";
-import { ApiError } from "@/lib/api";
-import { Loader2, Eye, EyeOff, Wrench, Clock, Headphones } from "lucide-react";
+import { api, ApiError } from "@/lib/api";
+import { Loader2, Eye, EyeOff } from "lucide-react";
 
 // Asset imports
 import logoUrl from "@/assets/svg/sign-in/logo.svg";
 import lowerPortionUrl from "@/assets/svg/sign-in/lower-portion.svg";
 import sidePortionUrl from "@/assets/svg/sign-in/side-portiuon.svg";
 
-export const Route = createFileRoute("/login")({
-  component: LoginPage,
+export const Route = createFileRoute("/signup")({
+  component: SignupPage,
   head: () => ({
-    meta: [{ title: "Welcome to Real Estate CRM" }],
+    meta: [{ title: "Create Account — Real Estate CRM" }],
   }),
 });
 
-function LoginPage() {
-  const { login, user, hydrated } = useAuth();
+function SignupPage() {
+  const { login } = useAuth();
   const navigate = useNavigate();
-  const search = useRouterState({ select: (r) => r.location.search }) as { redirect?: string };
 
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (hydrated && user) {
-      navigate({ to: search.redirect ?? "/", replace: true });
-    }
-  }, [hydrated, user, navigate, search.redirect]);
-
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
     setSubmitting(true);
     setError(null);
     try {
+      // Calculate initials from name
+      const initials = name
+        .trim()
+        .split(/\s+/)
+        .map((part) => part[0])
+        .join("")
+        .slice(0, 4)
+        .toUpperCase();
+
+      // Register the user
+      await api.post("/api/auth/register", {
+        name,
+        email,
+        password,
+        initials,
+      });
+
+      // Automatically log them in
       await login(email, password);
-      navigate({ to: search.redirect ?? "/", replace: true });
+      navigate({ to: "/", replace: true });
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : "Something went wrong");
+      setError(err instanceof ApiError ? err.message : "Something went wrong during signup");
     } finally {
       setSubmitting(false);
     }
   }
 
   return (
-    <div className="flex h-screen w-screen bg-white overflow-hidden">
+    <div className="flex min-h-screen bg-white">
       {/* Left Pane - Form and branding */}
-      <div className="w-full lg:w-1/2 flex flex-col justify-between p-8 sm:p-12 md:py-10 md:px-20 overflow-y-auto h-full">
+      <div className="w-full lg:w-1/2 flex flex-col justify-between p-8 sm:p-16 md:p-20 overflow-y-auto">
         <div className="my-auto py-4">
-          <div className="w-full max-w-[460px] mx-auto space-y-6">
+          <div className="w-full max-w-[420px] mx-auto space-y-6">
             {/* Logo */}
-            <div className="flex justify-center -mb-2">
-              <img src={logoUrl} alt="HubKonnect" className="h-32 w-auto object-contain" />
+            <div className="flex justify-center -mb-6">
+              <img src={logoUrl} alt="HubKonnect" className="h-28 w-auto object-contain" />
             </div>
 
             {/* Welcome text */}
             <div className="text-center space-y-2">
               <h1 className="text-3xl font-extrabold text-[#1c1c1c] tracking-tight">
-                Welcome Back!
+                Create Account
               </h1>
               <p className="text-sm text-[#6e6e73]">
-                Enter your credentials to access your account
+                Enter your details below to set up your profile
               </p>
             </div>
 
             {/* Google OAuth Button */}
             <button
               type="button"
-              className="w-full border border-gray-300 rounded-lg py-3 px-4 text-sm font-semibold text-gray-700 bg-white hover:bg-gray-50 flex items-center justify-center gap-2 cursor-pointer shadow-sm active:scale-[0.98] transition-all border-solid"
+              className="w-full border border-gray-300 rounded-lg py-3 px-4 text-sm font-semibold text-gray-700 bg-white hover:bg-gray-50 flex items-center justify-center gap-2 cursor-pointer shadow-sm active:scale-[0.98] transition-all"
             >
               <svg className="w-4 h-4" viewBox="0 0 24 24">
                 <path fill="#EA4335" d="M12 5.04c1.78 0 3.38.61 4.64 1.82l3.46-3.46C17.98 1.43 15.2 0 12 0 7.33 0 3.3 2.67 1.34 6.56l4.08 3.16C6.38 6.96 8.94 5.04 12 5.04z" />
@@ -83,7 +95,7 @@ function LoginPage() {
             </button>
 
             {/* Separator */}
-            <div className="relative py-1.5">
+            <div className="relative py-2">
               <div className="absolute inset-0 flex items-center">
                 <div className="w-full border-t border-gray-200"></div>
               </div>
@@ -94,6 +106,20 @@ function LoginPage() {
 
             {/* Credentials form */}
             <form onSubmit={onSubmit} className="space-y-4">
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold uppercase tracking-wider text-gray-600">
+                  Full Name
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="Enter your full name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="w-full rounded-lg border border-gray-300 bg-white px-3.5 py-3 text-sm text-gray-900 placeholder-gray-400 outline-none transition-all focus:border-[#dd5437] focus:ring-2 focus:ring-[#dd5437]/10"
+                />
+              </div>
+
               <div className="space-y-1.5">
                 <label className="text-xs font-semibold uppercase tracking-wider text-gray-600">
                   Email
@@ -110,20 +136,15 @@ function LoginPage() {
               </div>
 
               <div className="space-y-1.5">
-                <div className="flex justify-between items-center">
-                  <label className="text-xs font-semibold uppercase tracking-wider text-gray-600">
-                    Password
-                  </label>
-                  <a href="#" className="text-xs font-semibold text-[#dd5437] hover:underline">
-                    Forgot Password?
-                  </a>
-                </div>
+                <label className="text-xs font-semibold uppercase tracking-wider text-gray-600">
+                  Password
+                </label>
                 <div className="relative">
                   <input
                     type={showPassword ? "text" : "password"}
-                    autoComplete="current-password"
+                    autoComplete="new-password"
                     required
-                    placeholder="Enter your password"
+                    placeholder="Create a strong password (min 8 chars)"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     className="w-full rounded-lg border border-gray-300 bg-white pl-3.5 pr-10 py-3 text-sm text-gray-900 placeholder-gray-400 outline-none transition-all focus:border-[#dd5437] focus:ring-2 focus:ring-[#dd5437]/10"
@@ -151,59 +172,38 @@ function LoginPage() {
                 className="w-full bg-[#dd5437] hover:bg-[#c9452b] text-white font-semibold py-3 px-4 rounded-lg shadow-md transition-all active:scale-[0.98] disabled:opacity-60 disabled:pointer-events-none cursor-pointer text-sm flex items-center justify-center gap-2 mt-4"
               >
                 {submitting && <Loader2 className="h-4 w-4 animate-spin" />}
-                Sign In
+                Sign Up
               </button>
             </form>
 
             {/* Signup offer */}
-            <p className="text-sm text-center text-gray-500 pt-1">
-              Are you a property manager and need an account?{" "}
-              <Link to="/signup" className="text-[#dd5437] font-semibold hover:underline">
-                Sign Up
+            <p className="text-sm text-center text-gray-500 pt-2">
+              Already have an account?{" "}
+              <Link to="/login" className="text-[#dd5437] font-semibold hover:underline">
+                Sign In
               </Link>
             </p>
           </div>
 
           {/* Lower portion features */}
-          <div className="mt-12 grid grid-cols-3 gap-2 text-center max-w-[480px] mx-auto w-full select-none">
-            {/* Feature 1: Expert Technicians */}
-            <div className="flex flex-col items-center space-y-2.5">
-              <Wrench className="h-8 w-8 text-[#dd5437] stroke-[1.8px] hover:scale-110 transition-transform duration-200 cursor-pointer animate-in fade-in zoom-in-50 duration-300" />
-              <div className="space-y-0.5">
-                <h4 className="text-xs font-black text-slate-800 tracking-tight whitespace-nowrap">Expert Technicians</h4>
-                <p className="text-[10px] font-bold text-slate-400">Fully Licensed</p>
-              </div>
-            </div>
-
-            {/* Feature 2: Reliable */}
-            <div className="flex flex-col items-center space-y-2.5">
-              <Clock className="h-8 w-8 text-[#dd5437] stroke-[1.8px] hover:scale-110 transition-transform duration-200 cursor-pointer animate-in fade-in zoom-in-50 duration-300 delay-75" />
-              <div className="space-y-0.5">
-                <h4 className="text-xs font-black text-slate-800 tracking-tight">Reliable</h4>
-                <p className="text-[10px] font-bold text-slate-400">Always here when you need on</p>
-              </div>
-            </div>
-
-            {/* Feature 3: Support */}
-            <div className="flex flex-col items-center space-y-2.5">
-              <Headphones className="h-8 w-8 text-[#dd5437] stroke-[1.8px] hover:scale-110 transition-transform duration-200 cursor-pointer animate-in fade-in zoom-in-50 duration-300 delay-150" />
-              <div className="space-y-0.5">
-                <h4 className="text-xs font-black text-slate-800 tracking-tight">Support</h4>
-                <p className="text-[10px] font-bold text-slate-400">We're just a call away</p>
-              </div>
-            </div>
+          <div className="mt-12 flex justify-center">
+            <img
+              src={lowerPortionUrl}
+              alt="CRM Features: Expert Technicians, Reliable, Support"
+              className="w-full max-w-[480px] h-auto object-contain"
+            />
           </div>
         </div>
 
         {/* Footer */}
-        <p className="text-center text-xs text-gray-400 mt-8 shrink-0">
+        <p className="text-center text-xs text-gray-400 mt-12">
           2026 The Appliance Guys. All Rights Reserved
         </p>
       </div>
 
       {/* Right Pane - Feature image banner */}
-      <div className="hidden lg:block lg:w-1/2 p-4 h-full shrink-0">
-        <div className="w-full h-full rounded-[24px] overflow-hidden shadow-2xl bg-[#fafafa]">
+      <div className="hidden lg:block lg:w-1/2 p-6">
+        <div className="w-full h-full rounded-3xl overflow-hidden shadow-2xl bg-[#fafafa]">
           <img
             src={sidePortionUrl}
             alt="One less thing to stress about - HubKonnect"

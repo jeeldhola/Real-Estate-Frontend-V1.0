@@ -130,7 +130,7 @@ function RootComponent() {
 function RootBody() {
   const pathname = useRouterState({ select: (r) => r.location.pathname });
   // Public routes — no sidebar, no auth guard.
-  if (pathname === "/login") {
+  if (pathname === "/login" || pathname === "/signup") {
     return <Outlet />;
   }
 

@@ -3,7 +3,7 @@ import type { ApiErrorBody } from "./api-types";
 
 const API_URL =
   (import.meta.env.VITE_API_URL as string | undefined)?.replace(/\/$/, "") ??
-  "http://localhost:4000";
+  "https://api.hubkonnect.com.au";
 
 export class ApiError extends Error {
   readonly status: number;

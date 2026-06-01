@@ -223,7 +223,7 @@ export function AppSidebar() {
         <SidebarMenu className="gap-1">
           {items.map((item) => {
             const isPeople = item.title === "People";
-            const active = isActive(item.url) || (isPeople && currentPath.includes("managers"));
+            const active = isActive(item.url) || (isPeople && currentPath.includes("property-managers"));
 
             if (label === "Workspace" && isPeople) {
               return (
@@ -290,7 +290,7 @@ export function AppSidebar() {
         <SidebarContent className="flex flex-col items-center gap-3 px-2 py-4 bg-white overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
           {collapsedItems.map((item) => {
             const isPeople = item.title === "People";
-            const active = isActive(item.url) || (isPeople && currentPath.includes("managers"));
+            const active = isActive(item.url) || (isPeople && currentPath.includes("property-managers"));
 
             if (isPeople) {
               return (

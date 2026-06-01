@@ -1,5 +1,6 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import logoUrl from "@/assets/svg/sign-in/logo.svg";
+import collapsedLogoUrl from "@/assets/svg/collpasedlogo.svg";
 import { useAuth } from "@/lib/auth";
 import {
   LayoutDashboard,
@@ -16,6 +17,7 @@ import {
   LogOut,
   ChevronRight,
   ChevronsLeft,
+  ChevronsRight,
   ChevronsUpDown,
   Wrench,
   Package,
@@ -277,13 +279,16 @@ export function AppSidebar() {
         className="border-r border-gray-100 bg-white"
         style={{ "--sidebar-width-icon": "4rem" } as React.CSSProperties}
       >
-        <SidebarHeader className="flex flex-col items-center py-5 bg-white">
+        <SidebarHeader className="relative flex flex-col items-center py-6 bg-white shrink-0 select-none">
+          <div className="flex items-center justify-center w-full mt-1.5">
+            <img src={collapsedLogoUrl} alt="HubKonnect collapsed logo" className="h-9 w-auto object-contain" />
+          </div>
           <button
             onClick={toggleSidebar}
-            className="p-2 border border-gray-100 rounded-xl hover:bg-gray-50 text-gray-500 cursor-pointer flex items-center justify-center transition-all shadow-sm duration-200"
+            className="absolute -right-4 top-7 w-8 h-8 flex items-center justify-center bg-white border border-gray-200 rounded-xl shadow-md hover:bg-gray-50 text-gray-500 hover:text-gray-700 cursor-pointer z-50 transition-all duration-200 hover:scale-105 active:scale-95"
             aria-label="Expand sidebar"
           >
-            <ChevronRight className="h-4 w-4" />
+            <ChevronsRight className="h-4 w-4 stroke-[2.5px]" />
           </button>
         </SidebarHeader>
 

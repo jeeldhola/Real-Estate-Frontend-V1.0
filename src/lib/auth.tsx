@@ -19,7 +19,7 @@ type AuthState = {
 };
 
 type AuthContextValue = AuthState & {
-  login: (email: string, password: string) => Promise<User>;
+  login: (email: string, password: string, otp?: string) => Promise<User>;
   logout: () => void;
 };
 
@@ -48,10 +48,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [queryClient]);
 
   const login = useCallback(
-    async (email: string, password: string) => {
+    async (email: string, password: string, otp?: string) => {
       const res = await api.post<{ token: string; user: User }>("/api/auth/login", {
         email,
         password,
+        otp,
       });
       authStorage.set(res.token, res.user);
       setState({ user: res.user, token: res.token, hydrated: true });

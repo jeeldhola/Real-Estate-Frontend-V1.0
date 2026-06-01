@@ -1,247 +1,432 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import {
   Mail,
   Search,
   Inbox,
-  Send,
-  CheckCheck,
-  Loader2,
-  Building2,
+  FileText,
+  TrendingUp,
+  SlidersHorizontal,
+  ArrowUpDown,
+  LayoutGrid,
+  Star,
+  ChevronsUpDown,
+  Copy,
+  UserCheck,
+  ArrowUpRight,
+  ArrowDownRight,
+  ChevronDown,
+  Bell,
+  HelpCircle,
+  Compass,
+  Target
 } from "lucide-react";
-import {
-  useMailboxSummary,
-  useMessages,
-  useUpdateMessage,
-} from "@/lib/queries";
-import type { Message, MessageDirection } from "@/lib/api-types";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/mailbox")({
   component: MailboxPage,
   head: () => ({
     meta: [
-      { title: "Mailbox — The Appliance Guys" },
-      { name: "description", content: "All inbound and outbound mail tied to your offices." },
+      { title: "Mailbox — HubKonnect" },
+      { name: "description", content: "All inbound and workload overview of your inboxes." },
     ],
   }),
 });
 
-const folders: {
-  label: string;
-  direction?: MessageDirection;
-  read?: boolean;
-  icon: typeof Inbox;
-}[] = [
-  { label: "All", icon: Mail },
-  { label: "Inbox", direction: "inbound", icon: Inbox },
-  { label: "Unread", read: false, icon: CheckCheck },
-  { label: "Sent", direction: "outbound", icon: Send },
+interface InboxItem {
+  id: string;
+  name: string;
+  address: string;
+  unassigned?: number;
+  mine?: number;
+  assigned?: number;
+  draft?: number;
+  starred: boolean;
+}
+
+const INITIAL_INBOXES: InboxItem[] = [
+  { id: "1", name: "COMMERCIAL", address: "email@example.com", starred: true },
+  { id: "2", name: "HR TEAM", address: "email@example.com", unassigned: 12, assigned: 5, starred: false },
+  { id: "3", name: "KARDI SUPPORT", address: "email@example.com", unassigned: 6, assigned: 0, starred: false },
+  { id: "4", name: "PROCUREMENT TEAM", address: "email@example.com", unassigned: 5, assigned: 7, starred: false },
+  { id: "5", name: "TAG - ACCOUNT MANAGERS", address: "email@example.com", starred: false },
 ];
 
 function MailboxPage() {
-  const [folderIdx, setFolderIdx] = useState(1);
+  const [inboxes, setInboxes] = useState<InboxItem[]>(INITIAL_INBOXES);
   const [search, setSearch] = useState("");
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc" | null>(null);
+  const [refreshing, setRefreshing] = useState(false);
 
-  const folder = folders[folderIdx]!;
-  const messages = useMessages({
-    direction: folder.direction,
-    read: folder.read,
-    search: search.trim() || undefined,
-    limit: 200,
-  });
-  const allMessages = useMessages({ limit: 200 });
-  const summary = useMailboxSummary();
-  const updateMessage = useUpdateMessage();
+  // Filter and Sort Logic
+  const filteredInboxes = useMemo(() => {
+    let result = [...inboxes];
+    if (search.trim()) {
+      const query = search.toLowerCase();
+      result = result.filter(
+        (item) =>
+          item.name.toLowerCase().includes(query) ||
+          item.address.toLowerCase().includes(query)
+      );
+    }
+    if (sortOrder) {
+      result.sort((a, b) => {
+        const comp = a.name.localeCompare(b.name);
+        return sortOrder === "asc" ? comp : -comp;
+      });
+    }
+    return result;
+  }, [inboxes, search, sortOrder]);
 
-  const items = messages.data?.items ?? [];
-  const selected = items.find((m) => m.id === selectedId) ?? null;
-
-  const getFolderCount = (label: string) => {
-    const list = allMessages.data?.items ?? [];
-    if (label === "All") return summary.data?.total ?? list.length;
-    if (label === "Inbox") return list.filter(m => m.direction === "inbound").length;
-    if (label === "Unread") return summary.data?.unread ?? list.filter(m => !m.read).length;
-    if (label === "Sent") return list.filter(m => m.direction === "outbound").length;
-    return 0;
+  const toggleStar = (id: string) => {
+    setInboxes((prev) =>
+      prev.map((item) =>
+        item.id === id ? { ...item, starred: !item.starred } : item
+      )
+    );
+    toast.success("Starred state updated");
   };
+
+  const handleCopyAddress = (address: string) => {
+    navigator.clipboard.writeText(address);
+    toast.success("Address copied to clipboard!");
+  };
+
+  const handleSort = () => {
+    if (sortOrder === null) setSortOrder("asc");
+    else if (sortOrder === "asc") setSortOrder("desc");
+    else setSortOrder(null);
+    toast.success("Sorting updated");
+  };
+
+  const handleRefresh = () => {
+    setRefreshing(true);
+    setTimeout(() => {
+      setRefreshing(false);
+      toast.success("Mailbox up to date!");
+    }, 800);
+  };
+
+  const stats = [
+    {
+      label: "Total Inboxes",
+      value: 11,
+      icon: Mail,
+      tint: "bg-[#fdf3f0]/70 border border-[#f5eae2]",
+      fg: "text-[#dd5437]",
+      trend: "up" as const,
+      chevronUp: true,
+    },
+    {
+      label: "Unassigned",
+      value: 207,
+      icon: Compass,
+      tint: "bg-[#fffbf5]/70 border border-[#f5ebd8]",
+      fg: "text-amber-600",
+      trend: "down" as const,
+    },
+    {
+      label: "Mine",
+      value: 6,
+      icon: Target,
+      tint: "bg-[#f4f8fd]/80 border border-[#e3ecf5]",
+      fg: "text-blue-650",
+    },
+    {
+      label: "Assigned",
+      value: 183,
+      icon: UserCheck,
+      tint: "bg-[#f4faf8]/80 border border-[#e2f5ee]",
+      fg: "text-emerald-600",
+    },
+    {
+      label: "Draft",
+      value: 11,
+      icon: FileText,
+      tint: "bg-[#faf5ff]/80 border border-[#f3e8ff]",
+      fg: "text-purple-600",
+    },
+  ];
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
-      <div className="border-b bg-card p-6">
-        <div className="flex flex-wrap items-start justify-between gap-3">
+      {/* Sub Header & Navigation Tab Bar */}
+      <div className="flex h-16 w-full items-center justify-between border-b bg-white px-8 shrink-0 select-none">
+        <div className="flex items-center gap-1">
+          {/* Sub tabs */}
+          <div className="flex items-center gap-1 rounded-2xl bg-slate-50 border border-slate-100 p-1">
+            <button className="flex items-center gap-1.5 rounded-xl px-4 py-2 text-xs font-extrabold text-[#dd5437] bg-[#fdf2f0] border border-[#dd5437]/15 cursor-pointer transition-all">
+              <Inbox className="h-3.5 w-3.5 text-[#dd5437] stroke-[2.5px]" />
+              Inboxes
+              <ChevronDown className="h-3 w-3 text-[#dd5437] stroke-[2.5px]" />
+            </button>
+            <button
+              onClick={() => toast.success("Docs clicked")}
+              className="flex items-center gap-1.5 rounded-xl px-4 py-2 text-xs font-semibold text-slate-500 hover:text-slate-800 hover:bg-slate-100/50 cursor-pointer transition-all border-0 bg-transparent"
+            >
+              <FileText className="h-3.5 w-3.5 text-slate-400" />
+              Docs
+            </button>
+            <button
+              onClick={() => toast.success("Templates clicked")}
+              className="flex items-center gap-1.5 rounded-xl px-4 py-2 text-xs font-semibold text-slate-500 hover:text-slate-800 hover:bg-slate-100/50 cursor-pointer transition-all border-0 bg-transparent"
+            >
+              <LayoutGrid className="h-3.5 w-3.5 text-slate-400" />
+              Templates
+            </button>
+            <button
+              onClick={() => toast.success("Report clicked")}
+              className="flex items-center gap-1.5 rounded-xl px-4 py-2 text-xs font-semibold text-slate-500 hover:text-slate-800 hover:bg-slate-100/50 cursor-pointer transition-all border-0 bg-transparent"
+            >
+              <TrendingUp className="h-3.5 w-3.5 text-slate-400" />
+              Report
+            </button>
+            <button
+              onClick={() => toast.success("Manage clicked")}
+              className="flex items-center gap-1.5 rounded-xl px-4 py-2 text-xs font-semibold text-slate-500 hover:text-slate-800 hover:bg-slate-100/50 cursor-pointer transition-all border-0 bg-transparent"
+            >
+              <SlidersHorizontal className="h-3.5 w-3.5 text-slate-400" />
+              Manage
+            </button>
+          </div>
+        </div>
+
+        {/* Right side utilities */}
+        <div className="flex items-center gap-3">
+          <button 
+            onClick={() => toast.info("Notifications clicked")}
+            className="w-9 h-9 flex items-center justify-center rounded-full border border-slate-200 bg-white text-slate-400 hover:text-slate-600 hover:bg-slate-50 transition-colors cursor-pointer relative"
+          >
+            <Bell className="h-4.5 w-4.5" />
+            <span className="absolute top-2 right-2.5 h-1.5 w-1.5 rounded-full bg-[#dd5437]" />
+          </button>
+          <button 
+            onClick={() => toast.info("Help clicked")}
+            className="w-9 h-9 flex items-center justify-center rounded-full border border-slate-200 bg-white text-slate-400 hover:text-slate-600 hover:bg-slate-50 transition-colors cursor-pointer"
+          >
+            <HelpCircle className="h-4.5 w-4.5" />
+          </button>
+          <button 
+            onClick={() => toast.info("Global search clicked")}
+            className="w-9 h-9 flex items-center justify-center rounded-full border border-slate-200 bg-white text-slate-400 hover:text-slate-600 hover:bg-slate-50 transition-colors cursor-pointer"
+          >
+            <Search className="h-4.5 w-4.5" />
+          </button>
+          <div className="h-9 w-9 rounded-full overflow-hidden border border-slate-200 ml-1">
+            <img
+              src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&h=150&q=80"
+              alt="User profile"
+              className="h-full w-full object-cover"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Main Mailbox Content */}
+      <div className="flex-1 p-8 bg-slate-50/40">
+        {/* Title */}
+        <div className="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight text-foreground">Mailbox</h1>
-            <p className="mt-1 text-sm text-muted-foreground">
-              {summary.data?.total ?? 0} message{summary.data?.total === 1 ? "" : "s"} ·{" "}
-              {summary.data?.unread ?? 0} unread
+            <h1 className="text-3xl font-extrabold tracking-tight text-slate-900">
+              Mailbox
+            </h1>
+            <p className="mt-1 text-sm text-slate-400 font-medium">
+              Overview of your inboxes and workload.
             </p>
           </div>
-          <div className="flex flex-wrap gap-2.5">
-            {folders.map((f, i) => {
-              const active = i === folderIdx;
-              const count = getFolderCount(f.label);
-              
-              // Folder-specific active colors matching the pipeline layout
-              const activeClasses: Record<string, string> = {
-                "All": "bg-slate-700 text-white shadow-sm",
-                "Inbox": "bg-blue-600 text-white shadow-sm",
-                "Unread": "bg-amber-500 text-white shadow-sm",
-                "Sent": "bg-[#1b8354] text-white shadow-sm",
-              };
-              
-              const iconColors: Record<string, string> = {
-                "All": "text-slate-700",
-                "Inbox": "text-blue-500",
-                "Unread": "text-amber-500",
-                "Sent": "text-[#1b8354]",
-              };
-
-              const activeColor = activeClasses[f.label] ?? "bg-primary text-white";
-              const iconColor = iconColors[f.label] ?? "text-primary";
-
-              return (
-                <button
-                  key={f.label}
-                  onClick={() => {
-                    setFolderIdx(i);
-                    setSelectedId(null);
-                  }}
-                  className={`inline-flex items-center gap-2 rounded-full px-3.5 py-1.5 text-sm font-semibold transition-all cursor-pointer border border-slate-100 ${
-                    active ? activeColor : "text-slate-600 hover:bg-slate-50 bg-white border-slate-200/80"
-                  }`}
-                >
-                  <f.icon className={`h-4 w-4 ${active ? "text-white" : iconColor}`} />
-                  <span>{f.label}</span>
-                  <span className={active ? "inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-white/20 text-white px-1.5 text-[11px] font-bold" : `text-[11px] font-bold ${iconColor}`}>
-                    {count}
-                  </span>
-                </button>
-              );
-            })}
+          <div className="flex items-center gap-3">
+            <button
+              onClick={handleRefresh}
+              disabled={refreshing}
+              className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 px-4.5 py-2.5 text-xs font-bold text-slate-700 shadow-2xs active:scale-[0.98] transition-all cursor-pointer select-none disabled:opacity-60"
+            >
+              <RefreshCw className={`h-3.5 w-3.5 text-slate-600 ${refreshing ? "animate-spin" : ""}`} />
+              Refresh
+            </button>
+            <button
+              className="flex h-9.5 w-9.5 items-center justify-center rounded-xl border border-slate-200 bg-white hover:bg-slate-50 cursor-pointer transition-all shadow-2xs shrink-0 select-none"
+              aria-label="Filter"
+              onClick={() => toast.info("Filter clicked")}
+            >
+              <SlidersHorizontal className="h-4 w-4 text-slate-600" />
+            </button>
           </div>
         </div>
-      </div>
 
-      <div className="grid flex-1 grid-cols-1 lg:grid-cols-[minmax(260px,360px)_1fr]">
-        <aside className="border-r bg-card">
-          <div className="p-3">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+        {/* Overview Stats Cards */}
+        <div className="mb-8 grid gap-4 grid-cols-2 lg:grid-cols-5">
+          {stats.map((s) => {
+            const Icon = s.icon;
+            return (
+              <div
+                key={s.label}
+                className={`relative flex flex-col justify-between rounded-3xl p-5 shadow-2xs select-none transition-all hover:shadow-xs bg-white ${s.tint}`}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Icon className={`h-4.5 w-4.5 shrink-0 ${s.fg} stroke-[2.2px]`} />
+                    <span className="text-xs font-bold text-slate-800">{s.label}</span>
+                  </div>
+
+                  <button className="text-slate-400 hover:text-slate-650 bg-transparent border-0 flex items-center justify-center p-1 rounded-lg hover:bg-slate-100/35 transition-colors cursor-pointer focus:outline-none">
+                    {s.chevronUp ? (
+                      <ChevronDown className="h-4 w-4 text-slate-500 shrink-0 rotate-180" />
+                    ) : (
+                      <ChevronDown className="h-4 w-4 text-slate-500 shrink-0" />
+                    )}
+                  </button>
+                </div>
+
+                <div className="mt-5 flex items-end justify-between">
+                  <span className="text-3xl font-black text-slate-900 tracking-tight leading-none">
+                    {s.value}
+                  </span>
+
+                  <div className="flex flex-col items-end leading-none">
+                    {s.trend ? (
+                      <div className={`flex items-center gap-0.5 text-xs font-black ${
+                        s.trend === "up" ? "text-emerald-500" : "text-rose-500"
+                      }`}>
+                        {s.trend === "up" ? (
+                          <ArrowUpRight className="h-4 w-4 stroke-[3px] shrink-0" />
+                        ) : (
+                          <ArrowDownRight className="h-4 w-4 stroke-[3px] shrink-0" />
+                        )}
+                        <span>12%</span>
+                      </div>
+                    ) : (
+                      <span className="text-xs font-black text-slate-400">
+                        —
+                      </span>
+                    )}
+                    <span className="text-[10px] font-bold text-slate-400 mt-1 select-none whitespace-nowrap leading-none">
+                      vs Last Month
+                    </span>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Search, Sort and Column actions */}
+        <div className="mb-6 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
+          <div className="flex flex-1 items-center gap-3 max-w-xl">
+            <div className="relative flex-1">
+              <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
               <input
-                placeholder="Search messages..."
+                placeholder="Search offices..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full rounded-lg border bg-background py-2 pl-9 pr-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+                className="w-full rounded-xl border border-slate-200 bg-white py-2 pl-10 pr-14 text-xs font-semibold text-slate-700 outline-none focus:border-slate-350 transition-all placeholder:text-slate-400 shadow-sm"
               />
-            </div>
-          </div>
-          <div className="overflow-y-auto">
-            {messages.isLoading && (
-              <div className="flex items-center justify-center py-10">
-                <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+              <div className="absolute right-3.5 top-1/2 -translate-y-1/2 flex items-center gap-0.5 rounded-md border border-slate-200 bg-white px-1.5 py-0.5 text-[9px] font-bold text-slate-450 shadow-3xs select-none">
+                K <span className="text-[10px]">⌘</span>
               </div>
-            )}
-            {!messages.isLoading && items.length === 0 && (
-              <div className="px-4 py-8 text-center text-sm text-muted-foreground">
-                Nothing here.
-              </div>
-            )}
-            {items.map((m) => (
-              <MessageListItem
-                key={m.id}
-                message={m}
-                active={selectedId === m.id}
-                onClick={() => {
-                  setSelectedId(m.id);
-                  if (!m.read) updateMessage.mutate({ id: m.id, patch: { read: true } });
-                }}
-              />
-            ))}
-          </div>
-        </aside>
-
-        <main className="bg-background p-6">
-          {!selected ? (
-            <div className="flex h-full flex-col items-center justify-center gap-2 text-muted-foreground">
-              <Mail className="h-12 w-12 opacity-50" />
-              <p>Select a message to read.</p>
             </div>
-          ) : (
-            <MessageDetail message={selected} />
-          )}
-        </main>
-      </div>
-    </div>
-  );
-}
 
-function MessageListItem({
-  message: m,
-  active,
-  onClick,
-}: {
-  message: Message;
-  active: boolean;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      onClick={onClick}
-      className={`flex w-full flex-col items-start gap-1 border-b px-4 py-3 text-left transition-colors hover:bg-accent/40 ${
-        active ? "bg-accent/60" : ""
-      } ${!m.read ? "bg-[oklch(0.99_0.01_240)]" : ""}`}
-    >
-      <div className="flex w-full items-center justify-between gap-2">
-        <span className={`truncate text-sm ${!m.read ? "font-bold text-foreground" : "font-semibold text-muted-foreground"}`}>
-          {m.from}
-        </span>
-        <span className="shrink-0 text-[11px] text-muted-foreground">
-          {new Date(m.receivedAt).toLocaleDateString(undefined, { month: "short", day: "numeric" })}
-        </span>
-      </div>
-      <span className={`w-full truncate text-sm ${!m.read ? "font-semibold text-foreground" : "text-foreground"}`}>
-        {m.subject}
-      </span>
-      <span className="line-clamp-1 text-xs text-muted-foreground">{m.snippet ?? ""}</span>
-    </button>
-  );
-}
+            <button
+              onClick={handleSort}
+              className="flex h-9.5 items-center gap-2 rounded-xl bg-white border border-slate-200 px-4 text-xs font-bold text-slate-700 shadow-sm focus:outline-none transition-all cursor-pointer hover:bg-slate-50"
+            >
+              <ArrowUpDown className="h-3.5 w-3.5 text-slate-500" />
+              Sort
+            </button>
+          </div>
 
-function MessageDetail({ message: m }: { message: Message }) {
-  const officeName = typeof m.office === "string" ? undefined : m.office?.name;
-  return (
-    <div className="space-y-4">
-      <div className="border-b pb-4">
-        <h2 className="text-2xl font-bold text-foreground">{m.subject}</h2>
-        <div className="mt-2 flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
-          <span>
-            <span className="font-medium text-foreground">{m.from}</span>
-            {" → "}
-            {(m.to ?? []).join(", ") || "—"}
-          </span>
-          <span>
-            {new Date(m.receivedAt).toLocaleString(undefined, {
-              weekday: "short",
-              month: "short",
-              day: "numeric",
-              hour: "numeric",
-              minute: "2-digit",
-            })}
-          </span>
-          {officeName && (
-            <span className="inline-flex items-center gap-1.5">
-              <Building2 className="h-3.5 w-3.5" />
-              {officeName}
-            </span>
-          )}
-          <span className="rounded-full bg-accent px-2 py-0.5 text-[11px] font-semibold text-accent-foreground">
-            {m.direction}
-          </span>
+          <button
+            onClick={() => toast.info("Column Manager opened")}
+            className="flex h-9.5 items-center gap-2 rounded-xl bg-white border border-slate-200 px-4 text-xs font-bold text-slate-700 shadow-sm focus:outline-none transition-all cursor-pointer hover:bg-slate-50"
+          >
+            <LayoutGrid className="h-3.5 w-3.5 text-slate-500" />
+            Manage Column
+          </button>
         </div>
-      </div>
-      <div className="whitespace-pre-wrap text-sm text-foreground">
-        {m.body || <span className="text-muted-foreground">No body.</span>}
+
+        {/* Table of Inboxes */}
+        <div className="overflow-x-auto border border-slate-200/80 bg-white rounded-3xl shadow-sm mt-6">
+          <table className="w-full border-collapse text-left">
+            <thead>
+              <tr className="bg-[#f8f9fa] border-b border-slate-200/50">
+                <th className="w-16 px-6 py-4 text-center select-none">
+                  <Star className="h-4 w-4 stroke-slate-400 mx-auto" />
+                </th>
+                {["Inbox Name", "Address", "Unassigned", "Mine", "Assigned", "Draft"].map((h, i) => (
+                  <th
+                    key={h}
+                    className={`px-6 py-4 text-[11px] font-bold text-slate-500 select-none ${
+                      i <= 1 ? "text-left" : "text-center"
+                    }`}
+                  >
+                    <div className={`flex items-center gap-1.5 cursor-pointer hover:text-slate-800 transition-colors ${i <= 1 ? "justify-start" : "justify-center"}`}>
+                      <span>{h}</span>
+                      <ChevronsUpDown className="h-3 w-3 text-slate-400 shrink-0" />
+                    </div>
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {filteredInboxes.map((item) => (
+                <tr
+                  key={item.id}
+                  className="border-b border-slate-100 last:border-b-0 hover:bg-slate-55/40 transition-colors"
+                >
+                  <td className="px-6 py-4 text-center">
+                    <button
+                      onClick={() => toggleStar(item.id)}
+                      className="text-slate-350 hover:text-amber-500 bg-transparent border-0 flex items-center justify-center p-1 rounded-lg transition-colors cursor-pointer focus:outline-none mx-auto"
+                    >
+                      {item.starred ? (
+                        <Star className="h-4.5 w-4.5 fill-[#dd5437] text-[#dd5437] stroke-[1.5px]" />
+                      ) : (
+                        <Star className="h-4.5 w-4.5 stroke-slate-300 stroke-[1.5px]" />
+                      )}
+                    </button>
+                  </td>
+                  <td className="px-6 py-4 text-left">
+                    <span className="text-xs font-black tracking-wider text-[#dd5437] select-all cursor-pointer">
+                      {item.name}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 text-left">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-semibold text-slate-700">
+                        {item.address}
+                      </span>
+                      <button
+                        onClick={() => handleCopyAddress(item.address)}
+                        className="text-slate-400 hover:text-slate-605 bg-transparent border-0 flex items-center justify-center p-1 rounded hover:bg-slate-100 transition-colors cursor-pointer"
+                        title="Copy Address"
+                      >
+                        <Copy className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 text-center text-xs font-bold text-slate-700">
+                    {item.unassigned !== undefined ? item.unassigned : ""}
+                  </td>
+                  <td className="px-6 py-4 text-center text-xs font-bold text-slate-700">
+                    {item.mine !== undefined ? item.mine : ""}
+                  </td>
+                  <td className="px-6 py-4 text-center text-xs font-bold text-slate-700">
+                    {item.assigned !== undefined ? item.assigned : ""}
+                  </td>
+                  <td className="px-6 py-4 text-center text-xs font-bold text-slate-700">
+                    {item.draft !== undefined ? item.draft : ""}
+                  </td>
+                </tr>
+              ))}
+              {filteredInboxes.length === 0 && (
+                <tr>
+                  <td colSpan={7} className="px-6 py-16 text-center text-sm text-slate-400 font-medium bg-white rounded-b-3xl">
+                    No inboxes match your search.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

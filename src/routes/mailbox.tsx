@@ -50,11 +50,21 @@ function MailboxPage() {
     search: search.trim() || undefined,
     limit: 200,
   });
+  const allMessages = useMessages({ limit: 200 });
   const summary = useMailboxSummary();
   const updateMessage = useUpdateMessage();
 
   const items = messages.data?.items ?? [];
   const selected = items.find((m) => m.id === selectedId) ?? null;
+
+  const getFolderCount = (label: string) => {
+    const list = allMessages.data?.items ?? [];
+    if (label === "All") return summary.data?.total ?? list.length;
+    if (label === "Inbox") return list.filter(m => m.direction === "inbound").length;
+    if (label === "Unread") return summary.data?.unread ?? list.filter(m => !m.read).length;
+    if (label === "Sent") return list.filter(m => m.direction === "outbound").length;
+    return 0;
+  };
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
@@ -67,9 +77,29 @@ function MailboxPage() {
               {summary.data?.unread ?? 0} unread
             </p>
           </div>
-          <div className="flex flex-wrap gap-1">
+          <div className="flex flex-wrap gap-2.5">
             {folders.map((f, i) => {
               const active = i === folderIdx;
+              const count = getFolderCount(f.label);
+              
+              // Folder-specific active colors matching the pipeline layout
+              const activeClasses: Record<string, string> = {
+                "All": "bg-slate-700 text-white shadow-sm",
+                "Inbox": "bg-blue-600 text-white shadow-sm",
+                "Unread": "bg-amber-500 text-white shadow-sm",
+                "Sent": "bg-[#1b8354] text-white shadow-sm",
+              };
+              
+              const iconColors: Record<string, string> = {
+                "All": "text-slate-700",
+                "Inbox": "text-blue-500",
+                "Unread": "text-amber-500",
+                "Sent": "text-[#1b8354]",
+              };
+
+              const activeColor = activeClasses[f.label] ?? "bg-primary text-white";
+              const iconColor = iconColors[f.label] ?? "text-primary";
+
               return (
                 <button
                   key={f.label}
@@ -77,12 +107,15 @@ function MailboxPage() {
                     setFolderIdx(i);
                     setSelectedId(null);
                   }}
-                  className={`inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-sm font-medium transition-colors ${
-                    active ? "bg-primary text-primary-foreground" : "text-foreground hover:bg-accent"
+                  className={`inline-flex items-center gap-2 rounded-full px-3.5 py-1.5 text-sm font-semibold transition-all cursor-pointer border border-slate-100 ${
+                    active ? activeColor : "text-slate-600 hover:bg-slate-50 bg-white border-slate-200/80"
                   }`}
                 >
-                  <f.icon className="h-4 w-4" />
-                  {f.label}
+                  <f.icon className={`h-4 w-4 ${active ? "text-white" : iconColor}`} />
+                  <span>{f.label}</span>
+                  <span className={active ? "inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-white/20 text-white px-1.5 text-[11px] font-bold" : `text-[11px] font-bold ${iconColor}`}>
+                    {count}
+                  </span>
                 </button>
               );
             })}

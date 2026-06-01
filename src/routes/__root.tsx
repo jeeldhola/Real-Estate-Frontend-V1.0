@@ -15,6 +15,7 @@ import { AppSidebar } from "@/components/app-sidebar";
 import { AuthProvider } from "@/lib/auth";
 import { RequireAuth } from "@/components/require-auth";
 import { Toaster } from "sonner";
+import collapsedLogoUrl from "@/assets/svg/collpasedlogo.svg";
 
 function NotFoundComponent() {
   return (
@@ -88,6 +89,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "twitter:site", content: "@Lovable" },
     ],
     links: [
+      {
+        rel: "icon",
+        type: "image/svg+xml",
+        href: collapsedLogoUrl,
+      },
       {
         rel: "stylesheet",
         href: appCss,

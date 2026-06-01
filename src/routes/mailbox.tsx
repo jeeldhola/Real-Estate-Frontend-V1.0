@@ -47,6 +47,7 @@ import {
 import { toast } from "sonner";
 import { useSidebar } from "@/components/ui/sidebar";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import activeBtnUrl from "@/assets/svg/active-btn.svg";
 
 export const Route = createFileRoute("/mailbox")({
   component: MailboxPage,
@@ -762,11 +763,17 @@ function MailboxPage() {
 
                         {/* Top row actions */}
                         <div className="flex items-center gap-3">
-                          <div className="flex items-center gap-1.5 bg-emerald-50 border border-emerald-100 text-emerald-600 px-3 py-1.5 rounded-full text-xs font-black select-none cursor-pointer">
-                            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                            <span>Active</span>
-                            <ChevronDown className="h-3.5 w-3.5 stroke-[2.5px] opacity-80" />
-                          </div>
+                          <button
+                            onClick={() => toast.info("Active status options clicked")}
+                            className="p-0 border-0 bg-transparent cursor-pointer transition-transform hover:scale-[1.02] active:scale-[0.98] focus:outline-none flex items-center justify-center shrink-0"
+                            title="Active Status"
+                          >
+                            <img 
+                              src={activeBtnUrl} 
+                              alt="Active Status" 
+                              className="h-[34px] w-auto object-contain select-none" 
+                            />
+                          </button>
 
                           <div className="flex items-center gap-1">
                             {[

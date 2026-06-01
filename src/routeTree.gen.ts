@@ -16,7 +16,6 @@ import { Route as PipelineRouteImport } from './routes/pipeline'
 import { Route as MeetingsRouteImport } from './routes/meetings'
 import { Route as MailboxRouteImport } from './routes/mailbox'
 import { Route as LoginRouteImport } from './routes/login'
-import { Route as EmailTemplatesRouteImport } from './routes/email-templates'
 import { Route as AgencyOfficesRouteImport } from './routes/agency-offices'
 import { Route as AccountManagersRouteImport } from './routes/account-managers'
 import { Route as IndexRouteImport } from './routes/index'
@@ -58,11 +57,6 @@ const LoginRoute = LoginRouteImport.update({
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
-const EmailTemplatesRoute = EmailTemplatesRouteImport.update({
-  id: '/email-templates',
-  path: '/email-templates',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AgencyOfficesRoute = AgencyOfficesRouteImport.update({
   id: '/agency-offices',
   path: '/agency-offices',
@@ -94,7 +88,6 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/account-managers': typeof AccountManagersRoute
   '/agency-offices': typeof AgencyOfficesRoute
-  '/email-templates': typeof EmailTemplatesRoute
   '/login': typeof LoginRoute
   '/mailbox': typeof MailboxRoute
   '/meetings': typeof MeetingsRoute
@@ -109,7 +102,6 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/account-managers': typeof AccountManagersRoute
   '/agency-offices': typeof AgencyOfficesRoute
-  '/email-templates': typeof EmailTemplatesRoute
   '/login': typeof LoginRoute
   '/mailbox': typeof MailboxRoute
   '/meetings': typeof MeetingsRoute
@@ -125,7 +117,6 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/account-managers': typeof AccountManagersRoute
   '/agency-offices': typeof AgencyOfficesRoute
-  '/email-templates': typeof EmailTemplatesRoute
   '/login': typeof LoginRoute
   '/mailbox': typeof MailboxRoute
   '/meetings': typeof MeetingsRoute
@@ -142,7 +133,6 @@ export interface FileRouteTypes {
     | '/'
     | '/account-managers'
     | '/agency-offices'
-    | '/email-templates'
     | '/login'
     | '/mailbox'
     | '/meetings'
@@ -157,7 +147,6 @@ export interface FileRouteTypes {
     | '/'
     | '/account-managers'
     | '/agency-offices'
-    | '/email-templates'
     | '/login'
     | '/mailbox'
     | '/meetings'
@@ -172,7 +161,6 @@ export interface FileRouteTypes {
     | '/'
     | '/account-managers'
     | '/agency-offices'
-    | '/email-templates'
     | '/login'
     | '/mailbox'
     | '/meetings'
@@ -188,7 +176,6 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AccountManagersRoute: typeof AccountManagersRoute
   AgencyOfficesRoute: typeof AgencyOfficesRoute
-  EmailTemplatesRoute: typeof EmailTemplatesRoute
   LoginRoute: typeof LoginRoute
   MailboxRoute: typeof MailboxRoute
   MeetingsRoute: typeof MeetingsRoute
@@ -251,13 +238,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/email-templates': {
-      id: '/email-templates'
-      path: '/email-templates'
-      fullPath: '/email-templates'
-      preLoaderRoute: typeof EmailTemplatesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/agency-offices': {
       id: '/agency-offices'
       path: '/agency-offices'
@@ -300,7 +280,6 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AccountManagersRoute: AccountManagersRoute,
   AgencyOfficesRoute: AgencyOfficesRoute,
-  EmailTemplatesRoute: EmailTemplatesRoute,
   LoginRoute: LoginRoute,
   MailboxRoute: MailboxRoute,
   MeetingsRoute: MeetingsRoute,

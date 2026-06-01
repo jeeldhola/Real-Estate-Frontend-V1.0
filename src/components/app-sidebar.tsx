@@ -25,6 +25,8 @@ import {
   User,
   Phone,
   MapPin,
+  Clipboard,
+  Warehouse,
 } from "lucide-react";
 
 import React from "react";
@@ -66,15 +68,17 @@ const mailbox = [
 
 // Flat list of icons for collapsed state (matching mockup precisely)
 const collapsedItems = [
-  { title: "Dashboard", url: "/", icon: LayoutGrid },
+  { title: "Dashboard", url: "/", icon: LayoutDashboard },
+  { title: "People", url: "/property-managers", icon: Users },
   { title: "Leads", url: "/pipeline", icon: TrendingUp },
-  { title: "Quotes", url: "/tasks", icon: CheckSquare },
-  { title: "Meetings", url: "/meetings", icon: Calendar },
+  { title: "Quotes", url: "/tasks", icon: Clipboard },
+  { title: "Jobs", url: "/meetings", icon: Wrench },
+  { title: "Inventory", url: "/inventory", icon: Warehouse },
+  { title: "Invoices", url: "/invoices", icon: Receipt },
   { title: "Agency Offices", url: "/agency-offices", icon: Building2 },
   { title: "People", url: "/property-managers", icon: Users },
   { title: "Account Managers", url: "/account-managers", icon: UserCheck },
   { title: "Mailbox", url: "/mailbox", icon: Mail },
-  { title: "Email Templates", url: "/email-templates", icon: FileText },
 ];
 
 export function AppSidebar() {
@@ -293,24 +297,24 @@ export function AppSidebar() {
         </SidebarHeader>
 
         <SidebarContent className="flex flex-col items-center gap-3 px-2 py-4 bg-white overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-          {collapsedItems.map((item) => {
+          {collapsedItems.map((item, index) => {
             const isPeople = item.title === "People";
             const active = isActive(item.url) || (isPeople && currentPath.includes("property-managers"));
 
             if (isPeople) {
               return (
-                <Popover key={item.title}>
+                <Popover key={`${item.title}-${item.url}-${index}`}>
                   <PopoverTrigger asChild>
                     <button
-                      className={`group p-2.5 rounded-xl transition-all duration-200 flex items-center justify-center cursor-pointer border-0 bg-transparent text-gray-400 hover:bg-gray-50 hover:text-gray-700 data-[state=open]:bg-[#dd5437]/10 data-[state=open]:text-[#dd5437] ${
+                      className={`group w-12 h-12 flex items-center justify-center rounded-[14px] transition-all duration-200 cursor-pointer border-0 bg-transparent data-[state=open]:bg-[#dd5437] data-[state=open]:text-white ${
                         active
-                          ? "bg-[#dd5437]/10 text-[#dd5437] font-semibold"
-                          : ""
+                          ? "bg-[#dd5437] text-white shadow-md shadow-[#dd5437]/20"
+                          : "text-gray-400 hover:bg-gray-50 hover:text-gray-700"
                       }`}
                       title={item.title}
                     >
-                      <item.icon className={`h-5 w-5 shrink-0 transition-colors group-data-[state=open]:text-[#dd5437] ${
-                        active ? "text-[#dd5437]" : ""
+                      <item.icon className={`h-5 w-5 shrink-0 transition-colors group-data-[state=open]:text-white ${
+                        active ? "text-white" : ""
                       }`} />
                     </button>
                   </PopoverTrigger>
@@ -321,11 +325,11 @@ export function AppSidebar() {
 
             return (
               <Link
-                key={item.title}
+                key={`${item.title}-${item.url}-${index}`}
                 to={item.url as any}
-                className={`p-2.5 rounded-xl transition-all duration-200 flex items-center justify-center cursor-pointer ${
+                className={`w-12 h-12 flex items-center justify-center rounded-[14px] transition-all duration-200 cursor-pointer ${
                   active
-                    ? "bg-[#dd5437]/10 text-[#dd5437] shadow-sm shadow-[#dd5437]/5 font-semibold"
+                    ? "bg-[#dd5437] text-white shadow-md shadow-[#dd5437]/20"
                     : "text-gray-400 hover:bg-gray-50 hover:text-gray-700"
                 }`}
                 title={item.title}
@@ -336,17 +340,21 @@ export function AppSidebar() {
           })}
         </SidebarContent>
 
-        <SidebarFooter className="border-t border-gray-100 flex flex-col items-center gap-4 py-6 bg-white shrink-0">
-          <div className="h-9 w-9 rounded-full bg-[#dd5437] text-white flex items-center justify-center font-bold text-sm shadow-sm select-none shadow-[#dd5437]/20 border border-[#dd5437]/10">
-            J
+        <SidebarFooter className="border-t border-gray-100 flex flex-col items-center py-6 bg-white shrink-0">
+          <div className="border border-gray-100 rounded-2xl p-2.5 flex flex-col items-center gap-2.5 bg-white">
+            <img
+              src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&h=150&q=80"
+              alt="Jean Doe"
+              className="h-10 w-10 rounded-[14px] object-cover border border-gray-50 shrink-0"
+            />
+            <button
+              onClick={handleLogout}
+              className="h-10 w-10 flex items-center justify-center bg-[#fdf2f0] hover:bg-[#fdf2f0]/80 text-[#dd5437] rounded-[14px] transition-all cursor-pointer border-0"
+              title="Logout"
+            >
+              <LogOut className="h-4.5 w-4.5 stroke-[2.2px]" />
+            </button>
           </div>
-          <button
-            onClick={handleLogout}
-            className="p-2 text-gray-400 hover:text-[#dd5437] hover:bg-gray-50 rounded-xl transition-all cursor-pointer"
-            title="Logout"
-          >
-            <LogOut className="h-5 w-5 transition-colors" />
-          </button>
         </SidebarFooter>
       </Sidebar>
     );

@@ -75,6 +75,7 @@ import { accountManagerName, type Office, type OfficeStatus } from "@/lib/api-ty
 import { ApiError } from "@/lib/api";
 import { AddAgencyDialog } from "@/components/add-agency-dialog";
 import { toast } from "sonner";
+import maxIcon from "@/assets/svg/max.svg";
 
 export const Route = createFileRoute("/agency-offices")({
   component: AgencyOfficesPage,
@@ -222,13 +223,13 @@ function AgencyOfficesPage() {
     accountManager: managerFilter === "all" ? undefined : managerFilter,
     zone: zoneFilter === "all" ? undefined : zoneFilter,
     page,
-    limit: view === "map" ? 1000 : limit, // Load all for map plotting
+    limit: view === "map" ? 200 : limit, // Load all for map plotting
   });
 
   const updateOffice = useUpdateOffice();
 
   // Query all offices (unfiltered) to dynamically extract all zones for dropdown
-  const allOfficesQuery = useOffices({ limit: 1000 });
+  const allOfficesQuery = useOffices({ limit: 200 });
   const summaryQuery = useOfficesSummary();
   const usersQuery = useUsers({ limit: 200 });
 
@@ -452,10 +453,10 @@ function AgencyOfficesPage() {
           </button>
           <button 
             onClick={() => setMaxOpen(true)}
-            className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#d946ef] to-[#a855f7] hover:from-[#c084fc] hover:to-[#c084fc] text-white px-4 py-2.5 text-xs font-extrabold shadow-sm active:scale-[0.98] transition-all cursor-pointer border-0"
+            className="flex items-center justify-center transition-all active:scale-[0.96] cursor-pointer border-0 bg-transparent p-0 shrink-0"
+            aria-label="Max"
           >
-            <Sparkles className="h-3.5 w-3.5 text-white fill-white" />
-            Max
+            <img src={maxIcon} alt="Max" className="h-10 w-[78px] object-contain select-none pointer-events-none" />
           </button>
           <HeaderBtn icon={Download} onClick={() => setImportOpen(true)}>Import</HeaderBtn>
           <button

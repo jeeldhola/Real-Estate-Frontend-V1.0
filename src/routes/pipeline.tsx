@@ -761,21 +761,7 @@ function PipelinePage() {
                 : "text-slate-600 hover:bg-slate-50"
             }`}
           >
-            <div className="flex items-center gap-1.5">
-              <UserPlus className={`h-4 w-4 ${activeTab === "New Client" ? "text-white" : "text-[#1b8354]"}`} />
-              <span
-                onClick={(e) => {
-                  e.stopPropagation();
-                  openSettingsForTab("New Client");
-                }}
-                className={`p-0.5 rounded-md hover:bg-black/10 transition-colors cursor-pointer ${
-                  activeTab === "New Client" ? "text-white/80 hover:text-white" : "text-slate-400 hover:text-slate-600"
-                }`}
-                title="Settings"
-              >
-                <SlidersHorizontal className="h-3.5 w-3.5" />
-              </span>
-            </div>
+            <UserPlus className={`h-4 w-4 ${activeTab === "New Client" ? "text-white" : "text-[#1b8354]"}`} />
             <span>New Client</span>
             <span className={activeTab === "New Client" ? "inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-white/20 text-white px-1.5 text-[11px] font-bold" : "text-[11px] font-bold text-[#1b8354]"}>
               {newClientCount}
@@ -790,21 +776,7 @@ function PipelinePage() {
                 : "text-slate-600 hover:bg-slate-50"
             }`}
           >
-            <div className="flex items-center gap-1.5">
-              <AlertTriangle className={`h-4 w-4 ${activeTab === "Lapsing" ? "text-white" : "text-amber-500"}`} />
-              <span
-                onClick={(e) => {
-                  e.stopPropagation();
-                  openSettingsForTab("Lapsing");
-                }}
-                className={`p-0.5 rounded-md hover:bg-black/10 transition-colors cursor-pointer ${
-                  activeTab === "Lapsing" ? "text-white/80 hover:text-white" : "text-slate-400 hover:text-slate-600"
-                }`}
-                title="Settings"
-              >
-                <SlidersHorizontal className="h-3.5 w-3.5" />
-              </span>
-            </div>
+            <AlertTriangle className={`h-4 w-4 ${activeTab === "Lapsing" ? "text-white" : "text-amber-500"}`} />
             <span>Lapsing</span>
             <span className={activeTab === "Lapsing" ? "inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-white/20 text-white px-1.5 text-[11px] font-bold" : "text-[11px] font-bold text-amber-500"}>
               {lapsingCount}
@@ -819,21 +791,7 @@ function PipelinePage() {
                 : "text-slate-600 hover:bg-slate-50"
             }`}
           >
-            <div className="flex items-center gap-1.5">
-              <UserX className={`h-4 w-4 ${activeTab === "Inactive" ? "text-white" : "text-red-500"}`} />
-              <span
-                onClick={(e) => {
-                  e.stopPropagation();
-                  openSettingsForTab("Inactive");
-                }}
-                className={`p-0.5 rounded-md hover:bg-black/10 transition-colors cursor-pointer ${
-                  activeTab === "Inactive" ? "text-white/80 hover:text-white" : "text-slate-400 hover:text-slate-600"
-                }`}
-                title="Settings"
-              >
-                <SlidersHorizontal className="h-3.5 w-3.5" />
-              </span>
-            </div>
+            <UserX className={`h-4 w-4 ${activeTab === "Inactive" ? "text-white" : "text-red-500"}`} />
             <span>Inactive</span>
             <span className={activeTab === "Inactive" ? "inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-white/20 text-white px-1.5 text-[11px] font-bold" : "text-[11px] font-bold text-red-500"}>
               {inactiveCount}
@@ -848,21 +806,7 @@ function PipelinePage() {
                 : "text-slate-600 hover:bg-slate-50"
             }`}
           >
-            <div className="flex items-center gap-1.5">
-              <FileText className={`h-4 w-4 ${activeTab === "Onboarding" ? "text-white" : "text-teal-600"}`} />
-              <span
-                onClick={(e) => {
-                  e.stopPropagation();
-                  openSettingsForTab("Onboarding");
-                }}
-                className={`p-0.5 rounded-md hover:bg-black/10 transition-colors cursor-pointer ${
-                  activeTab === "Onboarding" ? "text-white/80 hover:text-white" : "text-slate-400 hover:text-slate-600"
-                }`}
-                title="Settings"
-              >
-                <SlidersHorizontal className="h-3.5 w-3.5" />
-              </span>
-            </div>
+            <FileText className={`h-4 w-4 ${activeTab === "Onboarding" ? "text-white" : "text-teal-600"}`} />
             <span>Onboarding</span>
             <span className={activeTab === "Onboarding" ? "inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-white/20 text-white px-1.5 text-[11px] font-bold" : "text-[11px] font-bold text-teal-600"}>
               {onboardingCount}
@@ -886,21 +830,7 @@ function PipelinePage() {
                 : "text-slate-600 hover:bg-slate-50"
             }`}
           >
-            <div className="flex items-center gap-1.5">
-              <UserPlus className={`h-4 w-4 ${activeTab === "New PM" ? "text-white" : "text-blue-500"}`} />
-              <span
-                onClick={(e) => {
-                  e.stopPropagation();
-                  openSettingsForTab("New PM");
-                }}
-                className={`p-0.5 rounded-md hover:bg-black/10 transition-colors cursor-pointer ${
-                  activeTab === "New PM" ? "text-white/80 hover:text-white" : "text-slate-400 hover:text-slate-600"
-                }`}
-                title="Settings"
-              >
-                <SlidersHorizontal className="h-3.5 w-3.5" />
-              </span>
-            </div>
+            <UserPlus className={`h-4 w-4 ${activeTab === "New PM" ? "text-white" : "text-blue-500"}`} />
             <span>New PM</span>
             <span className={activeTab === "New PM" ? "inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-white/20 text-white px-1.5 text-[11px] font-bold" : "text-[11px] font-bold text-blue-500"}>
               {newPmCount}
@@ -915,21 +845,7 @@ function PipelinePage() {
                 : "text-slate-600 hover:bg-slate-50"
             }`}
           >
-            <div className="flex items-center gap-1.5">
-              <Clock className={`h-4 w-4 ${activeTab === "Lapsing PM" ? "text-white" : "text-purple-500"}`} />
-              <span
-                onClick={(e) => {
-                  e.stopPropagation();
-                  openSettingsForTab("Lapsing PM");
-                }}
-                className={`p-0.5 rounded-md hover:bg-black/10 transition-colors cursor-pointer ${
-                  activeTab === "Lapsing PM" ? "text-white/80 hover:text-white" : "text-slate-400 hover:text-slate-600"
-                }`}
-                title="Settings"
-              >
-                <SlidersHorizontal className="h-3.5 w-3.5" />
-              </span>
-            </div>
+            <Clock className={`h-4 w-4 ${activeTab === "Lapsing PM" ? "text-white" : "text-purple-500"}`} />
             <span>Lapsing PM</span>
             <span className={activeTab === "Lapsing PM" ? "inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-white/20 text-white px-1.5 text-[11px] font-bold" : "text-[11px] font-bold text-purple-500"}>
               {lapsingPmCount}
@@ -944,21 +860,7 @@ function PipelinePage() {
                 : "text-slate-600 hover:bg-slate-50"
             }`}
           >
-            <div className="flex items-center gap-1.5">
-              <UserMinus className={`h-4 w-4 ${activeTab === "Inactive PM" ? "text-white" : "text-[#dc2626]"}`} />
-              <span
-                onClick={(e) => {
-                  e.stopPropagation();
-                  openSettingsForTab("Inactive PM");
-                }}
-                className={`p-0.5 rounded-md hover:bg-black/10 transition-colors cursor-pointer ${
-                  activeTab === "Inactive PM" ? "text-white/80 hover:text-white" : "text-slate-400 hover:text-slate-600"
-                }`}
-                title="Settings"
-              >
-                <SlidersHorizontal className="h-3.5 w-3.5" />
-              </span>
-            </div>
+            <UserMinus className={`h-4 w-4 ${activeTab === "Inactive PM" ? "text-white" : "text-[#dc2626]"}`} />
             <span>Inactive PM</span>
             <span className={activeTab === "Inactive PM" ? "inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-white/20 text-white px-1.5 text-[11px] font-bold" : "text-[11px] font-bold text-[#dc2626]"}>
               {inactivePmCount}

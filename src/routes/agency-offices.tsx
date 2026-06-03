@@ -877,9 +877,6 @@ function AgencyOfficesPage() {
         <div className="space-y-6 animate-in fade-in-50 duration-300">
           {/* Map Component */}
           <OfficeMap offices={offices} />
-
-          {/* Locations without map coordinates */}
-          <LocationsWithoutCoordinates offices={offices} />
         </div>
       )}
 
@@ -1185,66 +1182,6 @@ function OfficeMap({ offices }: { offices: Office[] }) {
   );
 }
 
-// 3-Column Responsive Grid listing offices without map coordinates
-function LocationsWithoutCoordinates({ offices }: { offices: Office[] }) {
-  const navigate = useNavigate();
-  const officesWithoutCoords = useMemo(() => {
-    return offices.filter((o) => getOfficeCoordinates(o) === null);
-  }, [offices]);
-
-  return (
-    <div className="rounded-2xl border border-slate-100 bg-card p-6 shadow-xs">
-      <div className="mb-4 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-slate-50 text-slate-400">
-            <MapPin className="h-4 w-4" />
-          </div>
-          <h3 className="text-sm font-black text-slate-800">
-            Locations without map coordinates
-          </h3>
-          <span className="flex h-5 items-center justify-center rounded-full bg-slate-100 px-2.5 text-[10px] font-extrabold text-slate-500">
-            {officesWithoutCoords.length}
-          </span>
-        </div>
-      </div>
-
-      {officesWithoutCoords.length === 0 ? (
-        <p className="text-xs font-bold text-slate-400 text-center py-6">
-          All locations have map coordinates!
-        </p>
-      ) : (
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {officesWithoutCoords.map((o) => (
-            <div
-              key={o.id}
-              onClick={() => navigate({ to: "/agency-offices/$officeId", params: { officeId: o.id } })}
-              className="group flex items-center justify-between gap-4 rounded-xl border border-slate-100 bg-white p-4 transition-all hover:border-[#e05638]/40 hover:shadow-xs cursor-pointer"
-            >
-              <div className="min-w-0 flex-1">
-                <div className="truncate text-xs font-black text-slate-800 group-hover:text-[#e05638] transition-colors">
-                  {o.name}
-                </div>
-                <div className="mt-1 truncate text-[10px] font-bold text-slate-400">
-                  {o.address || "No address"}
-                </div>
-              </div>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  navigate({ to: "/agency-offices/$officeId", params: { officeId: o.id } });
-                }}
-                className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-[10px] font-black text-slate-655 hover:bg-slate-50 hover:border-[#e05638]/50 hover:text-[#e05638] transition-all shadow-2xs cursor-pointer shrink-0"
-              >
-                <Eye className="h-3.5 w-3.5 text-slate-400 group-hover:text-[#e05638]/70 transition-colors" />
-                View
-              </button>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
 
 function StatusPill({ status }: { status: OfficeStatus }) {
   if (status === "Active") {

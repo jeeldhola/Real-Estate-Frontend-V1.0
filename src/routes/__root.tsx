@@ -143,10 +143,10 @@ function RootBody() {
   return (
     <RequireAuth>
       <SidebarProvider>
-        <div className="flex min-h-screen w-full bg-background">
+        <div className="flex min-h-screen w-full bg-white">
           <AppSidebar />
           <div className="flex min-w-0 flex-1 flex-col">
-            <header className="flex h-12 items-center border-b bg-background px-3 md:hidden">
+            <header className="flex h-12 items-center border-b bg-white px-3 md:hidden">
               <SidebarTrigger />
             </header>
             <main className="flex-1">

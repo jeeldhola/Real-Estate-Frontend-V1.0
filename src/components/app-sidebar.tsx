@@ -3,31 +3,29 @@ import logoUrl from "@/assets/svg/sign-in/logo.svg";
 import collapsedLogoUrl from "@/assets/svg/collpasedlogo.svg";
 import { useAuth } from "@/lib/auth";
 import {
-  LayoutDashboard,
-  LayoutGrid,
-  TrendingUp,
-  CheckSquare,
-  Calendar,
-  Building2,
   Users,
-  UserCog,
-  UserCheck,
-  Mail,
-  FileText,
-  LogOut,
-  ChevronRight,
-  ChevronsLeft,
-  ChevronsRight,
-  ChevronsUpDown,
-  Wrench,
-  Package,
-  Receipt,
   User,
-  Phone,
   MapPin,
-  Clipboard,
-  Warehouse,
+  Package,
+  Phone,
+  UserCheck,
+  Wrench,
 } from "lucide-react";
+
+import DashboardIcon from "@/icons/Layout.svg";
+import PeopleIcon from "@/icons/Users.svg";
+import LeadsIcon from "@/icons/TrendUp.svg";
+import QuotesIcon from "@/icons/Clipboard.svg";
+import JobsIcon from "@/icons/Wrench.svg";
+import InventoryIcon from "@/icons/Warehouse.svg";
+import InvoicesIcon from "@/icons/Invoice.svg";
+import OfficesIcon from "@/icons/BuildingApartment.svg";
+import AccountManagersIcon from "@/icons/UserCircleCheck.svg";
+import MailboxIcon from "@/icons/EnvelopeSimple.svg";
+import LogoutIcon from "@/icons/SignOut.svg";
+import CloseSidebarIcon from "@/icons/CaretDoubleLeft.svg";
+import ExpandSidebarIcon from "@/icons/CaretDoubleRight.svg";
+import ChevronUpDownIcon from "@/icons/CaretUpDown.svg";
 
 import React from "react";
 import {
@@ -44,41 +42,41 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { toast } from "sonner";
 
 const workspace = [
-  { title: "Dashboard", url: "/", icon: LayoutDashboard },
-  { title: "People", url: "/property-managers", icon: Users },
-  { title: "Leads", url: "/pipeline", icon: TrendingUp },
-  { title: "Quotes", url: "/tasks", icon: FileText },
-  { title: "Jobs", url: "/meetings", icon: Wrench },
-  { title: "Inventory", url: "/inventory", icon: Package },
-  { title: "Invoices", url: "/invoices", icon: Receipt },
+  { title: "Dashboard", url: "/", icon: DashboardIcon },
+  { title: "People", url: "/property-managers", icon: PeopleIcon },
+  { title: "Leads", url: "/pipeline", icon: LeadsIcon },
+  { title: "Quotes", url: "/tasks", icon: QuotesIcon },
+  { title: "Jobs", url: "/meetings", icon: JobsIcon },
+  { title: "Inventory", url: "/inventory", icon: InventoryIcon },
+  { title: "Invoices", url: "/invoices", icon: InvoicesIcon },
 ];
 
 const accounts = [
-  { title: "Agency Offices", url: "/agency-offices", icon: Building2 },
-  { title: "People", url: "/property-managers", icon: Users },
+  { title: "Agency Offices", url: "/agency-offices", icon: OfficesIcon },
+  { title: "People", url: "/property-managers", icon: PeopleIcon },
 ];
 
 const people = [
-  { title: "Account Managers", url: "/account-managers", icon: UserCog }
+  { title: "Account Managers", url: "/account-managers", icon: AccountManagersIcon }
 ];
 
 const mailbox = [
-  { title: "Mailbox", url: "/mailbox", icon: Mail }
+  { title: "Mailbox", url: "/mailbox", icon: MailboxIcon }
 ];
 
 // Flat list of icons for collapsed state (matching mockup precisely)
 const collapsedItems = [
-  { title: "Dashboard", url: "/", icon: LayoutDashboard },
-  { title: "People", url: "/property-managers", icon: Users },
-  { title: "Leads", url: "/pipeline", icon: TrendingUp },
-  { title: "Quotes", url: "/tasks", icon: Clipboard },
-  { title: "Jobs", url: "/meetings", icon: Wrench },
-  { title: "Inventory", url: "/inventory", icon: Warehouse },
-  { title: "Invoices", url: "/invoices", icon: Receipt },
-  { title: "Agency Offices", url: "/agency-offices", icon: Building2 },
-  { title: "People", url: "/property-managers", icon: Users },
-  { title: "Account Managers", url: "/account-managers", icon: UserCheck },
-  { title: "Mailbox", url: "/mailbox", icon: Mail },
+  { title: "Dashboard", url: "/", icon: DashboardIcon },
+  { title: "People", url: "/property-managers", icon: PeopleIcon },
+  { title: "Leads", url: "/pipeline", icon: LeadsIcon },
+  { title: "Quotes", url: "/tasks", icon: QuotesIcon },
+  { title: "Jobs", url: "/meetings", icon: JobsIcon },
+  { title: "Inventory", url: "/inventory", icon: InventoryIcon },
+  { title: "Invoices", url: "/invoices", icon: InvoicesIcon },
+  { title: "Agency Offices", url: "/agency-offices", icon: OfficesIcon },
+  { title: "People", url: "/property-managers", icon: PeopleIcon },
+  { title: "Account Managers", url: "/account-managers", icon: AccountManagersIcon },
+  { title: "Mailbox", url: "/mailbox", icon: MailboxIcon },
 ];
 
 export function AppSidebar() {
@@ -219,7 +217,7 @@ export function AppSidebar() {
 
   const renderGroup = (
     label: string,
-    items: { title: string; url: string; icon: typeof LayoutDashboard }[],
+    items: { title: string; url: string; icon: string }[],
   ) => (
     <SidebarGroup className="px-3 py-1">
       <span className="px-3 py-1.5 text-[11px] font-semibold text-[#8e8e93] block uppercase tracking-wider">
@@ -242,9 +240,12 @@ export function AppSidebar() {
                           : "text-gray-700 hover:text-gray-900 hover:bg-gray-50/80 bg-transparent"
                       }`}
                     >
-                      <item.icon className={`h-[18px] w-[18px] shrink-0 transition-colors group-data-[state=open]:text-[#dd5437] ${
-                        active ? "text-[#dd5437]" : "text-gray-400"
-                      }`} />
+                      <img
+                        src={item.icon}
+                        alt={item.title}
+                        className="h-[18px] w-[18px] shrink-0 transition-all"
+                        style={active ? { filter: "invert(40%) sepia(80%) saturate(1500%) hue-rotate(345deg) brightness(95%) contrast(90%)" } : { opacity: 0.6 }}
+                      />
                       <span>{item.title}</span>
                     </button>
                   </PopoverTrigger>
@@ -263,9 +264,12 @@ export function AppSidebar() {
                     : "text-gray-700 hover:text-gray-900 hover:bg-gray-50/80"
                 }`}
               >
-                <item.icon className={`h-[18px] w-[18px] shrink-0 transition-colors ${
-                  active ? "text-white" : "text-gray-400"
-                }`} />
+                <img
+                  src={item.icon}
+                  alt={item.title}
+                  className="h-[18px] w-[18px] shrink-0 transition-all"
+                  style={active ? { filter: "brightness(0) invert(1)" } : { opacity: 0.6 }}
+                />
                 <span>{item.title}</span>
               </Link>
             );
@@ -281,7 +285,10 @@ export function AppSidebar() {
       <Sidebar 
         collapsible="icon" 
         className="border-r border-gray-100 bg-white"
-        style={{ "--sidebar-width-icon": "4rem" } as React.CSSProperties}
+        style={{ 
+          "--sidebar-width": "240px",
+          "--sidebar-width-icon": "4rem" 
+        } as React.CSSProperties}
       >
         <SidebarHeader className="relative flex flex-col items-center py-6 bg-white shrink-0 select-none">
           <div className="flex items-center justify-center w-full mt-1.5">
@@ -292,7 +299,7 @@ export function AppSidebar() {
             className="absolute -right-4 top-7 w-8 h-8 flex items-center justify-center bg-white border border-gray-200 rounded-xl shadow-md hover:bg-gray-50 text-gray-500 hover:text-gray-700 cursor-pointer z-50 transition-all duration-200 hover:scale-105 active:scale-95"
             aria-label="Expand sidebar"
           >
-            <ChevronsRight className="h-4 w-4 stroke-[2.5px]" />
+            <img src={ExpandSidebarIcon} alt="Expand" className="h-[18px] w-[18px]" />
           </button>
         </SidebarHeader>
 
@@ -313,9 +320,12 @@ export function AppSidebar() {
                       }`}
                       title={item.title}
                     >
-                      <item.icon className={`h-5 w-5 shrink-0 transition-colors group-data-[state=open]:text-white ${
-                        active ? "text-white" : ""
-                      }`} />
+                      <img
+                        src={item.icon}
+                        alt={item.title}
+                        className="h-5 w-5 shrink-0 transition-all"
+                        style={active ? { filter: "brightness(0) invert(1)" } : { opacity: 0.6 }}
+                      />
                     </button>
                   </PopoverTrigger>
                   {renderPeopleSubmenu()}
@@ -334,7 +344,12 @@ export function AppSidebar() {
                 }`}
                 title={item.title}
               >
-                <item.icon className="h-5 w-5 shrink-0" />
+                <img
+                  src={item.icon}
+                  alt={item.title}
+                  className="h-5 w-5 shrink-0 transition-all"
+                  style={active ? { filter: "brightness(0) invert(1)" } : { opacity: 0.6 }}
+                />
               </Link>
             );
           })}
@@ -352,7 +367,7 @@ export function AppSidebar() {
               className="h-10 w-10 flex items-center justify-center bg-[#fdf2f0] hover:bg-[#fdf2f0]/80 text-[#dd5437] rounded-[14px] transition-all cursor-pointer border-0"
               title="Logout"
             >
-              <LogOut className="h-4.5 w-4.5 stroke-[2.2px]" />
+              <img src={LogoutIcon} alt="Logout" className="h-4.5 w-4.5" />
             </button>
           </div>
         </SidebarFooter>
@@ -365,18 +380,26 @@ export function AppSidebar() {
     <Sidebar 
       collapsible="icon" 
       className="border-r border-gray-100 bg-white"
-      style={{ "--sidebar-width-icon": "4rem" } as React.CSSProperties}
+      style={{ 
+        "--sidebar-width": "240px",
+        "--sidebar-width-icon": "4rem" 
+      } as React.CSSProperties}
     >
-      <SidebarHeader className="flex flex-row items-center justify-between px-5 pt-5 pb-2 border-none bg-white">
-        <div className="flex items-center gap-2">
-          <img src={logoUrl} alt="HubKonnect" className="h-[128px] w-auto object-contain" />
+      <SidebarHeader className="flex flex-row items-center justify-between px-5 pt-3 pb-2 border-none bg-white select-none">
+        <div className="flex items-center">
+          <img 
+            src={logoUrl} 
+            alt="HubKonnect" 
+            style={{ width: "143px", height: "107px" }} 
+            className="object-contain" 
+          />
         </div>
         <button
           onClick={toggleSidebar}
           className="p-2 border border-gray-100 rounded-xl hover:bg-gray-50 text-gray-500 cursor-pointer flex items-center justify-center transition-all shadow-sm duration-200"
           aria-label="Collapse sidebar"
         >
-          <ChevronsLeft className="h-4 w-4" />
+          <img src={CloseSidebarIcon} alt="Collapse" className="h-[18px] w-[18px]" />
         </button>
       </SidebarHeader>
 
@@ -406,10 +429,10 @@ export function AppSidebar() {
               <span className="truncate text-[11px] font-medium text-gray-400 mt-1 leading-none">@jeandoe</span>
             </div>
             <button 
-              className="border border-gray-200 rounded-lg p-1.5 hover:bg-gray-50 transition-all cursor-pointer text-gray-500 shrink-0"
+              className="border border-gray-200 rounded-lg p-1.5 hover:bg-gray-50 transition-all cursor-pointer text-gray-500 shrink-0 flex items-center justify-center"
               aria-label="Profile options"
             >
-              <ChevronsUpDown className="h-4 w-4" />
+              <img src={ChevronUpDownIcon} alt="Options" className="h-4 w-4" />
             </button>
           </div>
 
@@ -421,7 +444,7 @@ export function AppSidebar() {
             onClick={handleLogout}
             className="w-full flex items-center gap-3 py-2 px-1 text-sm font-medium text-gray-700 hover:text-[#dd5437] rounded-lg hover:bg-gray-50/50 cursor-pointer transition-all duration-150"
           >
-            <LogOut className="h-[18px] w-[18px] text-[#dd5437] shrink-0" />
+            <img src={LogoutIcon} alt="Logout" className="h-[18px] w-[18px] shrink-0" />
             <span className="text-gray-700 hover:text-[#dd5437] transition-colors">Logout</span>
           </button>
         </div>

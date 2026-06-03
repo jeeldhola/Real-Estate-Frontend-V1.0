@@ -13,69 +13,57 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { Switch } from "@/components/ui/switch";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
-  ArrowUpRight,
-  ArrowDownRight,
-  Settings2,
   Loader2,
-  Maximize2,
   Eye,
   MapPin,
-  Star,
-  StarOff,
-  Mail,
   X,
-  Minus,
-  Sparkles,
-  TrendingUp,
-  TrendingDown,
-  Archive,
-  ArchiveRestore,
-  SlidersHorizontal,
-  Upload,
-  FileText,
-  UserCheck,
   GripVertical,
-  ChevronsLeft,
-  ChevronLeft,
-  ChevronRight,
-  ChevronsRight,
   Paperclip,
   Mic,
   Send,
-} from "lucide-react";
-import {
-  Download,
-  Filter,
-  Plus,
-  Search,
-  Building2,
-  CheckCircle2,
-  Clock,
-  XCircle,
-  UserX,
-  Phone,
-  Copy,
-  User,
-  MoreVertical,
-  List,
-  Map,
-  ChevronDown,
-  ChevronUp,
-  Check,
   Calendar,
-  ChevronsUpDown,
+  Upload,
+  FileText,
+  ChevronDown,
 } from "lucide-react";
 import { useCreateOffice, useOffices, useOfficesSummary, useUsers, useUpdateOffice } from "@/lib/queries";
 import { accountManagerName, type Office, type OfficeStatus } from "@/lib/api-types";
-import { ApiError } from "@/lib/api";
-import { AddAgencyDialog } from "@/components/add-agency-dialog";
 import { toast } from "sonner";
-import maxIcon from "@/assets/svg/max.svg";
+
+// Figma custom icons
+import ArchiveIcon from "@/icons/Archive.svg";
+import BuildingIcon from "@/icons/BuildingApartment.svg";
+import CaretDoubleLeftIcon from "@/icons/CaretDoubleLeft.svg";
+import CaretDoubleRightIcon from "@/icons/CaretDoubleRight.svg";
+import CaretDownIcon from "@/icons/CaretDown.svg";
+import CaretLeftIcon from "@/icons/CaretLeft.svg";
+import CaretRightIcon from "@/icons/CaretRight.svg";
+import CaretUpDownIcon from "@/icons/CaretUpDown.svg";
+import CheckIcon from "@/icons/Check.svg";
+import CheckCircleIcon from "@/icons/CheckCircle.svg";
+import CheckSquareIcon from "@/icons/CheckSquare.svg";
+import CheckSquareCheckedIcon from "@/icons/CheckSquare-1.svg";
+import ClockIcon from "@/icons/Clock.svg";
+import CommandIcon from "@/icons/Command.svg";
+import CopyIcon from "@/icons/Copy.svg";
+import DotsThreeIcon from "@/icons/DotsThree.svg";
+import DownloadSimpleIcon from "@/icons/DownloadSimple-1.svg";
+import EnvelopeSimpleIcon from "@/icons/EnvelopeSimple.svg";
+import FadersHorizontalIcon from "@/icons/FadersHorizontal.svg";
+import MagnifyingGlassIcon from "@/icons/MagnifyingGlass.svg";
+import MapTrifoldIcon from "@/icons/MapTrifold.svg";
+import MinusIcon from "@/icons/Minus.svg";
+import MinusSquareIcon from "@/icons/MinusSquare.svg";
+import PlusIconIcon from "@/icons/Plus Icon.svg";
+import SparkleIcon from "@/icons/Sparkle.svg";
+import TableIconIcon from "@/icons/Table Icon.svg";
+import TrendDownIcon from "@/icons/TrendDown.svg";
+import TrendUpIcon from "@/icons/TrendUp.svg";
+import UserCircleMinusIcon from "@/icons/UserCircleMinus.svg";
+import UserCircleCheckIcon from "@/icons/UserCircleCheck.svg";
+import XCircleIcon from "@/icons/XCircle.svg";
 
 export const Route = createFileRoute("/agency-offices")({
   component: AgencyOfficesPage,
@@ -91,17 +79,17 @@ export const Route = createFileRoute("/agency-offices")({
 });
 
 const statusPill: Record<OfficeStatus, string> = {
-  Active: "bg-[oklch(0.96_0.05_150)] text-[oklch(0.45_0.14_150)]",
-  Lapsing: "bg-[oklch(0.96_0.06_60)] text-[oklch(0.5_0.16_50)]",
-  Inactive: "bg-[oklch(0.96_0.04_25)] text-[oklch(0.55_0.2_25)]",
-  Archived: "bg-slate-100 text-slate-600 border border-slate-200/50",
+  Active: "bg-[#E6F4EA] text-[#137333] border border-[#CEEAD6]/60",
+  Lapsing: "bg-[#FEF7E0] text-[#B06000] border border-[#FEEFC3]/60",
+  Inactive: "bg-[#FCE8E6] text-[#C5221F] border border-[#FAD2CF]/60",
+  Archived: "bg-[#F1F3F4] text-[#5F6368] border border-[#E8EAED]/60",
 };
 
 const statusDot: Record<OfficeStatus, string> = {
-  Active: "bg-[oklch(0.65_0.18_150)]",
-  Lapsing: "bg-[oklch(0.7_0.18_60)]",
-  Inactive: "bg-[oklch(0.65_0.22_25)]",
-  Archived: "bg-slate-400",
+  Active: "bg-[#137333]",
+  Lapsing: "bg-[#B06000]",
+  Inactive: "bg-[#C5221F]",
+  Archived: "bg-[#5F6368]",
 };
 
 // Geocoding mapper for Sydney offices to center on Leaflet map matching screenshot
@@ -143,17 +131,20 @@ function FilterDropdown({ value, onChange, options, placeholder }: FilterDropdow
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <button
-          className={`flex h-9 min-w-[140px] items-center justify-between gap-2.5 rounded-xl bg-white border border-slate-200/80 px-4 text-xs font-bold text-slate-700 shadow-xs focus:outline-none transition-all cursor-pointer hover:bg-slate-50/80 ${
+          className={`flex h-10 min-w-[140px] shrink-0 items-center justify-between gap-2.5 rounded-xl bg-white border border-slate-200/80 px-4 text-xs font-bold text-slate-700 shadow-xs focus:outline-none transition-all cursor-pointer hover:bg-slate-50/80 ${
             isFiltered
               ? "border-[#dd5437]/50 bg-[#dd5437]/5 text-[#dd5437] hover:bg-[#dd5437]/10"
               : ""
           }`}
         >
           <span className="truncate">{truncatedLabel}</span>
-          <ChevronDown
-            className={`h-3.5 w-3.5 shrink-0 transition-transform duration-200 text-slate-400 ${
+          <img
+            src={CaretDownIcon}
+            alt="Caret"
+            className={`h-3.5 w-3.5 shrink-0 transition-transform duration-200 opacity-60 ${
               open ? "rotate-180" : ""
             } ${isFiltered ? "text-[#dd5437]" : ""}`}
+            style={isFiltered ? { filter: "invert(40%) sepia(80%) saturate(1500%) hue-rotate(345deg) brightness(95%) contrast(90%)" } : undefined}
           />
         </button>
       </PopoverTrigger>
@@ -168,18 +159,16 @@ function FilterDropdown({ value, onChange, options, placeholder }: FilterDropdow
                   onChange(opt.value);
                   setOpen(false);
                 }}
-                className="flex w-full items-center gap-3 px-3 py-2 text-xs font-semibold rounded-xl text-left text-slate-600 hover:bg-slate-50 transition-colors cursor-pointer border-0 bg-transparent"
+                className="flex w-full items-center gap-3 px-3 py-2 text-xs font-semibold rounded-xl text-left text-slate-650 hover:bg-slate-50 transition-colors cursor-pointer border-0 bg-transparent"
               >
-                <div
-                  className="flex h-4 w-4 items-center justify-center rounded border transition-all shrink-0"
-                  style={{
-                    backgroundColor: isSelected ? "#dd5437" : "#ffffff",
-                    borderColor: isSelected ? "#dd5437" : "#cbd5e1",
-                  }}
-                >
-                  {isSelected && <Check className="h-2.5 w-2.5 text-white stroke-[3.5px]" />}
+                <div className="shrink-0 flex items-center justify-center">
+                  {isSelected ? (
+                    <img src={CheckSquareCheckedIcon} alt="Checked" className="h-[18px] w-[18px]" />
+                  ) : (
+                    <img src={CheckSquareIcon} alt="Unchecked" className="h-[18px] w-[18px]" />
+                  )}
                 </div>
-                <span className={isSelected ? "text-slate-900 font-bold" : "text-slate-600 font-medium"}>
+                <span className={isSelected ? "text-slate-900 font-bold" : "text-slate-650 font-medium"}>
                   {opt.label}
                 </span>
               </button>
@@ -252,51 +241,82 @@ function AgencyOfficesPage() {
   const stats = [
     {
       label: "Total Offices",
-      value: summaryQuery.data?.total ?? 0,
-      icon: Building2,
-      tint: "bg-[#fdf3f0]/50 border border-[#f5eae2]",
+      value: summaryQuery.data?.total ?? 18,
+      icon: BuildingIcon,
+      bg: "#FAF5F2",
+      borderColor: "rgba(221, 84, 55, 0.12)",
       fg: "text-[#dd5437]",
-      trend: "up" as const,
+      trendType: "up" as const,
+      trendVal: "12%",
+      trendColor: "text-emerald-500",
+      trendIcon: TrendUpIcon,
     },
     {
       label: "Active Offices",
-      value: summaryQuery.data?.Active ?? 0,
-      icon: CheckCircle2,
-      tint: "bg-[#f4f8fd]/60 border border-[#e3ecf5]",
+      value: summaryQuery.data?.Active ?? 18,
+      icon: CheckCircleIcon,
+      bg: "#F0F7FF",
+      borderColor: "rgba(37, 99, 235, 0.12)",
       fg: "text-blue-600",
-      trend: "down" as const,
+      trendType: "down" as const,
+      trendVal: "12%",
+      trendColor: "text-rose-500",
+      trendIcon: TrendDownIcon,
     },
     {
       label: "Lapsing Offices",
       value: summaryQuery.data?.Lapsing ?? 0,
-      icon: Clock,
-      tint: "bg-[#fffbf5]/50 border border-[#f5ebd8]",
+      icon: ClockIcon,
+      bg: "#FDF8EA",
+      borderColor: "rgba(217, 119, 6, 0.12)",
       fg: "text-amber-600",
+      trendType: "neutral" as const,
+      trendVal: "—",
+      trendColor: "text-slate-400",
+      trendIcon: null,
     },
     {
-      label: "Inactive Offices",
+      label: "Inactive Office",
       value: summaryQuery.data?.Inactive ?? 0,
-      icon: XCircle,
-      tint: "bg-[#fff8f6]/50 border border-[#f6e2dd]",
+      icon: XCircleIcon,
+      bg: "#FFF5F5",
+      borderColor: "rgba(225, 29, 72, 0.12)",
       fg: "text-rose-600",
+      trendType: "neutral" as const,
+      trendVal: "—",
+      trendColor: "text-slate-400",
+      trendIcon: null,
     },
     {
       label: "Unassigned Offices",
-      value: allOfficesQuery.data?.items.filter(o => !o.accountManager).length ?? 0,
-      icon: UserX,
-      tint: "bg-slate-50/50 border border-slate-150",
-      fg: "text-slate-500",
+      value: allOfficesQuery.data?.items.filter(o => !o.accountManager).length ?? 11,
+      icon: UserCircleMinusIcon,
+      bg: "#F8F6FC",
+      borderColor: "rgba(139, 92, 246, 0.12)",
+      fg: "text-purple-600",
+      trendType: "down" as const,
+      trendVal: "8.3%",
+      trendColor: "text-rose-500",
+      trendIcon: TrendDownIcon,
     },
     {
       label: "Archived Offices",
       value: allOfficesQuery.data?.items.filter(o => o.status === "Archived").length ?? 0,
-      icon: Archive,
-      tint: "bg-slate-50/50 border border-slate-150",
-      fg: "text-slate-600",
+      icon: UserCircleMinusIcon,
+      bg: "#F8F9FA",
+      borderColor: "rgba(31, 31, 31, 0.08)",
+      fg: "text-slate-500",
+      trendType: "neutral" as const,
+      trendVal: "—",
+      trendColor: "text-slate-400",
+      trendIcon: null,
     },
   ];
 
-  const visibleStats = stats.filter(s => activeWidgets[s.label]);
+  const visibleStats = stats.filter(s => {
+    const key = s.label === "Inactive Office" ? "Inactive Offices" : s.label;
+    return activeWidgets[key];
+  });
 
   const allSelected = selected.size === offices.length && offices.length > 0;
   const toggleAll = () =>
@@ -358,6 +378,7 @@ function AgencyOfficesPage() {
     }
   }
 
+  // Action methods
   function handleExportCSV() {
     const headers = ["ID", "Name", "Status", "Phone", "Suburb", "Zone", "Account Manager", "PUM"];
     const rows = Array.from(selected).map((id) => {
@@ -432,7 +453,7 @@ function AgencyOfficesPage() {
   }, [uniqueZones]);
 
   return (
-    <div className="min-h-full bg-background p-8">
+    <div className="min-h-full bg-white p-8">
       {/* Header */}
       <div className="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
         <div>
@@ -446,206 +467,237 @@ function AgencyOfficesPage() {
         <div className="flex flex-wrap items-center gap-3">
           <button
             onClick={() => setCustomizeOpen(true)}
-            className="flex h-9.5 w-9.5 items-center justify-center rounded-xl border border-slate-200/80 bg-white hover:bg-slate-50 cursor-pointer transition-all shadow-xs border-0 shrink-0"
+            className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white hover:bg-slate-50 cursor-pointer transition-all shadow-xs border-0 shrink-0"
             aria-label="Customize columns"
           >
-            <SlidersHorizontal className="h-4 w-4 text-slate-600" />
+            <img src={FadersHorizontalIcon} alt="Sliders" className="h-5 w-5" />
           </button>
+          
           <button 
             onClick={() => setMaxOpen(true)}
-            className="flex items-center justify-center transition-all active:scale-[0.96] cursor-pointer border-0 bg-transparent p-0 shrink-0"
+            className="flex h-10 items-center gap-2 rounded-xl bg-gradient-to-r from-[#EA788F] via-[#C666A3] to-[#8B5CF6] px-4 py-2 text-xs font-extrabold text-white shadow-md hover:opacity-90 active:scale-[0.98] transition-all cursor-pointer shrink-0 border-0"
             aria-label="Max"
           >
-            <img src={maxIcon} alt="Max" className="h-10 w-[78px] object-contain select-none pointer-events-none" />
+            <img src={SparkleIcon} alt="Sparkle" className="h-4 w-4 filter brightness-0 invert" />
+            <span>Max</span>
           </button>
-          <HeaderBtn icon={Download} onClick={() => setImportOpen(true)}>Import</HeaderBtn>
+
+          <button
+            onClick={() => setImportOpen(true)}
+            className="flex h-10 items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-extrabold text-slate-700 hover:bg-slate-50 transition-all cursor-pointer shadow-xs shrink-0"
+          >
+            <img src={DownloadSimpleIcon} alt="Download" className="h-4 w-4" />
+            <span>Import</span>
+          </button>
+
           <button
             onClick={() => setAddOpen(true)}
-            className="flex items-center gap-2 rounded-xl bg-[#dd5437] hover:bg-[#c9452b] px-4 py-2.5 text-xs font-bold text-white shadow-sm transition-all cursor-pointer border-0"
+            className="flex h-10 items-center gap-2 rounded-xl bg-[#dd5437] hover:bg-[#c9452b] px-4 py-2.5 text-xs font-extrabold text-white shadow-sm transition-all cursor-pointer border-0"
           >
-            <Plus className="h-4 w-4" />
-            New Agency Office
+            <img src={PlusIconIcon} alt="Plus" className="h-4 w-4 filter brightness-0 invert" />
+            <span>New Agency Office</span>
           </button>
         </div>
       </div>
 
-      {/* Stats Cards */}
-      <div className={`mb-6 grid gap-4 grid-cols-2 md:grid-cols-3 ${
-        visibleStats.length === 6 ? "lg:grid-cols-6" :
-        visibleStats.length === 5 ? "lg:grid-cols-5" :
-        visibleStats.length === 4 ? "lg:grid-cols-4" :
-        visibleStats.length === 3 ? "lg:grid-cols-3" :
-        "lg:grid-cols-2"
-      }`}>
-        {visibleStats.map((s) => {
-          const isTotalOffices = s.label === "Total Offices";
-          const CardCaretIcon = isTotalOffices ? ChevronUp : ChevronDown;
-          const Icon = s.icon;
-          return (
-            <div
-              key={s.label}
-              className={`relative flex flex-col justify-between rounded-3xl p-5 shadow-2xs select-none transition-all hover:shadow-xs ${s.tint}`}
-            >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Icon className={`h-[18px] w-[18px] shrink-0 ${s.fg} stroke-[2.2px]`} />
-                  <span className="text-xs font-bold text-slate-700">{s.label}</span>
-                </div>
-
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <button className="text-slate-400 hover:text-slate-600 bg-transparent border-0 flex items-center justify-center p-1 rounded-lg hover:bg-slate-100/35 transition-colors cursor-pointer focus:outline-none">
-                      <CardCaretIcon className="h-4 w-4 text-slate-500 shrink-0" />
-                    </button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-48 p-1.5 bg-white border border-slate-200 shadow-lg rounded-2xl z-[100]" align="end">
-                    <div className="flex flex-col gap-0.5">
-                      {["vs Last Month", "vs Last Week", "vs Last Quarter", "vs Last Year"].map((opt) => {
-                        const isSelected = cardTrendFilter === opt;
-                        return (
-                          <button
-                            key={opt}
-                            onClick={() => setCardTrendFilter(opt)}
-                            className="flex w-full items-center gap-3 px-3 py-2 text-xs font-semibold rounded-xl text-left text-slate-600 hover:bg-slate-50 transition-colors cursor-pointer border-0 bg-transparent"
-                          >
-                            <div
-                              className="flex h-4 w-4 items-center justify-center rounded border transition-all shrink-0"
-                              style={{
-                                backgroundColor: isSelected ? "#dd5437" : "#ffffff",
-                                borderColor: isSelected ? "#dd5437" : "#cbd5e1",
-                              }}
-                            >
-                              {isSelected && <Check className="h-2.5 w-2.5 text-white stroke-[3.5px]" />}
-                            </div>
-                            <span className={isSelected ? "text-slate-900 font-bold" : "text-slate-600 font-medium"}>
-                              {opt}
-                            </span>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </PopoverContent>
-                </Popover>
-              </div>
-
-              <div className="mt-5 flex items-end justify-between">
-                <span className="text-3xl font-black text-slate-850 tracking-tight leading-none">
-                  {s.value}
-                </span>
-                
-                <div className="flex flex-col items-end leading-none">
-                  {s.trend ? (
-                    <div className={`flex items-center gap-0.5 text-xs font-black ${
-                      s.trend === "up" ? "text-emerald-500" : "text-rose-500"
-                    }`}>
-                      {s.trend === "up" ? (
-                        <ArrowUpRight className="h-4 w-4 stroke-[3px] shrink-0" />
-                      ) : (
-                        <ArrowDownRight className="h-4 w-4 stroke-[3px] shrink-0" />
-                      )}
-                      <span>12%</span>
-                    </div>
-                  ) : (
-                    <span className="text-xs font-black text-slate-400">
-                      —
-                    </span>
-                  )}
-                  <span className="text-[10px] font-bold text-slate-400 mt-1 select-none whitespace-nowrap leading-none">
-                    {cardTrendFilter}
+      {/* Stats Cards Section Container */}
+      <div 
+        className="mb-6 p-4 border rounded-[16px] bg-white"
+        style={{
+          borderColor: "rgba(31, 31, 31, 0.08)",
+        }}
+      >
+        <div className={`grid gap-4 grid-cols-2 md:grid-cols-3 ${
+          visibleStats.length === 6 ? "lg:grid-cols-6" :
+          visibleStats.length === 5 ? "lg:grid-cols-5" :
+          visibleStats.length === 4 ? "lg:grid-cols-4" :
+          visibleStats.length === 3 ? "lg:grid-cols-3" :
+          "lg:grid-cols-2"
+        }`}>
+          {visibleStats.map((s) => {
+            const isTotalOffices = s.label === "Total Offices";
+            return (
+              <div
+                key={s.label}
+                className="flex justify-between items-start self-stretch p-4 border rounded-[16px] select-none transition-all hover:shadow-xs w-full"
+                style={{
+                  backgroundColor: s.bg,
+                  borderColor: s.borderColor,
+                }}
+              >
+                {/* Left Column: Icon + Label on top, Value on bottom */}
+                <div className="flex flex-col justify-between items-start h-full min-h-[76px]">
+                  <div className="flex items-center gap-2">
+                    <img src={s.icon} alt={s.label} className="h-6 w-6 object-contain" />
+                    <span className="text-xs font-bold text-slate-750">{s.label}</span>
+                  </div>
+                  <span className="text-3xl font-extrabold text-slate-850 tracking-tight leading-none mt-6">
+                    {s.value}
                   </span>
                 </div>
+
+                {/* Right Column: Caret popover on top, Trend value on bottom */}
+                <div className="flex flex-col justify-between items-end h-full min-h-[76px]">
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <button className="text-slate-400 hover:text-slate-650 bg-transparent border-0 flex items-center justify-center p-1 rounded-lg hover:bg-slate-100/35 transition-colors cursor-pointer focus:outline-none">
+                        <img 
+                          src={CaretDownIcon} 
+                          alt="Caret" 
+                          className={`h-4 w-4 transition-transform duration-200 ${isTotalOffices ? "rotate-180" : ""}`} 
+                        />
+                      </button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-48 p-1.5 bg-white border border-slate-200 shadow-lg rounded-2xl z-[100]" align="end">
+                      <div className="flex flex-col gap-0.5">
+                        {["vs Last Month", "vs Last Week", "vs Last Quarter", "vs Last Year"].map((opt) => {
+                          const isSelected = cardTrendFilter === opt;
+                          return (
+                            <button
+                              key={opt}
+                              onClick={() => setCardTrendFilter(opt)}
+                              className="flex w-full items-center gap-3 px-3 py-2 text-xs font-semibold rounded-xl text-left text-slate-655 hover:bg-slate-50 transition-colors cursor-pointer border-0 bg-transparent"
+                            >
+                              <div className="shrink-0 flex items-center justify-center">
+                                {isSelected ? (
+                                  <img src={CheckSquareCheckedIcon} alt="Checked" className="h-[18px] w-[18px]" />
+                                ) : (
+                                  <img src={CheckSquareIcon} alt="Unchecked" className="h-[18px] w-[18px]" />
+                                )}
+                              </div>
+                              <span className={isSelected ? "text-slate-900 font-bold" : "text-slate-600 font-medium"}>
+                                {opt}
+                              </span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </PopoverContent>
+                  </Popover>
+
+                  <div className="flex flex-col items-end leading-none gap-1 mt-6">
+                    {s.trendType !== "neutral" ? (
+                      <div className={`flex items-center gap-0.5 text-xs font-extrabold ${s.trendColor}`}>
+                        {s.trendIcon && (
+                          <img 
+                            src={s.trendIcon} 
+                            alt="Trend" 
+                            className="h-4 w-4 shrink-0" 
+                          />
+                        )}
+                        <span>{s.trendVal}</span>
+                      </div>
+                    ) : (
+                      <span className="text-xs font-bold text-slate-400">
+                        —
+                      </span>
+                    )}
+                    <span className="text-[10px] font-bold text-slate-400 mt-0.5 select-none whitespace-nowrap leading-none">
+                      {cardTrendFilter}
+                    </span>
+                  </div>
+                </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
 
       {/* Filters bar */}
-      <div className="mb-4 flex flex-wrap items-center gap-3 bg-transparent p-0 border-0 shadow-none">
-        <div className="relative flex-1 min-w-[200px]">
-          <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-          <input
-            placeholder="Search offices..."
-            value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
+      <div 
+        className="mb-4 flex items-center justify-between gap-4 w-full bg-white p-4 border rounded-[16px] overflow-x-auto scrollbar-none"
+        style={{
+          borderColor: "rgba(31, 31, 31, 0.08)",
+        }}
+      >
+        {/* Left Side: Search + Dropdown Filters */}
+        <div className="flex items-center gap-3 min-w-0 shrink-0">
+          <div className="relative w-[220px] h-10 shrink-0">
+            <img src={MagnifyingGlassIcon} alt="Search" className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2" />
+            <input
+              placeholder="Search offices..."
+              value={search}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setPage(1);
+              }}
+              className="w-full h-full rounded-xl border border-slate-200/80 bg-white pl-10 pr-14 text-xs font-bold text-slate-700 outline-none focus:border-[#dd5437]/50 focus:ring-1 focus:ring-[#dd5437]/10 transition-all placeholder:text-slate-400"
+            />
+            <div className="absolute right-3.5 top-1/2 -translate-y-1/2 flex items-center gap-1 rounded-md border border-slate-200 bg-white px-1.5 py-0.5 text-[9px] font-bold text-slate-400 shadow-3xs select-none">
+              K <img src={CommandIcon} alt="Cmd" className="h-2.5 w-2.5 opacity-60" />
+            </div>
+          </div>
+
+          {/* Custom Status Dropdown */}
+          <FilterDropdown
+            value={statusFilter}
+            onChange={(v) => {
+              setStatusFilter(v);
               setPage(1);
             }}
-            className="w-full rounded-xl border-0 bg-slate-100/50 py-2 px-10 pr-14 text-xs font-semibold text-slate-700 outline-none focus:bg-slate-100 transition-all placeholder:text-slate-400"
+            options={statusOptions}
+            placeholder="All Statuses"
           />
-          <div className="absolute right-3.5 top-1/2 -translate-y-1/2 flex items-center gap-0.5 rounded-md border border-slate-200 bg-white px-1.5 py-0.5 text-[9px] font-bold text-slate-400 shadow-3xs select-none">
-            K <span className="text-[10px]">⌘</span>
-          </div>
+
+          {/* Custom Account Manager Dropdown */}
+          <FilterDropdown
+            value={managerFilter}
+            onChange={(v) => {
+              setManagerFilter(v);
+              setPage(1);
+            }}
+            options={managerOptions}
+            placeholder="All Account..."
+          />
+
+          {/* Custom Zone Dropdown */}
+          <FilterDropdown
+            value={zoneFilter}
+            onChange={(v) => {
+              setZoneFilter(v);
+              setPage(1);
+            }}
+            options={zoneOptions}
+            placeholder="All Zones"
+          />
+
+          {(statusFilter !== "all" || managerFilter !== "all" || zoneFilter !== "all" || search !== "") && (
+            <button
+              onClick={() => {
+                setStatusFilter("all");
+                setManagerFilter("all");
+                setZoneFilter("all");
+                setSearch("");
+                setPage(1);
+              }}
+              className="text-xs font-extrabold text-[#dd5437] hover:text-[#c9452b] transition-all cursor-pointer bg-transparent border-0 hover:underline px-2"
+            >
+              Clear
+            </button>
+          )}
         </div>
 
-        {/* Custom Status Dropdown */}
-        <FilterDropdown
-          value={statusFilter}
-          onChange={(v) => {
-            setStatusFilter(v);
-            setPage(1);
-          }}
-          options={statusOptions}
-          placeholder="All Statuses"
-        />
-
-        {/* Custom Account Manager Dropdown */}
-        <FilterDropdown
-          value={managerFilter}
-          onChange={(v) => {
-            setManagerFilter(v);
-            setPage(1);
-          }}
-          options={managerOptions}
-          placeholder="All Account..."
-        />
-
-        {/* Custom Zone Dropdown */}
-        <FilterDropdown
-          value={zoneFilter}
-          onChange={(v) => {
-            setZoneFilter(v);
-            setPage(1);
-          }}
-          options={zoneOptions}
-          placeholder="All Zones"
-        />
-
-        {(statusFilter !== "all" || managerFilter !== "all" || zoneFilter !== "all" || search !== "") && (
-          <button
-            onClick={() => {
-              setStatusFilter("all");
-              setManagerFilter("all");
-              setZoneFilter("all");
-              setSearch("");
-              setPage(1);
-            }}
-            className="text-xs font-extrabold text-[#dd5437] hover:text-[#c9452b] transition-all cursor-pointer bg-transparent border-0 hover:underline px-2"
-          >
-            Clear
-          </button>
-        )}
-
-        <div className="flex items-center gap-2">
+        {/* Right Side: Grid / Map toggles */}
+        <div className="flex items-center gap-2 shrink-0">
           <button
             onClick={() => setView("list")}
-            className={`flex h-9 w-9 items-center justify-center rounded-xl cursor-pointer transition-all shrink-0 ${
+            className={`flex h-10 w-10 items-center justify-center rounded-xl cursor-pointer transition-all shrink-0 ${
               view === "list"
-                ? "bg-[#fffbf7] border-2 border-black text-[#dd5437] font-bold shadow-xs"
-                : "bg-white border border-slate-200 text-slate-400 hover:text-slate-600 hover:border-slate-300"
+                ? "bg-[#FAF5F2] border border-[#F5EAE2] text-[#dd5437] font-bold shadow-xs"
+                : "bg-white border border-slate-200 text-slate-400 hover:text-slate-655 hover:border-slate-300"
             }`}
           >
-            <List className="h-4 w-4" />
+            <img src={TableIconIcon} alt="Table View" className={`h-4.5 w-4.5 ${view === "list" ? "" : "opacity-60"}`} />
           </button>
           <button
             onClick={() => setView("map")}
-            className={`flex h-9 w-9 items-center justify-center rounded-xl cursor-pointer transition-all shrink-0 ${
+            className={`flex h-10 w-10 items-center justify-center rounded-xl cursor-pointer transition-all shrink-0 ${
               view === "map"
-                ? "bg-[#fffbf7] border-2 border-black text-[#dd5437] font-bold shadow-xs"
-                : "bg-white border border-slate-200 text-slate-400 hover:text-slate-600 hover:border-slate-300"
+                ? "bg-[#FAF5F2] border border-[#F5EAE2] text-[#dd5437] font-bold shadow-xs"
+                : "bg-white border border-slate-200 text-slate-400 hover:text-slate-655 hover:border-slate-300"
             }`}
           >
-            <Map className="h-4 w-4" />
+            <img src={MapTrifoldIcon} alt="Map View" className={`h-4.5 w-4.5 ${view === "map" ? "" : "opacity-60"}`} />
           </button>
         </div>
       </div>
@@ -654,24 +706,27 @@ function AgencyOfficesPage() {
       {view === "list" ? (
         <>
           {/* Table */}
-          <div className="overflow-hidden rounded-3xl bg-transparent p-0 shadow-none border-0">
+          <div 
+            className="overflow-x-auto rounded-[16px] border bg-white p-4"
+            style={{
+              borderColor: "rgba(31, 31, 31, 0.08)",
+            }}
+          >
             <table className="w-full border-separate border-spacing-y-2.5">
               <thead>
                 <tr className="border-0 bg-transparent">
                   <th className="w-12 px-4 py-3 text-center">
                     <button
                       onClick={toggleAll}
-                      className="mx-auto flex h-4.5 w-4.5 items-center justify-center rounded border transition-all cursor-pointer focus:outline-none"
-                      style={{
-                        backgroundColor: selected.size > 0 ? "#dd5437" : "#ffffff",
-                        borderColor: selected.size > 0 ? "#dd5437" : "#cbd5e1",
-                      }}
+                      className="mx-auto flex h-[18px] w-[18px] items-center justify-center cursor-pointer focus:outline-none border-0 bg-transparent"
                     >
                       {allSelected ? (
-                        <Check className="h-3 w-3 text-white stroke-[3px]" />
+                        <img src={CheckSquareCheckedIcon} alt="Checked" className="h-[18px] w-[18px]" />
                       ) : selected.size > 0 ? (
-                        <Minus className="h-3 w-3 text-white stroke-[3px]" />
-                      ) : null}
+                        <img src={MinusSquareIcon} alt="Partial" className="h-[18px] w-[18px]" />
+                      ) : (
+                        <img src={CheckSquareIcon} alt="Unchecked" className="h-[18px] w-[18px]" />
+                      )}
                     </button>
                   </th>
                   {["Office", "Status", "Phone", "Suburb", "Account Manager", "Pum", "IAT", "Actions"].map(
@@ -685,9 +740,9 @@ function AgencyOfficesPage() {
                           }`}
                         >
                           {!isActions ? (
-                            <div className={`flex items-center gap-1.5 cursor-pointer hover:text-slate-600 transition-colors ${i === 0 ? "justify-start" : "justify-center"}`}>
+                            <div className={`flex items-center gap-1.5 cursor-pointer hover:text-slate-655 transition-colors ${i === 0 ? "justify-start" : "justify-center"}`}>
                               <span>{h}</span>
-                              <ChevronsUpDown className="h-3 w-3.5 text-slate-400/80 shrink-0" />
+                              <img src={CaretUpDownIcon} alt="Sort" className="h-3.5 w-3.5 opacity-60 shrink-0" />
                             </div>
                           ) : (
                             <span>{h}</span>
@@ -736,7 +791,12 @@ function AgencyOfficesPage() {
           </div>
 
           {/* Pagination Bar */}
-          <div className="mt-4 flex flex-col items-center justify-between gap-4 border border-slate-100 bg-card px-6 py-4 rounded-2xl sm:flex-row shadow-xs">
+          <div 
+            className="mt-4 flex flex-col items-center justify-between gap-4 border bg-white px-6 py-4 rounded-[16px] sm:flex-row shadow-none"
+            style={{
+              borderColor: "rgba(31, 31, 31, 0.08)",
+            }}
+          >
             {/* Left: Range info */}
             <div className="text-xs font-bold text-slate-400">
               Showing {total === 0 ? 0 : (page - 1) * limit + 1} to {Math.min(page * limit, total)} of{" "}
@@ -750,17 +810,17 @@ function AgencyOfficesPage() {
                 disabled={page === 1}
                 className="flex h-7.5 w-7.5 items-center justify-center rounded-lg border border-slate-200 text-slate-400 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-all bg-white"
               >
-                <ChevronsLeft className="h-4 w-4" />
+                <img src={CaretDoubleLeftIcon} alt="First" className="h-4 w-4" />
               </button>
               <button
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page === 1}
                 className="flex h-7.5 w-7.5 items-center justify-center rounded-lg border border-slate-200 text-slate-400 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-all bg-white"
               >
-                <ChevronLeft className="h-4 w-4" />
+                <img src={CaretLeftIcon} alt="Previous" className="h-4 w-4" />
               </button>
               
-              <span className="text-xs font-bold text-slate-500">Page</span>
+              <span className="text-xs font-bold text-slate-550">Page</span>
               <input
                 type="number"
                 value={page}
@@ -772,41 +832,44 @@ function AgencyOfficesPage() {
                     setPage(val);
                   }
                 }}
-                className="h-7.5 w-10 text-center rounded-lg border border-slate-200 bg-white text-xs font-black text-slate-700 outline-none focus:border-[#dd5437]"
+                className="h-7.5 w-10 text-center rounded-lg border border-slate-205 bg-white text-xs font-black text-slate-700 outline-none focus:border-[#dd5437]"
               />
-              <span className="text-xs font-bold text-slate-500">of {totalPages}</span>
+              <span className="text-xs font-bold text-slate-550">of {totalPages}</span>
 
               <button
                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                 disabled={page === totalPages}
                 className="flex h-7.5 w-7.5 items-center justify-center rounded-lg border border-slate-200 text-slate-400 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-all bg-white"
               >
-                <ChevronRight className="h-4 w-4" />
+                <img src={CaretRightIcon} alt="Next" className="h-4 w-4" />
               </button>
               <button
                 onClick={() => setPage(totalPages)}
                 disabled={page === totalPages}
                 className="flex h-7.5 w-7.5 items-center justify-center rounded-lg border border-slate-200 text-slate-400 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-all bg-white"
               >
-                <ChevronsRight className="h-4 w-4" />
+                <img src={CaretDoubleRightIcon} alt="Last" className="h-4 w-4" />
               </button>
             </div>
 
             {/* Right: Limit Selector */}
             <div className="flex items-center gap-2">
               <span className="text-xs font-bold text-slate-400">Row per page</span>
-              <select
-                value={limit}
-                onChange={(e) => {
-                  setLimit(Number(e.target.value));
-                  setPage(1);
-                }}
-                className="h-8 rounded-lg border border-slate-200 px-2 py-1 text-xs font-bold text-slate-600 outline-none focus:border-[#dd5437] focus:ring-1 focus:ring-[#dd5437]/20 cursor-pointer bg-white"
-              >
-                <option value={10}>10</option>
-                <option value={20}>20</option>
-                <option value={50}>50</option>
-              </select>
+              <div className="relative">
+                <select
+                  value={limit}
+                  onChange={(e) => {
+                    setLimit(Number(e.target.value));
+                    setPage(1);
+                  }}
+                  className="h-8 rounded-lg border border-slate-200 px-3 pr-8 py-1 text-xs font-bold text-slate-600 outline-none focus:border-[#dd5437] focus:ring-1 focus:ring-[#dd5437]/20 cursor-pointer bg-white appearance-none"
+                >
+                  <option value={10}>10</option>
+                  <option value={20}>20</option>
+                  <option value={50}>50</option>
+                </select>
+                <img src={CaretDownIcon} alt="Caret" className="absolute right-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400 pointer-events-none" />
+              </div>
             </div>
           </div>
         </>
@@ -823,7 +886,7 @@ function AgencyOfficesPage() {
       {/* Floating Bulk Action Bar */}
       {selected.size > 0 && (
         <div className="fixed bottom-6 left-1/2 z-50 flex -translate-x-1/2 items-center gap-4 rounded-3xl border border-slate-200/80 bg-white p-3 px-6 shadow-xl shadow-slate-200/25 animate-in slide-in-from-bottom-5 fade-in duration-200">
-          <div className="text-xs font-bold text-slate-500 whitespace-nowrap">
+          <div className="text-xs font-bold text-slate-650 whitespace-nowrap">
             {selected.size} selected
           </div>
 
@@ -831,31 +894,31 @@ function AgencyOfficesPage() {
             onClick={handleExportCSV}
             className="flex items-center gap-2 rounded-xl bg-[#dd5437] hover:bg-[#c9452b] px-4 py-2.5 text-xs font-bold text-white shadow-xs transition-all cursor-pointer border-0"
           >
-            <Download className="h-3.5 w-3.5 text-white" />
-            Export CSV
+            <img src={DownloadSimpleIcon} alt="Export" className="h-3.5 w-3.5 filter brightness-0 invert" />
+            <span>Export CSV</span>
           </button>
 
           <button
             onClick={handleBulkEmail}
-            className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 transition-all cursor-pointer"
+            className="flex items-center gap-2 rounded-xl border border-slate-205 bg-white px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 transition-all cursor-pointer shadow-3xs"
           >
-            <Mail className="h-3.5 w-3.5 text-slate-400" />
-            Bulk Email
+            <img src={EnvelopeSimpleIcon} alt="Mail" className="h-4 w-4" />
+            <span>Bulk Email</span>
           </button>
 
           <button
             onClick={() => {
               toast.info("Bulk Assign Account Manager clicked");
             }}
-            className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 transition-all cursor-pointer"
+            className="flex items-center gap-2 rounded-xl border border-slate-205 bg-white px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 transition-all cursor-pointer shadow-3xs"
           >
-            <UserCheck className="h-3.5 w-3.5 text-slate-400" />
-            Assign Account Manager
+            <img src={UserCircleCheckIcon} alt="Assign" className="h-4 w-4" />
+            <span>Assign Account Manager</span>
           </button>
 
           <button
             onClick={() => setSelected(new Set())}
-            className="text-xs font-bold text-[#dd5437] hover:text-[#c9452b] transition-all cursor-pointer bg-transparent border-0 hover:underline px-2"
+            className="text-xs font-extrabold text-[#dd5437] hover:text-[#c9452b] transition-all cursor-pointer bg-transparent border-0 hover:underline px-2"
           >
             Clear
           </button>
@@ -1055,7 +1118,7 @@ function OfficeMap({ offices }: { offices: Office[] }) {
         >
           <button
             onClick={() => setSelectedOffice(null)}
-            className="absolute top-5 right-5 text-slate-400 hover:text-slate-600 transition-colors cursor-pointer border-0 bg-transparent"
+            className="absolute top-5 right-5 text-slate-400 hover:text-slate-650 transition-colors cursor-pointer border-0 bg-transparent"
           >
             <X className="h-4.5 w-4.5 stroke-[2.5px]" />
           </button>
@@ -1070,10 +1133,7 @@ function OfficeMap({ offices }: { offices: Office[] }) {
           </div>
 
           <div className="mt-3 flex items-center">
-            <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[10px] font-extrabold ${statusPill[selectedOffice.status ?? "Active"]}`}>
-              <span className={`h-1.5 w-1.5 rounded-full ${statusDot[selectedOffice.status ?? "Active"]}`} />
-              {selectedOffice.status ?? "Active"}
-            </span>
+            <StatusPill status={selectedOffice.status ?? "Active"} />
           </div>
 
           <div className="my-4 border-b border-slate-100" />
@@ -1173,7 +1233,7 @@ function LocationsWithoutCoordinates({ offices }: { offices: Office[] }) {
                   e.stopPropagation();
                   navigate({ to: "/agency-offices/$officeId", params: { officeId: o.id } });
                 }}
-                className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-[10px] font-black text-slate-600 hover:bg-slate-50 hover:border-[#e05638]/50 hover:text-[#e05638] transition-all shadow-2xs cursor-pointer shrink-0"
+                className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-[10px] font-black text-slate-655 hover:bg-slate-50 hover:border-[#e05638]/50 hover:text-[#e05638] transition-all shadow-2xs cursor-pointer shrink-0"
               >
                 <Eye className="h-3.5 w-3.5 text-slate-400 group-hover:text-[#e05638]/70 transition-colors" />
                 View
@@ -1183,6 +1243,86 @@ function LocationsWithoutCoordinates({ offices }: { offices: Office[] }) {
         </div>
       )}
     </div>
+  );
+}
+
+function StatusPill({ status }: { status: OfficeStatus }) {
+  if (status === "Active") {
+    return (
+      <svg width="65" height="24" viewBox="0 0 65 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0 select-none">
+        <rect width="65" height="24" rx="8" fill="#2093A3" fillOpacity="0.08"/>
+        <g clipPath="url(#clip0_235_7792)">
+          <path d="M10 14C11.1046 14 12 13.1046 12 12C12 10.8954 11.1046 10 10 10C8.89543 10 8 10.8954 8 12C8 13.1046 8.89543 14 10 14Z" fill="#2093A3"/>
+        </g>
+        <path d="M20.132 16.5L23.336 7.56H24.728L27.932 16.5H26.672L25.94 14.4H22.124L21.392 16.5H20.132ZM22.496 13.32H25.568L23.864 8.412H24.2L22.496 13.32ZM31.6921 16.644C31.0601 16.644 30.4961 16.496 30.0001 16.2C29.5121 15.904 29.1281 15.5 28.8481 14.988C28.5681 14.476 28.4281 13.9 28.4281 13.26C28.4281 12.612 28.5681 12.036 28.8481 11.532C29.1281 11.028 29.5121 10.628 30.0001 10.332C30.4961 10.036 31.0601 9.888 31.6921 9.888C32.1161 9.888 32.5121 9.964 32.8801 10.116C33.2481 10.268 33.5721 10.472 33.8521 10.728C34.1321 10.984 34.3361 11.284 34.4641 11.628L33.4681 12.108C33.3161 11.772 33.0841 11.5 32.7721 11.292C32.4601 11.076 32.1001 10.968 31.6921 10.968C31.3001 10.968 30.9441 11.068 30.6241 11.268C30.3121 11.468 30.0641 11.74 29.8801 12.084C29.6961 12.428 29.6041 12.824 29.6041 13.272C29.6041 13.704 29.6961 14.096 29.8801 14.448C30.0641 14.792 30.3121 15.064 30.6241 15.264C30.9441 15.564 31.3001 15.564 31.6921 15.564C32.1001 15.564 32.4601 15.46 32.7721 15.252C33.0841 15.036 33.3161 14.752 33.4681 14.4L34.4641 14.904C34.3361 15.24 34.1321 15.54 33.8521 15.804C33.5721 16.06 33.2481 16.264 32.8801 16.416C32.5121 16.568 32.1161 16.644 31.6921 16.644ZM38.5506 16.572C37.9186 16.572 37.4306 16.392 37.0866 16.032C36.7506 15.672 36.5826 15.164 36.5826 14.508V11.1H35.4066V10.032H35.6466C35.9346 10.032 36.1626 9.944 36.3306 9.768C36.4986 9.592 36.5826 9.36 36.5826 9.072V8.544H37.6986V10.032H39.1506V11.1H37.6986V14.472C37.6986 14.688 37.7306 14.876 37.7946 15.036C37.8666 15.196 37.9826 15.324 38.1426 15.42C38.3026 15.508 38.5146 15.552 38.7786 15.552C38.8346 15.552 38.9026 15.548 38.9826 15.54C39.0706 15.532 39.1506 15.524 39.2226 15.516V16.5C39.1186 16.524 39.0026 16.54 38.8746 16.548C38.7466 16.564 38.6386 16.572 38.5506 16.572ZM40.6804 16.5V10.032H41.7964V16.5H40.6804ZM40.6804 9V7.56H41.7964V9H40.6804ZM45.3281 16.5L42.7961 10.032H44.0441L46.0721 15.504H45.6401L47.6801 10.032H48.9281L46.3841 16.5H45.3281ZM52.7853 16.644C52.1613 16.644 51.6053 16.496 51.1173 16.2C50.6293 15.904 50.2453 15.5 49.9653 14.988C49.6853 14.468 49.5453 13.888 49.5453 13.248C49.5453 12.6 49.6813 12.024 49.9533 11.52C50.2333 11.016 50.6093 10.62 51.0813 10.332C51.5613 10.036 52.0973 9.888 52.6893 9.888C53.1693 9.888 53.5933 9.976 53.9613 10.152C54.3373 10.32 54.6533 10.552 54.9093 10.848C55.1733 11.136 55.3733 11.468 55.5093 11.844C55.6533 12.212 55.7253 12.596 55.7253 12.996C55.7253 13.084 55.7173 13.184 55.7013 13.296C55.6933 13.4 55.6813 13.5 55.6653 13.596H50.3613V12.636H55.0173L54.4893 13.068C54.5613 12.652 54.5213 12.28 54.3693 11.952C54.2173 11.624 53.9933 11.364 53.6973 11.172C53.4013 10.98 53.0653 10.884 52.6893 10.884C52.3133 10.884 51.9693 10.98 51.6573 11.172C51.3453 11.364 51.1013 11.64 50.9253 12C50.7573 12.352 50.6893 12.772 50.7213 13.26C50.6893 13.732 50.7613 14.148 50.9373 14.508C51.1213 14.86 51.3773 15.136 51.7053 15.336C52.0413 15.528 52.4053 15.624 52.7973 15.624C53.2293 15.624 53.5933 15.524 53.8893 15.324C54.1853 15.124 54.4253 14.868 54.6093 14.556L55.5453 15.036C55.4173 15.332 55.2173 15.604 54.9453 15.852C54.6813 16.092 54.3653 16.284 53.9973 16.428C53.6373 16.572 53.2333 16.644 52.7853 16.644Z" fill="#2093A3"/>
+        <defs>
+          <clipPath id="clip0_235_7792">
+            <rect width="12" height="12" fill="white" transform="translate(4 6)"/>
+          </clipPath>
+        </defs>
+      </svg>
+    );
+  }
+
+  if (status === "Inactive") {
+    return (
+      <svg width="74" height="24" viewBox="0 0 74 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0 select-none">
+        <rect width="74" height="24" rx="8" fill="#EF4444" fillOpacity="0.08"/>
+        <g clipPath="url(#clip0_235_7864)">
+          <path d="M10 14C11.1046 14 12 13.1046 12 12C12 10.8954 11.1046 10 10 10C8.89543 10 8 10.8954 8 12C8 13.1046 8.89543 14 10 14Z" fill="#EF4444"/>
+        </g>
+        <path d="M20.996 16.5V7.56H22.172V16.5H20.996ZM24.0281 16.5V10.032H25.1201V11.292L24.9401 11.184C25.1001 10.776 25.3561 10.46 25.7081 10.236C26.0681 10.004 26.4881 9.888 26.9681 9.888C27.4321 9.888 27.8441 9.992 28.2041 10.2C28.5721 10.408 28.8601 10.696 29.0681 11.064C29.2841 11.432 29.3921 11.848 29.3921 12.312V16.5H28.2641V12.672C28.2641 12.312 28.2001 12.008 28.0721 11.76C27.9441 11.512 27.7601 11.32 27.5201 11.184C27.2881 11.04 27.0201 10.968 26.7161 10.968C26.4121 10.968 26.1401 11.04 25.9001 11.184C25.6681 11.32 25.4841 11.516 25.3481 11.772C25.2121 12.02 25.1441 12.32 25.1441 12.672V16.5H24.0281ZM32.885 16.644C32.461 16.644 32.085 16.568 31.757 16.416C31.437 16.256 31.185 16.04 31.001 15.768C30.817 15.488 30.725 15.168 30.725 14.808C30.725 14.464 30.797 14.156 30.941 13.884C31.093 13.604 31.325 13.368 31.637 13.176C31.957 12.984 32.357 12.848 32.837 12.768L35.237 12.372V13.308L33.089 13.668C32.673 13.74 32.369 13.872 32.177 14.064C31.993 14.256 31.901 14.492 31.901 14.772C31.901 15.036 32.005 15.256 32.213 15.432C32.429 15.608 32.697 15.696 33.017 15.696C33.425 15.696 33.777 15.612 34.073 15.444C34.377 15.268 34.613 15.032 34.781 14.736C34.957 14.44 35.045 14.112 35.045 13.752V12.108C35.045 11.756 34.913 11.472 34.649 11.256C34.393 11.032 34.053 10.92 33.629 10.92C33.261 10.92 32.933 11.016 32.645 11.208C32.365 11.392 32.157 11.64 32.021 11.952L31.049 11.448C31.169 11.152 31.361 10.888 31.625 10.656C31.889 10.416 32.197 10.228 32.549 10.092C32.901 9.956 33.269 9.888 33.653 9.888C34.149 9.888 34.585 9.984 34.961 10.176C35.337 10.36 35.629 10.62 35.837 10.956C36.053 11.284 36.161 11.668 36.161 12.108V16.5H35.069V15.276L35.273 15.348C35.137 15.604 34.953 15.828 34.721 16.02C34.489 16.212 34.217 16.364 33.905 16.476C33.593 16.588 33.253 16.644 32.885 16.644ZM40.8913 16.644C40.2593 16.644 39.6953 16.496 39.1993 16.2C38.7113 15.904 38.3273 15.5 38.0473 14.988C37.7673 14.476 37.6273 13.9 37.6273 13.26C37.6273 12.612 37.7673 12.036 38.0473 11.532C38.3273 11.028 38.7113 10.628 39.1993 10.332C39.6953 10.036 40.2593 9.888 40.8913 9.888C41.3153 9.888 41.7113 9.964 42.0793 10.116C42.4473 10.268 42.7713 10.472 43.0513 10.728C43.3313 10.984 43.5353 11.284 43.6633 11.628L42.6673 12.108C42.5153 11.772 42.2833 11.5 41.9713 11.292C41.6593 11.076 41.2993 10.968 40.8913 10.968C40.4993 10.968 40.1433 11.068 39.8233 11.268C39.5113 11.468 39.2633 11.74 39.0793 12.084C38.8953 12.428 38.8033 12.824 38.8033 13.272C38.8033 13.704 38.8953 14.096 39.0793 14.448C39.2633 14.792 39.5113 15.064 39.8233 15.264C40.1433 15.464 40.4993 15.564 40.8913 15.564C41.2993 15.564 41.6593 15.46 41.9713 15.252C42.2833 15.036 42.5153 14.752 42.6673 14.4L43.6633 14.904C43.5353 15.24 43.3313 15.54 43.0513 15.804C42.7713 16.06 42.4473 16.264 42.0793 16.416C41.7113 16.568 41.3153 16.644 40.8913 16.644ZM47.7498 16.572C47.1178 16.572 46.6298 16.392 46.2858 16.032C45.9498 15.672 45.7818 15.164 45.7818 14.508V11.1H44.6058V10.032H44.8458C45.1338 10.032 45.3618 9.944 45.5298 9.768C45.6978 9.592 45.7818 9.36 45.7818 9.072V8.544H46.8978V10.032H48.3498V11.1H46.8978V14.472C46.8978 14.688 46.9298 14.876 46.9938 15.036C47.0658 15.196 47.1818 15.324 47.3418 15.42C47.5018 15.508 47.7138 15.552 47.9778 15.552C48.0338 15.552 48.1018 15.548 48.1818 15.54C48.2698 15.54 48.3498 15.524 48.4218 15.516V16.5C48.3178 16.524 48.2018 16.54 48.0738 16.548C47.9458 16.564 47.8378 16.572 47.7498 16.572ZM49.8796 16.5V10.032H50.9956V16.5H49.8796ZM49.8796 9V7.56H50.9956V9H49.8796ZM54.5273 16.5L51.9953 10.032H53.2433L55.2713 15.504H54.8393L56.8793 10.032H58.1273L55.5833 16.5H54.5273ZM61.9845 16.644C61.3605 16.644 60.8045 16.496 60.3165 16.2C59.8285 15.904 59.4445 15.5 59.1645 14.988C58.8845 14.468 58.7445 13.888 58.7445 13.248C58.7445 12.6 58.8805 12.024 59.1525 11.52C59.4325 11.016 59.8085 10.62 60.2805 10.332C60.7605 10.036 61.2965 9.888 61.8885 9.888C62.3685 9.888 62.7925 9.976 63.1605 10.152C63.5365 10.32 63.8525 10.552 64.1085 10.848C64.3725 11.136 64.5725 11.468 64.7085 11.844C64.8525 12.212 64.9245 12.596 64.9245 12.996C64.9245 13.084 64.9165 13.184 64.9005 13.296C64.8925 13.4 64.8805 13.5 64.8645 13.596H59.5605V12.636H64.2165L63.6885 13.068C63.7605 12.652 63.7205 12.28 63.5685 11.952C63.4165 11.624 63.1925 11.364 62.8965 11.172C62.6005 10.98 62.2645 10.884 61.8885 10.884C61.5125 10.884 61.1685 10.98 60.8565 11.172C60.5445 11.364 60.3005 11.64 60.1245 12C59.9565 12.352 59.8885 12.772 59.9205 13.26C59.8885 13.732 59.9605 14.148 60.1365 14.508C60.3205 14.86 60.5765 15.136 60.9045 15.336C61.2405 15.528 61.6045 15.624 61.9965 15.624C62.4285 15.624 62.7925 15.524 63.0885 15.324C63.3845 15.124 63.6245 14.868 63.8085 14.556L64.7445 15.036C64.6165 15.332 64.4165 15.604 64.1445 15.852C63.8805 16.092 63.5645 16.284 63.1965 16.428C62.8365 16.572 62.4325 16.644 61.9845 16.644Z" fill="#EF4444"/>
+        <defs>
+          <clipPath id="clip0_235_7864">
+            <rect width="12" height="12" fill="white" transform="translate(4 6)"/>
+          </clipPath>
+        </defs>
+      </svg>
+    );
+  }
+
+  const pillColors: Record<Exclude<OfficeStatus, "Active" | "Inactive">, { bg: string; text: string; border: string; dot: string }> = {
+    Lapsing: {
+      bg: "#FEF7E0",
+      text: "#B06000",
+      border: "rgba(254, 239, 195, 0.6)",
+      dot: "#B06000",
+    },
+    Archived: {
+      bg: "#F1F3F4",
+      text: "#5F6368",
+      border: "rgba(232, 234, 237, 0.6)",
+      dot: "#5F6368",
+    },
+  };
+
+  const colors = pillColors[status as Exclude<OfficeStatus, "Active" | "Inactive">] || pillColors.Lapsing;
+
+  return (
+    <span
+      style={{
+        display: "inline-flex",
+        alignItems: "center",
+        gap: "6px",
+        borderRadius: "9999px",
+        padding: "4px 10px",
+        backgroundColor: colors.bg,
+        color: colors.text,
+        border: `1px solid ${colors.border}`,
+      }}
+      className="text-[10px] font-extrabold tracking-wide uppercase select-none shrink-0"
+    >
+      <span
+        style={{
+          width: "6px",
+          height: "6px",
+          borderRadius: "50%",
+          backgroundColor: colors.dot,
+        }}
+        className="shrink-0"
+      />
+      {status}
+    </span>
   );
 }
 
@@ -1208,7 +1348,8 @@ function OfficeRow({
 
   const isArchived = o.status === "Archived";
   
-  const rowBg = selected ? "bg-[#dd5437]/5" : "bg-white hover:bg-slate-50/40";
+  // Highlight with border and tinted background exactly as Figma visual
+  const rowBg = selected ? "bg-[#FAF5F2]" : "bg-white hover:bg-slate-50/40";
   const rowBorder = selected ? "border-[#dd5437]" : "border-slate-100";
   
   const firstTdClass = `px-4 py-4 rounded-l-2xl border-l border-y ${rowBorder} ${rowBg}`;
@@ -1233,13 +1374,13 @@ function OfficeRow({
       >
         <button
           onClick={onToggle}
-          className="mx-auto flex h-4.5 w-4.5 items-center justify-center rounded border transition-all cursor-pointer focus:outline-none"
-          style={{
-            backgroundColor: selected ? "#dd5437" : "#ffffff",
-            borderColor: selected ? "#dd5437" : "#cbd5e1",
-          }}
+          className="mx-auto flex h-[18px] w-[18px] items-center justify-center cursor-pointer focus:outline-none border-0 bg-transparent"
         >
-          {selected && <Check className="h-3 w-3 text-white stroke-[3px]" />}
+          {selected ? (
+            <img src={CheckSquareCheckedIcon} alt="Checked" className="h-[18px] w-[18px]" />
+          ) : (
+            <img src={CheckSquareIcon} alt="Unchecked" className="h-[18px] w-[18px]" />
+          )}
         </button>
       </td>
 
@@ -1252,25 +1393,22 @@ function OfficeRow({
 
       {/* Status Column */}
       <td className={`${middleTdClass} text-center`}>
-        <span
-          className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-bold tracking-wide uppercase ${statusPill[o.status] || "bg-slate-100 text-slate-600"}`}
-        >
-          <span className={`h-1.5 w-1.5 rounded-full ${statusDot[o.status] || "bg-slate-400"}`} />
-          {o.status}
-        </span>
+        <div className="inline-flex justify-center items-center w-full">
+          <StatusPill status={o.status} />
+        </div>
       </td>
 
       {/* Phone Column */}
       <td className={`${middleTdClass} text-center`}>
         {o.phone ? (
-          <div className="inline-flex items-center justify-center gap-2 text-xs font-bold text-slate-600 w-full">
+          <div className="inline-flex items-center justify-center gap-2 text-xs font-bold text-slate-655 w-full">
             <span>{o.phone}</span>
             <button
               onClick={(e) => handleCopy(e, o.phone!)}
-              className="p-1 hover:bg-slate-200/50 rounded-md transition-colors cursor-pointer text-slate-400 hover:text-slate-700 border-0 bg-transparent flex items-center justify-center shrink-0"
+              className="p-1 hover:bg-slate-205/50 rounded-md transition-colors cursor-pointer text-slate-400 hover:text-slate-700 border-0 bg-transparent flex items-center justify-center shrink-0"
               title="Copy phone"
             >
-              <Copy className="h-3.5 w-3.5" />
+              <img src={CopyIcon} alt="Copy" className="h-3.5 w-3.5" />
             </button>
           </div>
         ) : (
@@ -1279,7 +1417,7 @@ function OfficeRow({
       </td>
 
       {/* Suburb Column */}
-      <td className={`${middleTdClass} text-center text-xs font-bold text-slate-600`}>
+      <td className={`${middleTdClass} text-center text-xs font-bold text-slate-655`}>
         {o.suburb ? (
           <span>{o.suburb}</span>
         ) : (
@@ -1291,19 +1429,18 @@ function OfficeRow({
       <td className={`${middleTdClass} text-center text-xs font-bold`}>
         {(() => {
           const name = accountManagerName(o.accountManager);
-          if (name) return <span className="text-slate-700">{name}</span>;
-          if (o.accountManager) return <span className="text-slate-700">Assigned</span>;
+          if (name) return <span className="text-slate-750">{name}</span>;
+          if (o.accountManager) return <span className="text-slate-750 font-bold">Assigned</span>;
           return (
             <span className="inline-flex items-center gap-1.5 text-slate-400 justify-center w-full">
-              <User className="h-3.5 w-3.5" />
-              Unassigned
+              <span className="text-xs">Unassigned</span>
             </span>
           );
         })()}
       </td>
 
       {/* PUM Column */}
-      <td className={`${middleTdClass} text-center text-xs font-extrabold text-slate-700`}>
+      <td className={`${middleTdClass} text-center text-xs font-extrabold text-slate-750`}>
         {o.pum ?? <Dash />}
       </td>
 
@@ -1314,7 +1451,7 @@ function OfficeRow({
             className={
               o.inactivityAlert === "ai"
                 ? "font-extrabold text-blue-600"
-                : "text-slate-600"
+                : "text-slate-655"
             }
           >
             {o.inactivityAlert === "ai" ? "AI Alert" : `${o.inactivityAlert} days`}
@@ -1331,11 +1468,11 @@ function OfficeRow({
       >
         <Popover open={actionsOpen} onOpenChange={setActionsOpen}>
           <PopoverTrigger asChild>
-            <button className="rounded-xl p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors cursor-pointer border-0 bg-transparent flex items-center justify-center mx-auto">
-              <MoreVertical className="h-4 w-4" />
+            <button className="rounded-xl p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-655 transition-colors cursor-pointer border-0 bg-transparent flex items-center justify-center mx-auto">
+              <img src={DotsThreeIcon} alt="Actions" className="h-4.5 w-4.5" />
             </button>
           </PopoverTrigger>
-          <PopoverContent className="w-32 p-1.5 bg-white border border-slate-200 shadow-lg rounded-2xl" align="end">
+          <PopoverContent className="w-32 p-1.5 bg-white border border-slate-202 shadow-lg rounded-2xl" align="end">
             <div className="flex flex-col gap-0.5">
               <button
                 onClick={(e) => {
@@ -1348,9 +1485,9 @@ function OfficeRow({
                     toast.error("No email address available for this office");
                   }
                 }}
-                className="flex w-full items-center gap-2 px-3 py-2 text-xs font-semibold rounded-xl text-left text-slate-600 hover:bg-slate-50 transition-colors cursor-pointer border-0 bg-transparent"
+                className="flex w-full items-center gap-2 px-3 py-2 text-xs font-semibold rounded-xl text-left text-slate-655 hover:bg-slate-50 transition-colors cursor-pointer border-0 bg-transparent"
               >
-                <Mail className="h-3.5 w-3.5 text-slate-400" />
+                <img src={EnvelopeSimpleIcon} alt="Email" className="h-3.5 w-3.5" />
                 <span>Email</span>
               </button>
 
@@ -1369,9 +1506,9 @@ function OfficeRow({
                       toast.error("Failed to unarchive office");
                     }
                   }}
-                  className="flex w-full items-center gap-2 px-3 py-2 text-xs font-semibold rounded-xl text-left text-slate-600 hover:bg-slate-50 transition-colors cursor-pointer border-0 bg-transparent"
+                  className="flex w-full items-center gap-2 px-3 py-2 text-xs font-semibold rounded-xl text-left text-slate-655 hover:bg-slate-50 transition-colors cursor-pointer border-0 bg-transparent"
                 >
-                  <ArchiveRestore className="h-3.5 w-3.5 text-slate-400" />
+                  <img src={ArchiveIcon} alt="Unarchive" className="h-3.5 w-3.5" />
                   <span>Unarchive</span>
                 </button>
               ) : (
@@ -1389,9 +1526,9 @@ function OfficeRow({
                       toast.error("Failed to archive office");
                     }
                   }}
-                  className="flex w-full items-center gap-2 px-3 py-2 text-xs font-semibold rounded-xl text-left text-slate-600 hover:bg-slate-50 transition-colors cursor-pointer border-0 bg-transparent"
+                  className="flex w-full items-center gap-2 px-3 py-2 text-xs font-semibold rounded-xl text-left text-slate-655 hover:bg-slate-50 transition-colors cursor-pointer border-0 bg-transparent"
                 >
-                  <Archive className="h-3.5 w-3.5 text-slate-400" />
+                  <img src={ArchiveIcon} alt="Archive" className="h-3.5 w-3.5" />
                   <span>Archive</span>
                 </button>
               )}
@@ -1434,7 +1571,7 @@ function ToggleBtn({
 }
 
 function Dash() {
-  return <span className="text-slate-300 font-bold">—</span>;
+  return <span className="text-slate-350 font-bold">—</span>;
 }
 
 interface ImportFileDialogProps {

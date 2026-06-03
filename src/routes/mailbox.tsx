@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState, useMemo, useRef } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import {
   Mail,
   Search,
@@ -48,6 +48,7 @@ import { toast } from "sonner";
 import { useSidebar } from "@/components/ui/sidebar";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import activeBtnUrl from "@/assets/svg/active-btn.svg";
+import { useMessages, usePropertyManagers, useOffices, useSyncMailbox, useSendMailbox } from "@/lib/queries";
 
 export const Route = createFileRoute("/mailbox")({
   component: MailboxPage,
@@ -71,11 +72,7 @@ interface InboxItem {
 }
 
 const INITIAL_INBOXES: InboxItem[] = [
-  { id: "1", name: "COMMERCIAL", address: "email@example.com", starred: true },
-  { id: "2", name: "HR TEAM", address: "email@example.com", unassigned: 12, assigned: 5, starred: false },
-  { id: "3", name: "KARDI SUPPORT", address: "email@example.com", unassigned: 6, assigned: 0, starred: false },
-  { id: "4", name: "PROCUREMENT TEAM", address: "email@example.com", unassigned: 5, assigned: 7, starred: false },
-  { id: "5", name: "TAG - ACCOUNT MANAGERS", address: "email@example.com", starred: false },
+  { id: "1", name: "PRIMARY GMAIL", address: "jeel.mindlyticai@gmail.com", starred: true },
 ];
 
 interface ConversationItem {
@@ -230,28 +227,131 @@ const EMAIL_TEMPLATES_DATA: TemplateItem[] = [
 ];
 
 function MailboxPage() {
-  const { state } = useSidebar();
+  const { state, setOpen } = useSidebar();
   const isCollapsed = state === "collapsed";
   const [activeTab, setActiveTab] = useState<"inboxes" | "docs" | "templates" | "report" | "manage">("inboxes");
   const [inboxes, setInboxes] = useState<InboxItem[]>(INITIAL_INBOXES);
-  const [conversations, setConversations] = useState<ConversationItem[]>(INITIAL_CONVERSATIONS);
-  const [selectedConversationId, setSelectedConversationId] = useState<string | null>("2");
+  const [selectedConversationId, setSelectedConversationId] = useState<string | null>(null);
   const [isInlineReplying, setIsInlineReplying] = useState(false);
   const [isExpandedReply, setIsExpandedReply] = useState(false);
-  const [isNoted, setIsNoted] = useState(false);
+  const [localNotes, setLocalNotes] = useState<Record<string, any[]>>({});
   const [inlineReplyText, setInlineReplyText] = useState("");
-  const [conversationMessages, setConversationMessages] = useState<{
-    [key: string]: { sender: string; avatar: string; date: string; body: string; isSent?: boolean }[];
-  }>({
-    "2": [
-      {
-        sender: "Julie Martinez",
-        avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&h=150&q=80",
-        date: "Jan 28",
-        body: `Hi there,\n\nI'm having trouble using the filters in the Accessories section. When I select "Price: Under $50" and "Brand: EcoChic," the results are either empty or incorrect. Could you look into this? I'd love to place an order soon!\n\nThanks, Julie`,
-      },
-    ],
-  });
+
+  // API queries
+  const messagesQuery = useMessages({ limit: 100 });
+  const messages = messagesQuery.data?.items || [];
+  const pmQuery = usePropertyManagers({ limit: 100 });
+  const pms = pmQuery.data?.items || [];
+  const officesQuery = useOffices({ limit: 100 });
+  const offices = officesQuery.data?.items || [];
+
+  const syncMailbox = useSyncMailbox();
+  const sendMailbox = useSendMailbox();
+
+  // Maps
+  const pmNameMap = useMemo(() => {
+    const map = new Map<string, string>();
+    pms.forEach((pm) => {
+      const email = pm.email?.toLowerCase();
+      if (email) {
+        map.set(email, `${pm.firstName} ${pm.lastName}`);
+      }
+    });
+    return map;
+  }, [pms]);
+
+  const officeNameMap = useMemo(() => {
+    const map = new Map<string, string>();
+    offices.forEach((o) => {
+      map.set(o.id, o.name);
+    });
+    return map;
+  }, [offices]);
+
+  // Group messages into conversation threads
+  const conversations = useMemo(() => {
+    const groups = new Map<string, any[]>();
+    messages.forEach((msg) => {
+      const isOutbound = msg.direction === "outbound";
+      let extEmail = isOutbound 
+        ? (msg.to && msg.to[0] ? msg.to[0] : "") 
+        : msg.from;
+      extEmail = extEmail.trim().toLowerCase();
+      if (!extEmail) return;
+      
+      if (!groups.has(extEmail)) {
+        groups.set(extEmail, []);
+      }
+      groups.get(extEmail)!.push(msg);
+    });
+
+    const list = Array.from(groups.entries()).map(([email, msgs]) => {
+      const sortedMsgs = [...msgs].sort((a, b) => new Date(a.receivedAt).getTime() - new Date(b.receivedAt).getTime());
+      const latestMsg = sortedMsgs[sortedMsgs.length - 1]!;
+      const pmName = pmNameMap.get(email);
+      const fallbackName = email.split("@")[0]!.replace(/[._-]/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+      
+      const receivedDate = new Date(latestMsg.receivedAt);
+      const now = new Date();
+      const diffMs = now.getTime() - receivedDate.getTime();
+      const diffMins = Math.floor(diffMs / 60000);
+      const diffHours = Math.floor(diffMins / 60);
+      const diffDays = Math.floor(diffHours / 24);
+      
+      let waitingStr = "Just now";
+      if (diffDays > 0) waitingStr = `${diffDays} Day${diffDays > 1 ? "s" : ""}`;
+      else if (diffHours > 0) waitingStr = `${diffHours} Hr${diffHours > 1 ? "s" : ""}`;
+      else if (diffMins > 0) waitingStr = `${diffMins} Min${diffMins > 1 ? "s" : ""}`;
+
+      const unassignedCount = msgs.filter(m => m.direction === "inbound" && !m.read).length;
+
+      return {
+        id: email,
+        name: pmName || fallbackName,
+        emailId: email,
+        conversation: latestMsg.subject,
+        date: receivedDate.toLocaleDateString(undefined, { day: "numeric", month: "short" }),
+        waiting: latestMsg.direction === "inbound" && !latestMsg.read ? waitingStr : "Read",
+        status: unassignedCount > 0 ? `${unassignedCount} new` : "Done",
+        statusColorClass: unassignedCount > 0 ? "text-[#dd5437]" : "text-sky-500",
+        messages: sortedMsgs,
+        latestMsgDate: new Date(latestMsg.receivedAt),
+      };
+    });
+
+    return list.sort((a, b) => b.latestMsgDate.getTime() - a.latestMsgDate.getTime());
+  }, [messages, pmNameMap]);
+
+  const activeConversation = useMemo(() => {
+    if (!selectedConversationId) return null;
+    return conversations.find((c) => c.id === selectedConversationId) || null;
+  }, [conversations, selectedConversationId]);
+
+  const activePm = useMemo(() => {
+    if (!activeConversation) return null;
+    return pms.find(pm => pm.email?.toLowerCase() === activeConversation.emailId.toLowerCase()) || null;
+  }, [pms, activeConversation]);
+
+  const activeOfficeName = useMemo(() => {
+    if (!activePm || !activePm.office) return "Independent / No Office";
+    const officeId = typeof activePm.office === "string" ? activePm.office : activePm.office.id;
+    return officeNameMap.get(officeId) || "Independent / No Office";
+  }, [activePm, officeNameMap]);
+
+  const isNoted = activeConversation ? (localNotes[activeConversation.id] || []).length > 0 : false;
+
+  const messagesToRender = useMemo(() => {
+    if (!activeConversation) return [];
+    const dbMsgs = activeConversation.messages || [];
+    const notes = localNotes[activeConversation.id] || [];
+    return [...dbMsgs, ...notes].sort((a, b) => new Date(a.receivedAt).getTime() - new Date(b.receivedAt).getTime());
+  }, [activeConversation, localNotes]);
+
+  useEffect(() => {
+    // Auto-sync on mount
+    syncMailbox.mutate(undefined);
+  }, []);
+
   const [isComposeOpen, setIsComposeOpen] = useState(false);
   const [composeData, setComposeData] = useState({
     to: "",
@@ -293,6 +393,20 @@ function MailboxPage() {
     }
     return result;
   }, [inboxes, search, sortOrder]);
+
+  const filteredConversations = useMemo(() => {
+    let result = [...conversations];
+    if (search.trim()) {
+      const query = search.toLowerCase();
+      result = result.filter(
+        (c) =>
+          c.name.toLowerCase().includes(query) ||
+          c.emailId.toLowerCase().includes(query) ||
+          c.conversation.toLowerCase().includes(query)
+      );
+    }
+    return result;
+  }, [conversations, search]);
 
   const toggleStar = (id: string) => {
     setInboxes((prev) =>
@@ -362,9 +476,7 @@ function MailboxPage() {
   };
 
   const handleDeleteConversation = (id: string, name: string) => {
-    setConversations((prev) => prev.filter((c) => c.id !== id));
-    setSelectedConversationId(null);
-    toast.success(`Conversation with ${name} deleted successfully!`);
+    toast.info(`Deletion of conversation with ${name} is simulated.`);
   };
 
   const handleCopyAddress = (address: string) => {
@@ -381,10 +493,11 @@ function MailboxPage() {
 
   const handleRefresh = () => {
     setRefreshing(true);
-    setTimeout(() => {
-      setRefreshing(false);
-      toast.success("Mailbox up to date!");
-    }, 800);
+    syncMailbox.mutate(undefined, {
+      onSettled: () => {
+        setRefreshing(false);
+      }
+    });
   };
 
   const stats = [
@@ -665,9 +778,21 @@ function MailboxPage() {
             <>
               {/* Left Sub-Navigation Pane */}
               <div className="w-60 shrink-0 bg-white border border-slate-200/80 rounded-3xl p-5 shadow-xs flex flex-col gap-4 select-none">
-                <div>
-                  <h2 className="text-base font-extrabold text-slate-800">Support</h2>
-                  <span className="text-[11px] font-bold text-slate-400">12 Conversations</span>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h2 className="text-base font-extrabold text-slate-800">Support</h2>
+                    <span className="text-[11px] font-bold text-slate-400">
+                      {conversations.length} {conversations.length === 1 ? "Conversation" : "Conversations"}
+                    </span>
+                  </div>
+                  <button
+                    onClick={handleRefresh}
+                    disabled={refreshing}
+                    className="p-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-500 hover:text-slate-700 transition-colors cursor-pointer select-none disabled:opacity-60 flex items-center justify-center shrink-0"
+                    title="Sync Mailbox"
+                  >
+                    <RefreshCw className={`h-4 w-4 ${refreshing ? "animate-spin" : ""}`} />
+                  </button>
                 </div>
 
                 {/* Menu items */}
@@ -837,60 +962,59 @@ function MailboxPage() {
 
                       {/* Message Thread Body card containers */}
                       <div className="space-y-4">
-                        {(conversationMessages[selectedConversationId] || [
-                          {
-                            sender: conversations.find(c => c.id === selectedConversationId)?.name || "Sender",
-                            avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&h=150&q=80",
-                            date: "Jan 28",
-                            body: `Hi there,\n\nI'm having trouble using the filters in the Accessories section. When I select "Price: Under $50" and "Brand: EcoChic," the results are either empty or incorrect. Could you look into this? I'd love to place an order soon!\n\nThanks, Julie`
-                          }
-                        ]).map((msg, idx) => (
-                          <div
-                            key={idx}
-                            className={`border rounded-3xl p-6 flex flex-col gap-4 shadow-3xs ${
-                              msg.isSent
-                                ? "border-[#dd5437]/20 bg-white"
-                                : "border-slate-200 bg-white"
-                            }`}
-                          >
-                            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-                              <div className="flex items-center gap-3">
-                                {msg.isSent ? (
-                                  msg.isNote ? (
-                                    <img
-                                      src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=150&h=150&q=80"
-                                      alt="Jean Doe avatar"
-                                      className="h-9 w-9 rounded-full object-cover border border-slate-100 shrink-0 animate-in fade-in"
-                                    />
-                                  ) : (
+                        {messagesToRender.map((msg, idx) => {
+                          const isOutbound = msg.direction === "outbound";
+                          const isNote = !!msg.isNote;
+                          const senderName = isNote 
+                            ? msg.sender 
+                            : (isOutbound ? "HubKonnect" : activeConversation?.name || "Sender");
+                          const avatarUrl = isNote 
+                            ? msg.avatar 
+                            : (isOutbound ? "" : "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&h=150&q=80");
+                          const formattedDate = new Date(msg.receivedAt).toLocaleDateString(undefined, { day: "numeric", month: "short", hour: "numeric", minute: "2-digit" });
+
+                          return (
+                            <div
+                              key={msg.id || idx}
+                              className={`border rounded-3xl p-6 flex flex-col gap-4 shadow-3xs ${
+                                isNote
+                                  ? "border-amber-200 bg-amber-50/30"
+                                  : (isOutbound
+                                    ? "border-[#dd5437]/20 bg-white"
+                                    : "border-slate-200 bg-white")
+                              }`}
+                            >
+                              <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+                                <div className="flex items-center gap-3">
+                                  {isOutbound && !isNote ? (
                                     <div className="h-9 w-9 rounded-full bg-[#dd5437] text-white flex items-center justify-center font-bold text-sm shadow-sm select-none border border-[#dd5437]/10 shrink-0">
-                                      J
+                                      H
                                     </div>
-                                  )
-                                ) : (
-                                  <img
-                                    src={msg.avatar}
-                                    alt="Sender avatar"
-                                    className="h-9 w-9 rounded-full object-cover border border-slate-100 shrink-0"
-                                  />
-                                )}
-                                <div className="flex flex-col text-left">
-                                  <span className="text-xs font-black text-slate-800">
-                                    {msg.sender}
-                                  </span>
+                                  ) : (
+                                    <img
+                                      src={avatarUrl || "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=150&h=150&q=80"}
+                                      alt="Sender avatar"
+                                      className="h-9 w-9 rounded-full object-cover border border-slate-100 shrink-0"
+                                    />
+                                  )}
+                                  <div className="flex flex-col text-left">
+                                    <span className="text-xs font-black text-slate-800">
+                                      {senderName}
+                                    </span>
+                                  </div>
+                                </div>
+                                <div className="flex items-center gap-1.5 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider select-none">
+                                  {isNote && <Lock className="h-3 w-3 text-slate-455 shrink-0" />}
+                                  <span>{isNote ? "Private Note • " : ""}{formattedDate}</span>
                                 </div>
                               </div>
-                              <div className="flex items-center gap-1.5 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider select-none">
-                                {msg.isNote && <Lock className="h-3 w-3 text-slate-400 shrink-0" />}
-                                <span>{msg.isNote ? "• " : ""}{msg.date}</span>
+
+                              <div className="text-xs font-semibold text-slate-655 leading-relaxed whitespace-pre-line text-left py-2">
+                                {msg.body}
                               </div>
                             </div>
-
-                            <div className="text-xs font-semibold text-slate-655 leading-relaxed whitespace-pre-line text-left py-2">
-                              {msg.body}
-                            </div>
-                          </div>
-                        ))}
+                          );
+                        })}
                       </div>
                                       {/* Footer Actions / Inline Reply */}
                     {isInlineReplying ? (
@@ -999,37 +1123,36 @@ function MailboxPage() {
                               <Send className="h-3.5 w-3.5 text-slate-400" />
                             </button>
                             <button
+                              disabled={sendMailbox.isPending}
                               onClick={() => {
                                 if (!inlineReplyText.trim()) {
                                   toast.error("Please enter a reply message");
                                   return;
                                 }
+                                if (!activeConversation) return;
 
-                                const newMsg = {
-                                  sender: "jeandoe@theapplianceguys.com.au",
-                                  avatar: "",
-                                  date: "Just now",
+                                sendMailbox.mutate({
+                                  to: [activeConversation.emailId],
+                                  subject: activeConversation.conversation.startsWith("Re:") 
+                                    ? activeConversation.conversation 
+                                    : `Re: ${activeConversation.conversation}`,
                                   body: inlineReplyText,
-                                  isSent: true
-                                };
-
-                                setConversationMessages((prev) => ({
-                                  ...prev,
-                                  [selectedConversationId || "2"]: [...(prev[selectedConversationId || "2"] || []), newMsg]
-                                }));
-
-                                toast.success("Reply sent successfully!");
-                                setInlineReplyText("");
-                                setIsInlineReplying(false);
-                                setIsExpandedReply(false);
+                                  office: activePm?.office ? (typeof activePm.office === "string" ? activePm.office : activePm.office.id) : undefined,
+                                }, {
+                                  onSuccess: () => {
+                                    setInlineReplyText("");
+                                    setIsInlineReplying(false);
+                                    setIsExpandedReply(false);
+                                  }
+                                });
                               }}
                               className={`rounded-xl px-6 py-2 text-center text-[11px] font-extrabold text-white transition-all cursor-pointer shadow-md active:scale-[0.98] ${
-                                inlineReplyText.trim()
+                                inlineReplyText.trim() && !sendMailbox.isPending
                                   ? "bg-[#dd5437] hover:bg-[#c9452b] shadow-[#dd5437]/15"
                                   : "bg-[#f5c6bb] cursor-not-allowed shadow-none"
                               }`}
                             >
-                              Send
+                              {sendMailbox.isPending ? "Sending..." : "Send"}
                             </button>
                           </div>
                         </div>
@@ -1049,30 +1172,30 @@ function MailboxPage() {
 
                         <button
                           onClick={() => {
-                            const newNotedState = !isNoted;
-                            setIsNoted(newNotedState);
+                            if (!activeConversation) return;
+                            const isCurrentlyNoted = (localNotes[activeConversation.id] || []).length > 0;
                             
-                            if (newNotedState) {
+                            if (!isCurrentlyNoted) {
                               toast.success("Conversation marked as Noted!");
-                              // Add the private internal note to the chat stack statefully
                               const noteMsg = {
+                                id: `note-${Date.now()}`,
                                 sender: "Jean Doe",
                                 avatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=150&h=150&q=80",
-                                date: "Jan 28",
-                                body: `Hey there, Julie!\n\nThank you very much for your email, we can definitely assist with this request! I've gone ahead and made the appropriate changes, but you'll be happy to know we're shipping a fix tomorrow where you'll be able to make these changes via your account in the future!\n\nYou should receive an updated invoice with the updated details momentarily.\n\nWhile I've got you, our new feature webinar is on Monday at 11 AM ET. Register here to save your spot-we'll send a recording link afterward if you can't attend live! Hope to see you then :)`,
-                                isSent: true,
+                                receivedAt: new Date().toISOString(),
+                                body: `Review complete: PM details and office assignments validated. Follow-up task scheduled for next review cycle.`,
+                                direction: "outbound" as const,
+                                read: true,
                                 isNote: true
                               };
-                              setConversationMessages((prev) => ({
+                              setLocalNotes((prev) => ({
                                 ...prev,
-                                [selectedConversationId || "2"]: [...(prev[selectedConversationId || "2"] || []), noteMsg]
+                                [activeConversation.id]: [noteMsg]
                               }));
                             } else {
                               toast.success("Note removed from conversation thread");
-                              // Prune the internal note from the stack
-                              setConversationMessages((prev) => ({
+                              setLocalNotes((prev) => ({
                                 ...prev,
-                                [selectedConversationId || "2"]: (prev[selectedConversationId || "2"] || []).filter(x => !x.isNote)
+                                [activeConversation.id]: []
                               }));
                             }
                           }}
@@ -1111,27 +1234,31 @@ function MailboxPage() {
                         className="h-16 w-16 rounded-2xl object-cover border border-slate-100 shadow-3xs"
                       />
                       <h3 className="text-sm font-extrabold text-slate-800 mt-4 tracking-tight leading-none">
-                        {conversations.find(c => c.id === selectedConversationId)?.name || "Customer Name"}
+                        {activeConversation?.name || "Customer Name"}
                       </h3>
                       <span className="text-[11px] font-bold text-[#dd5437] hover:underline cursor-pointer mt-2 select-all">
-                        juliemartinez@theapplianceguys.com.au
+                        {activeConversation?.emailId}
                       </span>
                     </div>
 
                     <div className="w-full border-t border-slate-100 pt-5 flex flex-col gap-3 text-left">
                       <div className="flex items-center gap-3 text-xs font-semibold text-slate-600">
                         <Building2 className="h-4 w-4 text-slate-400 shrink-0" />
-                        <span>StellarTech Solutions</span>
+                        <span>{activeOfficeName}</span>
                       </div>
                       <div className="flex items-center justify-between text-xs font-semibold text-slate-600">
                         <div className="flex items-center gap-3">
                           <Phone className="h-4 w-4 text-slate-400 shrink-0" />
-                          <span className="select-all">+61414547447</span>
+                          <span className="select-all">{activePm?.phone || "No phone number"}</span>
                         </div>
                         <button
                           onClick={() => {
-                            navigator.clipboard.writeText("+61414547447");
-                            toast.success("Phone number copied!");
+                            if (activePm?.phone) {
+                              navigator.clipboard.writeText(activePm.phone);
+                              toast.success("Phone number copied!");
+                            } else {
+                              toast.error("No phone number available");
+                            }
                           }}
                           className="text-slate-350 hover:text-slate-500 p-1 rounded hover:bg-slate-50 transition-all cursor-pointer"
                           title="Copy Phone"
@@ -1181,11 +1308,11 @@ function MailboxPage() {
                             toast.success(`Opening conversation with ${item.name}`);
                           }}
                           className={`border-b border-slate-100 last:border-b-0 hover:bg-slate-50/70 transition-colors cursor-pointer ${
-                            item.id === selectedConversationId || (selectedConversationId === null && item.isSelected) ? "bg-[#fdf2f0]/60 hover:bg-[#fdf2f0]/80" : ""
+                            item.id === selectedConversationId || (selectedConversationId === null && item.id === conversations[0]?.id) ? "bg-[#fdf2f0]/60 hover:bg-[#fdf2f0]/80" : ""
                           }`}
                         >
                           <td className="px-5 py-4 text-center">
-                            <input type="checkbox" className="rounded border-slate-350 text-[#dd5437] focus:ring-[#dd5437] cursor-pointer" defaultChecked={item.isSelected} />
+                            <input type="checkbox" className="rounded border-slate-350 text-[#dd5437] focus:ring-[#dd5437] cursor-pointer" defaultChecked={item.id === selectedConversationId} />
                           </td>
                           <td className="px-5 py-4 text-left font-black text-slate-800 text-xs select-all cursor-pointer">
                             {item.name}
@@ -1384,11 +1511,18 @@ function MailboxPage() {
                 {filteredInboxes.map((item) => (
                   <tr
                     key={item.id}
-                    className="border-b border-slate-100 last:border-b-0 hover:bg-slate-55/40 transition-colors"
+                    onClick={() => {
+                      setOpen(false);
+                      toast.success(`Opening inbox: ${item.name}`);
+                    }}
+                    className="border-b border-slate-100 last:border-b-0 hover:bg-slate-55/40 transition-colors cursor-pointer"
                   >
                     <td className="px-6 py-4 text-center">
                       <button
-                        onClick={() => toggleStar(item.id)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleStar(item.id);
+                        }}
                         className="text-slate-350 hover:text-amber-500 bg-transparent border-0 flex items-center justify-center p-1 rounded-lg transition-colors cursor-pointer focus:outline-none mx-auto"
                       >
                         {item.starred ? (
@@ -1409,7 +1543,10 @@ function MailboxPage() {
                           {item.address}
                         </span>
                         <button
-                          onClick={() => handleCopyAddress(item.address)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleCopyAddress(item.address);
+                          }}
                           className="text-slate-400 hover:text-slate-605 bg-transparent border-0 flex items-center justify-center p-1 rounded hover:bg-slate-100 transition-colors cursor-pointer"
                           title="Copy Address"
                         >
@@ -1499,13 +1636,35 @@ function MailboxPage() {
             {/* Save Button */}
             <div className="pt-2">
               <button
+                disabled={sendMailbox.isPending}
                 onClick={() => {
-                  toast.success("Draft email saved successfully!");
-                  setIsComposeOpen(false);
+                  if (!composeData.to.trim()) {
+                    toast.error("Please enter a recipient email");
+                    return;
+                  }
+                  if (!composeData.subject.trim()) {
+                    toast.error("Please enter a subject");
+                    return;
+                  }
+                  if (!composeData.body.trim()) {
+                    toast.error("Please enter the email body");
+                    return;
+                  }
+
+                  sendMailbox.mutate({
+                    to: [composeData.to.trim()],
+                    subject: composeData.subject.trim(),
+                    body: composeData.body.trim(),
+                  }, {
+                    onSuccess: () => {
+                      setComposeData({ to: "", subject: "", body: "" });
+                      setIsComposeOpen(false);
+                    }
+                  });
                 }}
-                className="w-full rounded-xl bg-[#dd5437] hover:bg-[#dd5437]/90 py-3 text-center text-xs font-extrabold text-white transition-all cursor-pointer select-none"
+                className="w-full rounded-xl bg-[#dd5437] hover:bg-[#dd5437]/90 py-3 text-center text-xs font-extrabold text-white transition-all cursor-pointer select-none disabled:opacity-60"
               >
-                Save
+                {sendMailbox.isPending ? "Sending..." : "Send"}
               </button>
             </div>
           </div>

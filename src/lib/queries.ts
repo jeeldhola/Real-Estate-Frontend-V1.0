@@ -491,6 +491,37 @@ export function useCreateMessage() {
   });
 }
 
+export function useSyncMailbox() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: () => api.post<{ success: boolean; newCount: number }>("/api/mailbox/sync"),
+    onSuccess: (res) => {
+      if (res.newCount > 0) {
+        toast.success(`Mailbox synchronized: ${res.newCount} new message(s) loaded.`);
+      } else {
+        toast.success("Mailbox is already up to date.");
+      }
+      qc.invalidateQueries({ queryKey: ["mailbox"] });
+      qc.invalidateQueries({ queryKey: ["mailbox", "summary"] });
+    },
+    onError: (err) => showError(err, "Mailbox synchronization failed"),
+  });
+}
+
+export function useSendMailbox() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (input: { to: string[]; cc?: string[]; subject: string; body: string; office?: string }) =>
+      api.post<Message>("/api/mailbox/send", input),
+    onSuccess: () => {
+      toast.success("Email sent successfully");
+      qc.invalidateQueries({ queryKey: ["mailbox"] });
+      qc.invalidateQueries({ queryKey: ["mailbox", "summary"] });
+    },
+    onError: (err) => showError(err, "Failed to send email"),
+  });
+}
+
 // ---------------- Email Templates ----------------
 
 export function useTemplates(query: TemplateListQuery = {}) {

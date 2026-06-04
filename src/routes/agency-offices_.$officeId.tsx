@@ -35,8 +35,12 @@ import {
   MoreVertical,
   ChevronsUpDown,
   Calendar,
+  CalendarPlus,
   Sparkles,
   Plus,
+  Clock,
+  Paperclip,
+  History,
 } from "lucide-react";
 import { useDeleteOffice, useOffice, useUpdateOffice, usePropertyManagers, useMeetings, useCreateMeeting } from "@/lib/queries";
 import { accountManagerName, type Office } from "@/lib/api-types";
@@ -63,80 +67,56 @@ const TABS = ["Overview", "People", "Meetings", "Notes"] as const;
 type Tab = (typeof TABS)[number];
 
 function StatusPill({ status }: { status: string }) {
-  if (status === "Active") {
+  if (status === "Scheduled") {
     return (
-      <svg width="65" height="24" viewBox="0 0 65 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0 select-none">
-        <rect width="65" height="24" rx="8" fill="#2093A3" fillOpacity="0.08"/>
-        <g clipPath="url(#clip0_235_7792)">
-          <path d="M10 14C11.1046 14 12 13.1046 12 12C12 10.8954 11.1046 10 10 10C8.89543 10 8 10.8954 8 12C8 13.1046 8.89543 14 10 14Z" fill="#2093A3"/>
-        </g>
-        <path d="M20.132 16.5L23.336 7.56H24.728L27.932 16.5H26.672L25.94 14.4H22.124L21.392 16.5H20.132ZM22.496 13.32H25.568L23.864 8.412H24.2L22.496 13.32ZM31.6921 16.644C31.0601 16.644 30.4961 16.496 30.0001 16.2C29.5121 15.904 29.1281 15.5 28.8481 14.988C28.5681 14.476 28.4281 13.9 28.4281 13.26C28.4281 12.612 28.5681 12.036 28.8481 11.532C29.1281 11.028 29.5121 10.628 30.0001 10.332C30.4961 10.036 31.0601 9.888 31.6921 9.888C32.1161 9.888 32.5121 9.964 32.8801 10.116C33.2481 10.268 33.5721 10.472 33.8521 10.728C34.1321 10.984 34.3361 11.284 34.4641 11.628L33.4681 12.108C33.3161 11.772 33.0841 11.5 32.7721 11.292C32.4601 11.076 32.1001 10.968 31.6921 10.968C31.3001 10.968 30.9441 11.068 30.6241 11.268C30.3121 11.468 30.0641 11.74 29.8801 12.084C29.6961 12.428 29.6041 12.824 29.6041 13.272C29.6041 13.704 29.6961 14.096 29.8801 14.448C30.0641 14.792 30.3121 15.064 30.6241 15.264C30.9441 15.564 31.3001 15.564 31.6921 15.564C32.1001 15.564 32.4601 15.46 32.7721 15.252C33.0841 15.036 33.3161 14.752 33.4681 14.4L34.4641 14.904C34.3361 15.24 34.1321 15.54 33.8521 15.804C33.5721 16.06 33.2481 16.264 32.8801 16.416C32.5121 16.568 32.1161 16.644 31.6921 16.644ZM38.5506 16.572C37.9186 16.572 37.4306 16.392 37.0866 16.032C36.7506 15.672 36.5826 15.164 36.5826 14.508V11.1H35.4066V10.032H35.6466C35.9346 10.032 36.1626 9.944 36.3306 9.768C36.4986 9.592 36.5826 9.36 36.5826 9.072V8.544H37.6986V10.032H39.1506V11.1H37.6986V14.472C37.6986 14.688 37.7306 14.876 37.7946 15.036C37.8666 15.196 37.9826 15.324 38.1426 15.42C38.3026 15.508 38.5146 15.552 38.7786 15.552C38.8346 15.552 38.9026 15.548 38.9826 15.54C39.0706 15.532 39.1506 15.524 39.2226 15.516V16.5C39.1186 16.524 39.0026 16.54 38.8746 16.548C38.7466 16.564 38.6386 16.572 38.5506 16.572ZM40.6804 16.5V10.032H41.7964V16.5H40.6804ZM40.6804 9V7.56H41.7964V9H40.6804ZM45.3281 16.5L42.7961 10.032H44.0441L46.0721 15.504H45.6401L47.6801 10.032H48.9281L46.3841 16.5H45.3281ZM52.7853 16.644C52.1613 16.644 51.6053 16.496 51.1173 16.2C50.6293 15.904 50.2453 15.5 49.9653 14.988C49.6853 14.468 49.5453 13.888 49.5453 13.248C49.5453 12.6 49.6813 12.024 49.9533 11.52C50.2333 11.016 50.6093 10.62 51.0813 10.332C51.5613 10.036 52.0973 9.888 52.6893 9.888C53.1693 9.888 53.5933 9.976 53.9613 10.152C54.3373 10.32 54.6533 10.552 54.9093 10.848C55.1733 11.136 55.3733 11.468 55.5093 11.844C55.6533 12.212 55.7253 12.596 55.7253 12.996C55.7253 13.084 55.7173 13.184 55.7013 13.296C55.6933 13.4 55.6813 13.5 55.6653 13.596H50.3613V12.636H55.0173L54.4893 13.068C54.5613 12.652 54.5213 12.28 54.3693 11.952C54.2173 11.624 53.9933 11.364 53.6973 11.172C53.4013 10.98 53.0653 10.884 52.6893 10.884C52.3133 10.884 51.9693 10.98 51.6573 11.172C51.3453 11.364 51.1013 11.64 50.9253 12C50.7573 12.352 50.6893 12.772 50.7213 13.26C50.6893 13.732 50.7613 14.148 50.9373 14.508C51.1213 14.86 51.3773 15.136 51.7053 15.336C52.0413 15.528 52.4053 15.624 52.7973 15.624C53.2293 15.624 53.5933 15.524 53.8893 15.324C54.1853 15.124 54.4253 14.868 54.6093 14.556L55.5453 15.036C55.4173 15.332 55.2173 15.604 54.9453 15.852C54.6813 16.092 54.3653 16.284 53.9973 16.428C53.6373 16.572 53.2333 16.644 52.7853 16.644Z" fill="#2093A3"/>
-        <defs>
-          <clipPath id="clip0_235_7792">
-            <rect width="12" height="12" fill="white" transform="translate(4 6)"/>
-          </clipPath>
-        </defs>
-      </svg>
+      <span className="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-semibold border border-slate-200 text-slate-700 bg-white select-none">
+        Scheduled
+      </span>
+    );
+  }
+  if (status === "Completed") {
+    return (
+      <span className="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-semibold border border-emerald-200 text-emerald-700 bg-emerald-50/50 select-none">
+        Completed
+      </span>
+    );
+  }
+  if (status === "Cancelled" || status === "No Show") {
+    return (
+      <span className="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-semibold border border-rose-200 text-rose-700 bg-rose-50/50 select-none">
+        {status}
+      </span>
     );
   }
 
-  if (status === "Inactive") {
-    return (
-      <svg width="74" height="24" viewBox="0 0 74 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0 select-none">
-        <rect width="74" height="24" rx="8" fill="#EF4444" fillOpacity="0.08"/>
-        <g clipPath="url(#clip0_235_7864)">
-          <path d="M10 14C11.1046 14 12 13.1046 12 12C12 10.8954 11.1046 10 10 10C8.89543 10 8 10.8954 8 12C8 13.1046 8.89543 14 10 14Z" fill="#EF4444"/>
-        </g>
-        <path d="M20.996 16.5V7.56H22.172V16.5H20.996ZM24.0281 16.5V10.032H25.1201V11.292L24.9401 11.184C25.1001 10.776 25.3561 10.46 25.7081 10.236C26.0681 10.004 26.4881 9.888 26.9681 9.888C27.4321 9.888 27.8441 9.992 28.2041 10.2C28.5721 10.408 28.8601 10.696 29.0681 11.064C29.2841 11.432 29.3921 11.848 29.3921 12.312V16.5H28.2641V12.672C28.2641 12.312 28.2001 12.008 28.0721 11.76C27.9441 11.512 27.7601 11.32 27.5201 11.184C27.2881 11.04 27.0201 10.968 26.7161 10.968C26.4121 10.968 26.1401 11.04 25.9001 11.184C25.6681 11.32 25.4841 11.516 25.3481 11.772C25.2121 12.02 25.1441 12.32 25.1441 12.672V16.5H24.0281ZM32.885 16.644C32.461 16.644 32.085 16.568 31.757 16.416C31.437 16.256 31.185 16.04 31.001 15.768C30.817 15.488 30.725 15.168 30.725 14.808C30.725 14.464 30.797 14.156 30.941 13.884C31.093 13.604 31.325 13.368 31.637 13.176C31.957 12.984 32.357 12.848 32.837 12.768L35.237 12.372V13.308L33.089 13.668C32.673 13.74 32.369 13.872 32.177 14.064C31.993 14.256 31.901 14.492 31.901 14.772C31.901 15.036 32.005 15.256 32.213 15.432C32.429 15.608 32.697 15.696 33.017 15.696C33.425 15.696 33.777 15.612 34.073 15.444C34.377 15.268 34.613 15.032 34.781 14.736C34.957 14.44 35.045 14.112 35.045 13.752V12.108C35.045 11.756 34.913 11.472 34.649 11.256C34.393 11.032 34.053 10.92 33.629 10.92C33.261 10.92 32.933 11.016 32.645 11.208C32.365 11.392 32.157 11.64 32.021 11.952L31.049 11.448C31.169 11.152 31.361 10.888 31.625 10.656C31.889 10.416 32.197 10.228 32.549 10.092C32.901 9.956 33.269 9.888 33.653 9.888C34.149 9.888 34.585 9.984 34.961 10.176C35.337 10.36 35.629 10.62 35.837 10.956C36.053 11.284 36.161 11.668 36.161 12.108V16.5H35.069V15.276L35.273 15.348C35.137 15.604 34.953 15.828 34.721 16.02C34.489 16.212 34.217 16.364 33.905 16.476C33.593 16.588 33.253 16.644 32.885 16.644ZM40.8913 16.644C40.2593 16.644 39.6953 16.496 39.1993 16.2C38.7113 15.904 38.3273 15.5 38.0473 14.988C37.7673 14.476 37.6273 13.9 37.6273 13.26C37.6273 12.612 37.7673 12.036 38.0473 11.532C38.3273 11.028 38.7113 10.628 39.1993 10.332C39.6953 10.036 40.2593 9.888 40.8913 9.888C41.3153 9.888 41.7113 9.964 42.0793 10.116C42.4473 10.268 42.7713 10.472 43.0513 10.728C43.3313 10.984 43.5353 11.284 43.6633 11.628L42.6673 12.108C42.5153 11.772 42.2833 11.5 41.9713 11.292C41.6593 11.076 41.2993 10.968 40.8913 10.968C40.4993 10.968 40.1433 11.068 39.8233 11.268C39.5113 11.468 39.2633 11.74 39.0793 12.084C38.8953 12.428 38.8033 12.824 38.8033 13.272C38.8033 13.704 38.8953 14.096 39.0793 14.448C39.2633 14.792 39.5113 15.064 39.8233 15.264C40.1433 15.464 40.4993 15.564 40.8913 15.564C41.2993 15.564 41.6593 15.46 41.9713 15.252C42.2833 15.036 42.5153 14.752 42.6673 14.4L43.6633 14.904C43.5353 15.24 43.3313 15.54 43.0513 15.804C42.7713 16.06 42.4473 16.264 42.0793 16.416C41.7113 16.568 41.3153 16.644 40.8913 16.644ZM47.7498 16.572C47.1178 16.572 46.6298 16.392 46.2858 16.032C45.9498 15.672 45.7818 15.164 45.7818 14.508V11.1H44.6058V10.032H44.8458C45.1338 10.032 45.3618 9.944 45.5298 9.768C45.6978 9.592 45.7818 9.36 45.7818 9.072V8.544H46.8978V10.032H48.3498V11.1H46.8978V14.472C46.8978 14.688 46.9298 14.876 46.9938 15.036C47.0658 15.196 47.1818 15.324 47.3418 15.42C47.5018 15.508 47.7138 15.552 47.9778 15.552C48.0338 15.552 48.1018 15.548 48.1818 15.54C48.2698 15.54 48.3498 15.524 48.4218 15.516V16.5C48.3178 16.524 48.2018 16.54 48.0738 16.548C47.9458 16.564 47.8378 16.572 47.7498 16.572ZM49.8796 16.5V10.032H50.9956V16.5H49.8796ZM49.8796 9V7.56H50.9956V9H49.8796ZM54.5273 16.5L51.9953 10.032H53.2433L55.2713 15.504H54.8393L56.8793 10.032H58.1273L55.5833 16.5H54.5273ZM61.9845 16.644C61.3605 16.644 60.8045 16.496 60.3165 16.2C59.8285 15.904 59.4445 15.5 59.1645 14.988C58.8845 14.468 58.7445 13.888 58.7445 13.248C58.7445 12.6 58.8805 12.024 59.1525 11.52C59.4325 11.016 59.8085 10.62 60.2805 10.332C60.7605 10.036 61.2965 9.888 61.8885 9.888C62.3685 9.888 62.7925 9.976 63.1605 10.152C63.5365 10.32 63.8525 10.552 64.1085 10.848C64.3725 11.136 64.5725 11.468 64.7085 11.844C64.8525 12.212 64.9245 12.596 64.9245 12.996C64.9245 13.084 64.9165 13.184 64.9005 13.296C64.8925 13.4 64.8805 13.5 64.8645 13.596H59.5605V12.636H64.2165L63.6885 13.068C63.7605 12.652 63.7205 12.28 63.5685 11.952C63.4165 11.624 63.1925 11.364 62.8965 11.172C62.6005 10.98 62.2645 10.884 61.8885 10.884C61.5125 10.884 61.1685 10.98 60.8565 11.172C60.5445 11.364 60.3005 11.64 60.1245 12C59.9565 12.352 59.8885 12.772 59.9205 13.26C59.8885 13.732 59.9605 14.148 60.1365 14.508C60.3205 14.86 60.5765 15.136 60.9045 15.336C61.2405 15.528 61.6045 15.624 61.9965 15.624C62.4285 15.624 62.7925 15.524 63.0885 15.324C63.3845 15.124 63.6245 14.868 63.8085 14.556L64.7445 15.036C64.6165 15.332 64.4165 15.604 64.1445 15.852C63.8805 16.092 63.5645 16.284 63.1965 16.428C62.8365 16.572 62.4325 16.644 61.9845 16.644Z" fill="#EF4444"/>
-        <defs>
-          <clipPath id="clip0_235_7864">
-            <rect width="12" height="12" fill="white" transform="translate(4 6)"/>
-          </clipPath>
-        </defs>
-      </svg>
-    );
-  }
-
-  const pillColors: Record<string, { bg: string; text: string; border: string; dot: string }> = {
+  const statusConfig: Record<string, { bg: string; text: string; dot: string }> = {
+    Active: {
+      bg: "bg-[#2093A3]/8",
+      text: "text-[#2093A3]",
+      dot: "bg-[#2093A3]",
+    },
+    Inactive: {
+      bg: "bg-rose-500/8",
+      text: "text-rose-500",
+      dot: "bg-rose-500",
+    },
     Lapsing: {
-      bg: "#FEF7E0",
-      text: "#B06000",
-      border: "rgba(254, 239, 195, 0.6)",
-      dot: "#B06000",
+      bg: "bg-amber-500/8",
+      text: "text-amber-600",
+      dot: "bg-amber-500",
     },
     Archived: {
-      bg: "#F1F3F4",
-      text: "#5F6368",
-      border: "rgba(232, 234, 237, 0.6)",
-      dot: "#5F6368",
+      bg: "bg-slate-500/8",
+      text: "text-slate-500",
+      dot: "bg-slate-500",
     },
   };
 
-  const colors = pillColors[status] || pillColors.Lapsing;
+  const config = statusConfig[status] || statusConfig.Active;
 
   return (
-    <span
-      style={{
-        display: "inline-flex",
-        alignItems: "center",
-        gap: "6px",
-        borderRadius: "9999px",
-        padding: "4px 10px",
-        backgroundColor: colors.bg,
-        color: colors.text,
-        border: `1px solid ${colors.border}`,
-      }}
-      className="text-[10px] font-extrabold tracking-wide uppercase select-none shrink-0"
-    >
-      <span
-        style={{
-          width: "6px",
-          height: "6px",
-          borderRadius: "50%",
-          backgroundColor: colors.dot,
-        }}
-        className="shrink-0"
-      />
+    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold leading-none ${config.bg} ${config.text} select-none`}>
+      <span className={`w-1.5 h-1.5 rounded-full ${config.dot}`} />
       {status}
     </span>
   );
@@ -147,6 +127,7 @@ function AgencyOfficeDetailPage() {
   const [tab, setTab] = useState<Tab>("Overview");
   const [cardPeriodFilter, setCardPeriodFilter] = useState("vs Last Month");
   const [isArchiveDialogOpen, setIsArchiveDialogOpen] = useState(false);
+  const [isActivateDialogOpen, setIsActivateDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [confirmDeleteId, setConfirmDeleteId] = useState("");
   const navigate = useNavigate();
@@ -285,6 +266,19 @@ function AgencyOfficeDetailPage() {
     }
   };
 
+  const handleConfirmActivate = async () => {
+    try {
+      await updateOffice.mutateAsync({
+        id: officeId,
+        patch: { status: "Active" },
+      });
+      toast.success("Office successfully reactivated!");
+      setIsActivateDialogOpen(false);
+    } catch (err) {
+      toast.error("Failed to reactivate office");
+    }
+  };
+
   const handleConfirmDelete = async () => {
     try {
       await deleteOffice.mutateAsync(officeId);
@@ -302,50 +296,60 @@ function AgencyOfficeDetailPage() {
       value: "18",
       trend: "12%",
       trendDir: "up" as const,
+      trendColor: "text-emerald-500",
+      trendIcon: TrendingUp,
       icon: Receipt,
-      tint: "bg-[#fff8f6]/70 border-orange-100/50",
-      iconBg: "bg-orange-100/70 text-[#dd5437]",
-      fg: "text-orange-600 font-extrabold",
+      bg: "#FAF5F2",
+      borderColor: "rgba(221, 84, 55, 0.12)",
+      fg: "text-[#dd5437]",
     },
     {
       label: "Overdue Invoices",
       value: "18",
       trend: "12%",
       trendDir: "down" as const,
+      trendColor: "text-rose-500",
+      trendIcon: TrendingDown,
       icon: Receipt,
-      tint: "bg-blue-50/40 border-blue-100/30",
-      iconBg: "bg-blue-100/70 text-blue-600",
-      fg: "text-blue-600 font-extrabold",
+      bg: "#F0F7FF",
+      borderColor: "rgba(37, 99, 235, 0.12)",
+      fg: "text-blue-600",
     },
     {
       label: "Average Monthly Spend",
       value: "0",
       trend: "—",
       trendDir: "none" as const,
+      trendColor: "text-slate-400",
+      trendIcon: null,
       icon: DollarSign,
-      tint: "bg-amber-50/40 border-amber-100/30",
-      iconBg: "bg-amber-100/70 text-amber-600",
-      fg: "text-amber-600 font-extrabold",
+      bg: "#FDF8EA",
+      borderColor: "rgba(217, 119, 6, 0.12)",
+      fg: "text-amber-600",
     },
     {
       label: "Open Quotes",
       value: "0",
       trend: "—",
       trendDir: "none" as const,
+      trendColor: "text-slate-400",
+      trendIcon: null,
       icon: FileText,
-      tint: "bg-rose-50/40 border-rose-100/30",
-      iconBg: "bg-rose-100/70 text-rose-600",
-      fg: "text-rose-600 font-extrabold",
+      bg: "#FFF5F5",
+      borderColor: "rgba(225, 29, 72, 0.12)",
+      fg: "text-rose-600",
     },
     {
       label: "Quote Approval Rate",
       value: "95%",
       trend: "8.3%",
       trendDir: "down" as const,
+      trendColor: "text-rose-500",
+      trendIcon: TrendingDown,
       icon: UserCheck,
-      tint: "bg-purple-50/40 border-purple-100/30",
-      iconBg: "bg-purple-100/70 text-purple-600",
-      fg: "text-purple-600 font-extrabold",
+      bg: "#F8F6FC",
+      borderColor: "rgba(139, 92, 246, 0.12)",
+      fg: "text-purple-600",
     },
   ];
 
@@ -377,9 +381,9 @@ function AgencyOfficeDetailPage() {
         {/* Action Buttons Top Right */}
         <div className="flex items-center gap-3 shrink-0">
           <button
-            onClick={isArchived ? handleArchiveToggle : () => setIsArchiveDialogOpen(true)}
+            onClick={isArchived ? () => setIsActivateDialogOpen(true) : () => setIsArchiveDialogOpen(true)}
             disabled={updateOffice.isPending}
-            className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-50 shadow-xs cursor-pointer transition-all border-0 disabled:opacity-50"
+            className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-bold text-slate-655 hover:bg-slate-50 shadow-3xs cursor-pointer transition-all disabled:opacity-50"
           >
             {isArchived ? (
               <>
@@ -400,7 +404,7 @@ function AgencyOfficeDetailPage() {
               setIsDeleteDialogOpen(true);
             }}
             disabled={deleteOffice.isPending}
-            className="flex items-center gap-2 rounded-xl border border-rose-200 bg-white hover:bg-rose-50/50 px-4 py-2.5 text-xs font-bold text-rose-600 shadow-xs cursor-pointer transition-all border-0 disabled:opacity-50"
+            className="flex items-center gap-2 rounded-xl border border-rose-200 bg-white hover:bg-rose-50/50 px-4 py-2.5 text-xs font-bold text-rose-600 shadow-3xs cursor-pointer transition-all disabled:opacity-50"
           >
             {deleteOffice.isPending ? (
               <Loader2 className="h-3.5 w-3.5 animate-spin text-rose-500" />
@@ -413,25 +417,47 @@ function AgencyOfficeDetailPage() {
       </div>
 
       {/* 5-Column Invoices & Quotes Metric Cards Row */}
-      {tab === "Overview" && (
-        <div className="mb-6 grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-5">
+      <div 
+        className="mb-6 p-4 border rounded-[16px] bg-white"
+        style={{
+          borderColor: "rgba(31, 31, 31, 0.08)",
+        }}
+      >
+        <div className="grid gap-4 grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
           {invoiceStats.map((s) => {
             const isUnpaid = s.label === "Unpaid Invoices";
             const CardCaretIcon = isUnpaid ? ChevronUp : ChevronDown;
             return (
               <div
                 key={s.label}
-                className={`relative flex items-center gap-4 rounded-3xl border border-slate-100 p-5 pr-8 text-left transition-all hover:shadow-sm ${s.tint}`}
+                className="flex justify-between items-start self-stretch p-4 border rounded-[16px] select-none transition-all hover:shadow-xs w-full bg-white"
+                style={{
+                  backgroundColor: s.bg,
+                  borderColor: s.borderColor,
+                }}
               >
-                {/* Caret dropdown popover on the top right */}
-                <div className="absolute top-4 right-4 z-20">
+                {/* Left Column: Icon + Label on top, Value on bottom */}
+                <div className="flex flex-col justify-between items-start h-full min-h-[76px]">
+                  <div className="flex items-center gap-2">
+                    <div className={`flex h-6 w-6 items-center justify-center rounded-lg ${s.fg} bg-white/60 shadow-3xs`}>
+                      <s.icon className="h-4 w-4" />
+                    </div>
+                    <span className="text-xs font-bold text-slate-750">{s.label}</span>
+                  </div>
+                  <span className="text-2xl font-extrabold text-slate-850 tracking-tight leading-none mt-6">
+                    {s.value}
+                  </span>
+                </div>
+
+                {/* Right Column: Caret popover on top, Trend value on bottom */}
+                <div className="flex flex-col justify-between items-end h-full min-h-[76px]">
                   <Popover>
                     <PopoverTrigger asChild>
-                      <button className="text-slate-400 hover:text-slate-600 cursor-pointer bg-transparent border-0 flex items-center justify-center p-1 rounded-lg hover:bg-slate-100/10 transition-colors">
+                      <button className="text-slate-400 hover:text-slate-655 bg-transparent border-0 flex items-center justify-center p-1 rounded-lg hover:bg-slate-100/35 transition-colors cursor-pointer focus:outline-none">
                         <CardCaretIcon className="h-4 w-4" />
                       </button>
                     </PopoverTrigger>
-                    <PopoverContent className="w-48 p-1.5 bg-white border border-slate-200 shadow-lg rounded-2xl animate-in fade-in-50" align="end">
+                    <PopoverContent className="w-48 p-1.5 bg-white border border-slate-200 shadow-lg rounded-2xl z-[100]" align="end">
                       <div className="flex flex-col gap-0.5">
                         {["vs Last Month", "vs Last Week", "vs Last Quarter", "vs Last Year"].map((opt) => {
                           const isSelected = cardPeriodFilter === opt;
@@ -439,16 +465,14 @@ function AgencyOfficeDetailPage() {
                             <button
                               key={opt}
                               onClick={() => setCardPeriodFilter(opt)}
-                              className="flex w-full items-center gap-3 px-3 py-2.5 text-xs font-semibold rounded-xl text-left text-slate-600 hover:bg-slate-50 transition-colors cursor-pointer border-0 bg-transparent"
+                              className="flex w-full items-center gap-3 px-3 py-2 text-xs font-semibold rounded-xl text-left text-slate-655 hover:bg-slate-50 transition-colors cursor-pointer border-0 bg-transparent"
                             >
-                              <div
-                                className="flex h-4 w-4 items-center justify-center rounded border transition-all shrink-0"
-                                style={{
-                                  backgroundColor: isSelected ? "#dd5437" : "#ffffff",
-                                  borderColor: isSelected ? "#dd5437" : "#cbd5e1",
-                                }}
-                              >
-                                {isSelected && <Check className="h-2.5 w-2.5 text-white stroke-[3.5px]" />}
+                              <div className="shrink-0 flex items-center justify-center">
+                                {isSelected ? (
+                                  <Check className="h-4 w-4 text-[#dd5437]" />
+                                ) : (
+                                  <div className="h-4 w-4 rounded border border-slate-200" />
+                                )}
                               </div>
                               <span className={isSelected ? "text-slate-900 font-bold" : "text-slate-600 font-medium"}>
                                 {opt}
@@ -459,51 +483,43 @@ function AgencyOfficeDetailPage() {
                       </div>
                     </PopoverContent>
                   </Popover>
-                </div>
 
-                <div
-                  className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full ${s.iconBg}`}
-                >
-                  <s.icon className="h-5 w-5" />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-baseline gap-1.5 flex-wrap">
-                    <span className="text-2xl font-black text-slate-900 tracking-tight">{s.value}</span>
-                    {s.trendDir === "up" && (
-                      <span className="inline-flex items-center gap-0.5 text-[9px] font-bold text-emerald-600 bg-emerald-100/60 px-1.5 py-0.5 rounded-md shrink-0 leading-none">
-                        <TrendingUp className="h-2.5 w-2.5 stroke-[2.5px]" /> {s.trend}
+                  <div className="flex flex-col items-end leading-none gap-1 mt-6">
+                    {s.trendDir !== "none" ? (
+                      <div className={`flex items-center gap-0.5 text-xs font-extrabold ${s.trendColor}`}>
+                        {s.trendIcon && (
+                          <s.trendIcon className="h-3.5 w-3.5 shrink-0 stroke-[2.5px]" />
+                        )}
+                        <span>{s.trend}</span>
+                      </div>
+                    ) : (
+                      <span className="text-xs font-bold text-slate-400">
+                        —
                       </span>
                     )}
-                    {s.trendDir === "down" && (
-                      <span className="inline-flex items-center gap-0.5 text-[9px] font-bold text-rose-600 bg-rose-100/60 px-1.5 py-0.5 rounded-md shrink-0 leading-none">
-                        <TrendingDown className="h-2.5 w-2.5 stroke-[2.5px]" /> {s.trend}
-                      </span>
-                    )}
-                  </div>
-                  <div className="text-xs font-semibold text-slate-500 mt-0.5 truncate">{s.label}</div>
-                  {/* Dynamically showing selection below statistic */}
-                  <div className="text-[10px] text-slate-400 font-medium leading-none mt-1 animate-in fade-in-50">
-                    {cardPeriodFilter}
+                    <span className="text-[10px] font-bold text-slate-400 mt-0.5 select-none whitespace-nowrap leading-none">
+                      {cardPeriodFilter}
+                    </span>
                   </div>
                 </div>
               </div>
             );
           })}
         </div>
-      )}
+      </div>
 
       {/* Tabs Menu Header & Actions Row */}
       <div className="mb-6 flex flex-col sm:flex-row justify-between sm:items-center gap-4">
         {/* Left Side: Tabs Menu Header */}
-        <div className="flex bg-slate-100/50 rounded-2xl p-1 shadow-3xs w-fit">
+        <div className="flex bg-slate-100/60 rounded-lg p-1 border border-[#1F1F1F]/4 w-fit select-none">
           {TABS.map((t) => (
             <button
               key={t}
               onClick={() => setTab(t)}
-              className={`rounded-xl px-5 py-2 text-xs font-extrabold transition-all cursor-pointer border-0 ${
+              className={`rounded-md px-5 py-2 text-xs font-extrabold transition-all cursor-pointer border-0 ${
                 tab === t
                   ? "bg-white text-slate-800 shadow-sm"
-                  : "text-slate-400 hover:text-slate-600"
+                  : "text-slate-400 hover:text-slate-655"
               }`}
             >
               {t}
@@ -512,7 +528,7 @@ function AgencyOfficeDetailPage() {
         </div>
         
         {/* Right Side: Customize Pencil Action or Save/Cancel Actions */}
-        {isEditingOverview && tab === "Overview" ? (
+        {isEditingOverview ? (
           <div className="flex items-center gap-2.5 mr-1 animate-in fade-in duration-200 shrink-0">
             {/* Trash button */}
             <button 
@@ -547,15 +563,16 @@ function AgencyOfficeDetailPage() {
             </button>
           </div>
         ) : (
-          tab === "Overview" && (
-            <button 
-              onClick={() => setIsEditingOverview(true)}
-              className="rounded-xl border border-slate-200 bg-white p-2.5 text-slate-400 hover:bg-slate-50 hover:text-slate-600 transition-all shadow-3xs cursor-pointer border-0 mr-1 flex items-center justify-center h-9 w-9 shrink-0"
-              title="Edit Details"
-            >
-              <Pencil className="h-4 w-4 text-slate-500" />
-            </button>
-          )
+          <button 
+            onClick={() => {
+              setTab("Overview");
+              setIsEditingOverview(true);
+            }}
+            className="rounded-xl border border-slate-200 bg-white p-2.5 text-slate-400 hover:bg-slate-50 hover:text-slate-600 transition-all shadow-3xs cursor-pointer mr-1 flex items-center justify-center h-9 w-9 shrink-0"
+            title="Edit Details"
+          >
+            <Pencil className="h-4 w-4 text-slate-500" />
+          </button>
         )}
       </div>
 
@@ -615,38 +632,49 @@ function AgencyOfficeDetailPage() {
 
       {/* Archive Confirmation Popup Modal */}
       <Dialog open={isArchiveDialogOpen} onOpenChange={setIsArchiveDialogOpen}>
-        <DialogContent className="sm:max-w-md rounded-[2rem] p-6 border-0 shadow-2xl bg-white [&>button]:hidden">
+        <DialogContent className="sm:max-w-[480px] rounded-[28px] px-8 pt-6 pb-6 border-0 shadow-2xl bg-white [&>button]:hidden text-center select-none gap-0">
           {/* Custom Close Button */}
-          <DialogClose asChild>
-            <button className="absolute right-6 top-6 flex h-8 w-8 items-center justify-center rounded-xl border border-slate-200 bg-white hover:bg-slate-50 transition-colors shadow-3xs cursor-pointer">
-              <X className="h-4 w-4 text-slate-500" />
-            </button>
-          </DialogClose>
+          <div className="absolute right-5 top-5">
+            <DialogClose asChild>
+              <button className="flex h-7 w-7 items-center justify-center rounded-lg border border-slate-200 bg-white hover:bg-slate-50 transition-colors shadow-3xs cursor-pointer focus:outline-none">
+                <X className="h-3.5 w-3.5 text-slate-500" />
+              </button>
+            </DialogClose>
+          </div>
           
           {/* Circular Badge with Orange Sparkles */}
           <div className="flex justify-center mt-2 relative">
-            <div className="flex h-20 w-20 items-center justify-center rounded-full bg-[#fff8f6] relative border border-orange-50/50">
+            <div className="relative flex h-20 w-20 items-center justify-center rounded-full bg-[#fff8f6] ring-8 ring-[#fff8f6]/60 border border-orange-100/30 shadow-2xs">
               <Archive className="h-8 w-8 text-[#dd5437]" />
+              
+              {/* Floating Sparkles & Dots around the circle */}
+              {/* Top Left Star */}
+              <span className="absolute -top-1 -left-3 text-[#dd5437] text-[10px] opacity-70 animate-pulse select-none">✦</span>
+              {/* Mid Left Dot */}
+              <span className="absolute top-5 -left-6 text-[#dd5437]/60 text-[12px] leading-none select-none">•</span>
+              {/* Bottom Left Star */}
+              <span className="absolute bottom-2 -left-2 text-[#dd5437] text-[8px] opacity-60 select-none">✦</span>
+              
+              {/* Top Right Dot */}
+              <span className="absolute -top-2 right-2 text-[#dd5437]/50 text-[12px] leading-none select-none">•</span>
+              {/* Mid Right Star */}
+              <span className="absolute top-6 -right-5 text-[#dd5437] text-[11px] opacity-75 animate-pulse select-none">✦</span>
+              {/* Bottom Right Dot */}
+              <span className="absolute bottom-3 -right-2 text-[#dd5437]/60 text-[10px] leading-none select-none">•</span>
             </div>
-            <div className="absolute top-0 left-[35%] text-[#dd5437] opacity-60 text-xs font-black animate-pulse select-none">✦</div>
-            <div className="absolute top-5 left-[38%] text-[#dd5437] opacity-40 text-[8px] font-black select-none">✦</div>
-            <div className="absolute bottom-1 left-[36%] text-[#dd5437] opacity-50 text-[10px] font-black select-none">✦</div>
-            <div className="absolute top-2 right-[36%] text-[#dd5437] opacity-40 text-[8px] font-black select-none">✦</div>
-            <div className="absolute top-6 right-[33%] text-[#dd5437] opacity-60 text-xs font-black animate-pulse select-none">✦</div>
-            <div className="absolute bottom-3 right-[37%] text-[#dd5437] opacity-40 text-[8px] font-black select-none">✦</div>
           </div>
 
-          <div className="text-center mt-4">
-            <h2 className="text-lg font-black text-slate-800 tracking-tight">Archive {office.name}?</h2>
-            <div className="w-12 h-1 bg-[#dd5437] rounded-full mx-auto my-3" />
-            <p className="text-xs text-slate-500 font-semibold leading-relaxed max-w-sm mx-auto px-1">
+          <div className="text-center mt-5">
+            <h2 className="text-xl font-bold text-slate-800 tracking-tight leading-snug">Archive {office.name}?</h2>
+            <div className="w-12 h-[3px] bg-[#dd5437] rounded-full mx-auto mt-2.5 mb-3.5" />
+            <p className="text-[13px] font-medium text-slate-500 leading-normal max-w-sm mx-auto px-1 text-center">
               Are you sure you want to archive this agency office? Archiving will hide this office from the active list, but all data will remain safe and can be restored anytime from the Archived Offices filter.
             </p>
           </div>
 
-          <div className="flex items-center gap-3.5 mt-6">
+          <div className="flex items-center gap-3.5 mt-8">
             <DialogClose asChild>
-              <button className="w-full py-3.5 border border-slate-200 hover:bg-slate-50 bg-white text-slate-600 font-bold text-xs rounded-2xl transition-all cursor-pointer shadow-3xs border-0 outline-none">
+              <button className="w-full h-11 border border-slate-200 hover:bg-slate-50 bg-white text-slate-600 font-bold text-xs rounded-xl transition-all cursor-pointer flex items-center justify-center outline-none shadow-3xs border-0">
                 Cancel
               </button>
             </DialogClose>
@@ -654,7 +682,7 @@ function AgencyOfficeDetailPage() {
             <button 
               onClick={handleConfirmArchive}
               disabled={updateOffice.isPending}
-              className="w-full py-3.5 bg-[#dd5437] hover:bg-[#dd5437]/90 disabled:opacity-50 text-white font-bold text-xs rounded-2xl transition-all flex items-center justify-center gap-2 cursor-pointer shadow-sm shadow-[#dd5437]/20 border-0 outline-none"
+              className="w-full h-11 bg-[#dd5437] hover:bg-[#c24328] disabled:opacity-50 text-white font-bold text-xs rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-sm outline-none border-0"
             >
               {updateOffice.isPending ? (
                 <Loader2 className="h-4 w-4 animate-spin text-white" />
@@ -667,53 +695,129 @@ function AgencyOfficeDetailPage() {
         </DialogContent>
       </Dialog>
 
+      {/* Activate Confirmation Popup Modal */}
+      <Dialog open={isActivateDialogOpen} onOpenChange={setIsActivateDialogOpen}>
+        <DialogContent className="sm:max-w-[480px] rounded-[28px] px-8 pt-6 pb-6 border-0 shadow-2xl bg-white [&>button]:hidden text-center select-none gap-0">
+          {/* Custom Close Button */}
+          <div className="absolute right-5 top-5">
+            <DialogClose asChild>
+              <button className="flex h-7 w-7 items-center justify-center rounded-lg border border-slate-200 bg-white hover:bg-slate-50 transition-colors shadow-3xs cursor-pointer focus:outline-none">
+                <X className="h-3.5 w-3.5 text-slate-500" />
+              </button>
+            </DialogClose>
+          </div>
+          
+          {/* Circular Badge with Teal Sparkles */}
+          <div className="flex justify-center mt-2 relative">
+            <div className="relative flex h-20 w-20 items-center justify-center rounded-full bg-[#f4faf8] ring-8 ring-[#f4faf8]/60 border border-teal-100/30 shadow-2xs">
+              <ArchiveRestore className="h-8 w-8 text-[#0f766e]" />
+              
+              {/* Floating Sparkles & Dots around the circle */}
+              {/* Top Left Star */}
+              <span className="absolute -top-1 -left-3 text-[#0f766e] text-[10px] opacity-70 animate-pulse select-none">✦</span>
+              {/* Mid Left Dot */}
+              <span className="absolute top-5 -left-6 text-[#0f766e]/60 text-[12px] leading-none select-none">•</span>
+              {/* Bottom Left Star */}
+              <span className="absolute bottom-2 -left-2 text-[#0f766e] text-[8px] opacity-60 select-none">✦</span>
+              
+              {/* Top Right Dot */}
+              <span className="absolute -top-2 right-2 text-[#0f766e]/50 text-[12px] leading-none select-none">•</span>
+              {/* Mid Right Star */}
+              <span className="absolute top-6 -right-5 text-[#0f766e] text-[11px] opacity-75 animate-pulse select-none">✦</span>
+              {/* Bottom Right Dot */}
+              <span className="absolute bottom-3 -right-2 text-[#0f766e]/60 text-[10px] leading-none select-none">•</span>
+            </div>
+          </div>
+
+          <div className="text-center mt-5">
+            <h2 className="text-xl font-bold text-slate-800 tracking-tight leading-snug">Activate {office.name}?</h2>
+            <div className="w-12 h-[3px] bg-[#0f766e] rounded-full mx-auto mt-2.5 mb-3.5" />
+            <p className="text-[13px] font-medium text-slate-500 leading-normal max-w-sm mx-auto px-1 text-center">
+              Are you sure you want to reactivate this agency office? Activating it will restore its status to Active and move it back to your main workplace list and dashboard tracking.
+            </p>
+          </div>
+
+          <div className="flex items-center gap-3.5 mt-8">
+            <DialogClose asChild>
+              <button className="w-full h-11 border border-slate-200 hover:bg-slate-50 bg-white text-slate-600 font-bold text-xs rounded-xl transition-all cursor-pointer flex items-center justify-center outline-none shadow-3xs border-0">
+                Cancel
+              </button>
+            </DialogClose>
+            
+            <button 
+              onClick={handleConfirmActivate}
+              disabled={updateOffice.isPending}
+              className="w-full h-11 bg-[#0f766e] hover:bg-[#0d6860] disabled:opacity-50 text-white font-bold text-xs rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-sm outline-none border-0"
+            >
+              {updateOffice.isPending ? (
+                <Loader2 className="h-4 w-4 animate-spin text-white" />
+              ) : (
+                <ArchiveRestore className="h-4 w-4 text-white" />
+              )}
+              Activate Office
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       {/* Delete Confirmation Popup Modal */}
       <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <DialogContent className="sm:max-w-md rounded-[2rem] p-6 border-0 shadow-2xl bg-white [&>button]:hidden">
+        <DialogContent className="sm:max-w-[480px] rounded-[28px] px-8 pt-6 pb-6 border-0 shadow-2xl bg-white [&>button]:hidden text-center select-none gap-0">
           {/* Custom Close Button */}
-          <DialogClose asChild>
-            <button className="absolute right-6 top-6 flex h-8 w-8 items-center justify-center rounded-xl border border-slate-200 bg-white hover:bg-slate-50 transition-colors shadow-3xs cursor-pointer">
-              <X className="h-4 w-4 text-slate-500" />
-            </button>
-          </DialogClose>
+          <div className="absolute right-5 top-5">
+            <DialogClose asChild>
+              <button className="flex h-7 w-7 items-center justify-center rounded-lg border border-slate-200 bg-white hover:bg-slate-50 transition-colors shadow-3xs cursor-pointer focus:outline-none">
+                <X className="h-3.5 w-3.5 text-slate-500" />
+              </button>
+            </DialogClose>
+          </div>
           
           {/* Circular Badge with Red Sparkles */}
           <div className="flex justify-center mt-2 relative">
-            <div className="flex h-20 w-20 items-center justify-center rounded-full bg-[#fff1ef] relative border border-rose-50/50">
-              <Trash2 className="h-8 w-8 text-[#dd5437]" />
+            <div className="relative flex h-20 w-20 items-center justify-center rounded-full bg-[#fff1ef] ring-8 ring-[#fff1ef]/60 border border-rose-100/30 shadow-2xs">
+              <Trash2 className="h-8 w-8 text-[#ef4444]" />
+              
+              {/* Floating Sparkles & Dots around the circle */}
+              {/* Top Left Star */}
+              <span className="absolute -top-1 -left-3 text-[#ef4444] text-[10px] opacity-70 animate-pulse select-none">✦</span>
+              {/* Mid Left Dot */}
+              <span className="absolute top-5 -left-6 text-[#ef4444]/60 text-[12px] leading-none select-none">•</span>
+              {/* Bottom Left Star */}
+              <span className="absolute bottom-2 -left-2 text-[#ef4444] text-[8px] opacity-60 select-none">✦</span>
+              
+              {/* Top Right Dot */}
+              <span className="absolute -top-2 right-2 text-[#ef4444]/50 text-[12px] leading-none select-none">•</span>
+              {/* Mid Right Star */}
+              <span className="absolute top-6 -right-5 text-[#ef4444] text-[11px] opacity-75 animate-pulse select-none">✦</span>
+              {/* Bottom Right Dot */}
+              <span className="absolute bottom-3 -right-2 text-[#ef4444]/60 text-[10px] leading-none select-none">•</span>
             </div>
-            <div className="absolute top-0 left-[35%] text-[#dd5437] opacity-60 text-xs font-black animate-pulse select-none">✦</div>
-            <div className="absolute top-5 left-[38%] text-[#dd5437] opacity-40 text-[8px] font-black select-none">✦</div>
-            <div className="absolute bottom-1 left-[36%] text-[#dd5437] opacity-50 text-[10px] font-black select-none">✦</div>
-            <div className="absolute top-2 right-[36%] text-[#dd5437] opacity-40 text-[8px] font-black select-none">✦</div>
-            <div className="absolute top-6 right-[33%] text-[#dd5437] opacity-60 text-xs font-black animate-pulse select-none">✦</div>
-            <div className="absolute bottom-3 right-[37%] text-[#dd5437] opacity-40 text-[8px] font-black select-none">✦</div>
           </div>
 
-          <div className="text-center mt-4">
-            <h2 className="text-lg font-black text-[#dd5437] tracking-tight">Delete {office.name} Permanently?</h2>
-            <div className="w-12 h-1 bg-[#dd5437] rounded-full mx-auto my-3" />
-            <p className="text-xs text-slate-500 font-semibold leading-relaxed max-w-sm mx-auto px-1">
+          <div className="text-center mt-5">
+            <h2 className="text-xl font-bold text-[#ef4444] tracking-tight leading-snug">Delete {office.name} Permanently?</h2>
+            <div className="w-12 h-[3px] bg-[#ef4444] rounded-full mx-auto mt-2.5 mb-3.5" />
+            <p className="text-[13px] font-medium text-slate-500 leading-normal max-w-sm mx-auto px-1 text-center">
               This action cannot be undone. Deleting this agency office will permanently erase all associated data, logs, and accounts from the system. Any connected Property Managers or active jobs may lose their reference.
             </p>
           </div>
 
-          <div className="mt-5 space-y-2.5">
-            <label className="block text-[10px] font-black uppercase text-slate-400 tracking-wider text-center select-none">
+          <div className="mt-4 space-y-1.5">
+            <p className="text-xs font-semibold text-slate-440 tracking-wider text-center select-none uppercase">
               To confirm, please type the ID Number (#{office.id.slice(-4).toUpperCase()}) below:
-            </label>
+            </p>
             <input 
               type="text" 
               value={confirmDeleteId}
               onChange={(e) => setConfirmDeleteId(e.target.value)}
-              className="w-full h-11 px-4 text-xs font-bold text-slate-700 bg-slate-50/60 border border-slate-200 rounded-xl focus:bg-white focus:border-[#dd5437] focus:outline-none transition-all text-center placeholder-slate-300"
+              className="w-full h-11 px-4 text-sm font-semibold text-slate-700 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-[#ef4444]/50 focus:outline-none transition-all text-center placeholder-slate-400"
               placeholder={`Type #${office.id.slice(-4).toUpperCase()} here`}
             />
           </div>
 
-          <div className="flex items-center gap-3.5 mt-6">
+          <div className="flex items-center gap-3.5 mt-8">
             <DialogClose asChild>
-              <button className="w-full py-3.5 border border-slate-200 hover:bg-slate-50 bg-white text-slate-600 font-bold text-xs rounded-2xl transition-all cursor-pointer shadow-3xs border-0 outline-none">
+              <button className="w-full h-11 border border-slate-200 hover:bg-slate-50 bg-white text-slate-600 font-bold text-xs rounded-xl transition-all cursor-pointer flex items-center justify-center outline-none shadow-3xs border-0">
                 Cancel
               </button>
             </DialogClose>
@@ -721,10 +825,7 @@ function AgencyOfficeDetailPage() {
             <button 
               onClick={handleConfirmDelete}
               disabled={deleteOffice.isPending || (confirmDeleteId.trim() !== "#" + office.id.slice(-4).toUpperCase() && confirmDeleteId.trim().toUpperCase() !== office.id.slice(-4).toUpperCase())}
-              className="w-full py-3.5 disabled:opacity-50 text-white font-bold text-xs rounded-2xl transition-all flex items-center justify-center gap-2 cursor-pointer shadow-sm border-0 outline-none select-none"
-              style={{ 
-                backgroundColor: (confirmDeleteId.trim() === "#" + office.id.slice(-4).toUpperCase() || confirmDeleteId.trim().toUpperCase() === office.id.slice(-4).toUpperCase()) ? "#dd5437" : "#f3bab0" 
-              }}
+              className="w-full h-11 text-white font-bold text-xs rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-sm outline-none border-0 disabled:bg-[#fcdad5] disabled:text-[#f8a899] bg-[#ef4444] hover:bg-[#dc2626] disabled:cursor-not-allowed select-none"
             >
               {deleteOffice.isPending ? (
                 <Loader2 className="h-4 w-4 animate-spin text-white" />
@@ -1117,11 +1218,11 @@ function OverviewTab({
       
       {/* Business Details Column (Takes 7/12 cols ~58%) */}
       <div className="lg:col-span-7 rounded-3xl border border-slate-100 bg-white p-6 shadow-2xs">
-        <div className="mb-5 flex items-center gap-3.5 border-b border-slate-50 pb-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#fff8f6] text-[#dd5437]">
+        <div className="mb-5 flex items-center gap-3.5 pb-2">
+          <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#FAF5F2] text-[#dd5437]">
             <Building2 className="h-4.5 w-4.5" />
           </div>
-          <h2 className="text-md font-black text-slate-800 tracking-wide text-left">Business Details</h2>
+          <h2 className="text-md font-bold text-slate-800 tracking-tight text-left">Business Details</h2>
         </div>
         
         <div className="grid grid-cols-1 gap-x-6 gap-y-4 md:grid-cols-2">
@@ -1180,14 +1281,14 @@ function OverviewTab({
 
       {/* Key Contacts & Metrics Column (Takes 5/12 cols ~42%) */}
       <div className="lg:col-span-5 rounded-3xl border border-slate-100 bg-white p-6 shadow-2xs">
-        <div className="mb-5 flex items-center gap-3.5 border-b border-slate-50 pb-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#fff8f6] text-[#dd5437]">
+        <div className="mb-5 flex items-center gap-3.5 pb-2">
+          <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#FAF5F2] text-[#dd5437]">
             <Users className="h-4.5 w-4.5" />
           </div>
-          <h2 className="text-md font-black text-slate-800 tracking-wide text-left">Key Contacts & Metrics</h2>
+          <h2 className="text-md font-bold text-slate-800 tracking-tight text-left">Key Contacts & Metrics</h2>
         </div>
         
-        <div className="space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
           <Field 
             label="Principal / License" 
             icon={UserCheck}
@@ -1199,11 +1300,11 @@ function OverviewTab({
             } 
           />
           <Field 
-            label="Principal / License" 
+            label="Head of Property Management" 
             icon={UserCheck}
             value={
               <div className="flex items-center gap-1">
-                <span className="text-[#dd5437] font-bold hover:underline cursor-pointer">Andrew Webset</span>
+                <span className="text-[#dd5437] font-bold hover:underline cursor-pointer">Peter Frank</span>
                 <ExternalLink className="h-3 w-3 text-[#dd5437]/75 hover:text-[#dd5437] cursor-pointer" />
               </div>
             } 
@@ -1223,33 +1324,33 @@ function OverviewTab({
 
         {/* Spaced Row of 3 card widgets */}
         <div className="grid grid-cols-3 gap-3.5 mt-5">
-          <div className="rounded-xl border border-slate-100 bg-[#fff8f6]/40 p-4 text-left flex flex-col justify-between h-[110px] hover:shadow-xs transition-shadow">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-orange-100/70 text-[#dd5437]">
+          <div className="rounded-2xl border border-slate-100 bg-[#fff8f6]/40 p-4 text-left flex flex-col justify-between h-[112px] hover:shadow-xs transition-shadow">
+            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-orange-100/70 text-[#dd5437]">
               <Home className="h-4.5 w-4.5" />
             </div>
             <div>
-              <div className="text-[9px] font-bold text-slate-400 uppercase tracking-wider leading-tight">Total Properties</div>
-              <div className="text-sm font-black text-slate-800 mt-1 leading-none">{o.pum ?? 600}</div>
+              <div className="text-[10px] font-semibold text-slate-500 leading-tight">Total Properties Under Management</div>
+              <div className="text-base font-extrabold text-slate-800 mt-1.5 leading-none">{o.pum ?? 600}</div>
             </div>
           </div>
           
-          <div className="rounded-xl border border-slate-100 bg-[#fff8f6]/40 p-4 text-left flex flex-col justify-between h-[110px] hover:shadow-xs transition-shadow">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-orange-100/70 text-[#dd5437]">
+          <div className="rounded-2xl border border-slate-100 bg-[#fff8f6]/40 p-4 text-left flex flex-col justify-between h-[112px] hover:shadow-xs transition-shadow">
+            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-orange-100/70 text-[#dd5437]">
               <DollarSign className="h-4.5 w-4.5" />
             </div>
             <div>
-              <div className="text-[9px] font-bold text-slate-400 uppercase tracking-wider leading-tight">Est. Monthly Spend</div>
-              <div className="text-sm font-black text-slate-800 mt-1 leading-none">{o.estimatedMonthlySpend != null ? `$${o.estimatedMonthlySpend}` : "$600"}</div>
+              <div className="text-[10px] font-semibold text-slate-500 leading-tight">Estimated Monthly Spend</div>
+              <div className="text-base font-extrabold text-slate-800 mt-1.5 leading-none">{o.estimatedMonthlySpend != null ? `$${o.estimatedMonthlySpend}` : "$600"}</div>
             </div>
           </div>
           
-          <div className="rounded-xl border border-slate-100 bg-[#fff8f6]/40 p-4 text-left flex flex-col justify-between h-[110px] hover:shadow-xs transition-shadow">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-orange-100/70 text-[#dd5437]">
+          <div className="rounded-2xl border border-slate-100 bg-[#fff8f6]/40 p-4 text-left flex flex-col justify-between h-[112px] hover:shadow-xs transition-shadow">
+            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-orange-100/70 text-[#dd5437]">
               <Monitor className="h-4.5 w-4.5" />
             </div>
             <div>
-              <div className="text-[9px] font-bold text-slate-400 uppercase tracking-wider leading-tight">Platform & System</div>
-              <div className="text-sm font-black text-slate-800 mt-1 leading-none truncate max-w-[95px]">{o.platform ?? "—"}</div>
+              <div className="text-[10px] font-semibold text-slate-500 leading-tight">Platform & System</div>
+              <div className="text-base font-extrabold text-slate-800 mt-1.5 leading-none truncate max-w-[95px]">{o.platform ?? "—"}</div>
             </div>
           </div>
         </div>
@@ -1260,15 +1361,15 @@ function OverviewTab({
 
 function Field({ label, value, icon: Icon }: { label: string; value: ReactNode | null; icon?: any }) {
   return (
-    <div className="flex items-start gap-3.5 py-2 border-b border-slate-50 last:border-0 hover:bg-slate-50/20 transition-all rounded-lg px-2">
+    <div className="flex items-start gap-3 py-2 border-b border-[#1F1F1F]/4 last:border-0 hover:bg-slate-50/20 transition-all rounded-lg px-2 text-left">
       {Icon && (
-        <div className="mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-slate-50 text-slate-400">
-          <Icon className="h-4 w-4" />
+        <div className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center text-slate-400 mr-1.5">
+          <Icon className="h-4 w-4 stroke-[1.8px]" />
         </div>
       )}
-      <div className="min-w-0 flex-1 text-left">
-        <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider leading-none">{label}</div>
-        <div className="mt-1.5 text-xs font-black text-slate-700 leading-normal truncate">
+      <div className="min-w-0 flex-1">
+        <div className="text-[11px] font-medium text-slate-500">{label}</div>
+        <div className="mt-0.5 text-xs font-semibold text-slate-800 leading-normal break-words">
           {value === null || value === undefined ? (
             <span className="text-slate-300 font-bold">—</span>
           ) : (
@@ -1356,12 +1457,7 @@ function PeopleTab({ officeId }: PeopleTabProps) {
     return [...mapped, ...uniqueMockups];
   }, [pmData]);
 
-  // Set default selection to first two items (Peter Frank and Simon Lee) to match the mockup!
-  useEffect(() => {
-    if (people.length >= 2 && selectedIds.length === 0) {
-      setSelectedIds([people[0].id, people[1].id]);
-    }
-  }, [people, selectedIds]);
+
 
   const handleSelectAll = () => {
     if (selectedIds.length === people.length) {
@@ -1388,13 +1484,34 @@ function PeopleTab({ officeId }: PeopleTabProps) {
   const isAllSelected = people.length > 0 && selectedIds.length === people.length;
   const isPartiallySelected = selectedIds.length > 0 && selectedIds.length < people.length;
 
+  const handleBulkEmail = () => {
+    const emails = people
+      .filter(p => selectedIds.includes(p.id) && p.email !== "—")
+      .map(p => p.email);
+    if (emails.length === 0) {
+      toast.error("No selected contacts have email addresses");
+      return;
+    }
+    window.location.href = `mailto:${emails.join(",")}`;
+  };
+
   return (
     <div className="space-y-5 text-left animate-in fade-in-50 mt-2">
-      <div>
-        <h2 className="text-lg font-black text-slate-800 tracking-tight">Property Managers & Key People</h2>
-        <p className="text-xs text-slate-400 font-semibold mt-1">
-          Manage the property managers associated with this agency office.
-        </p>
+      <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
+        <div>
+          <h2 className="text-lg font-black text-slate-800 tracking-tight">Property Managers & Key People</h2>
+          <p className="text-xs text-slate-400 font-semibold mt-1">
+            Manage the property managers associated with this agency office.
+          </p>
+        </div>
+        
+        <button 
+          onClick={handleBulkEmail}
+          className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-655 hover:bg-slate-50 shadow-3xs cursor-pointer transition-all h-9 shrink-0 outline-none"
+        >
+          <Mail className="h-3.5 w-3.5 text-slate-400" />
+          Email
+        </button>
       </div>
 
       <div className="rounded-3xl border border-slate-100 bg-white p-6 shadow-2xs">
@@ -1521,10 +1638,7 @@ function PeopleTab({ officeId }: PeopleTabProps) {
 
                       {/* Status */}
                       <td className={`px-4 py-3.5 border-y ${rowBorderClass}`}>
-                        <span className="inline-flex items-center gap-1.5 text-xs font-bold text-teal-600">
-                          <span className="h-1.5 w-1.5 rounded-full bg-teal-500" />
-                          {p.status}
-                        </span>
+                        <StatusPill status={p.status} />
                       </td>
 
                       {/* Sentiment */}
@@ -1726,46 +1840,46 @@ function MeetingsTab({ officeId, officeName, accountManagerName }: MeetingsTabPr
     <div className="space-y-5 text-left animate-in fade-in-50 mt-2">
       <div className="flex items-center justify-between gap-4">
         <div>
-          <h2 className="text-lg font-black text-slate-800 tracking-tight">Meetings ({meetings.length})</h2>
+          <h2 className="text-lg font-bold text-slate-800 tracking-tight">Meetings ({meetings.length})</h2>
         </div>
         
         <button
           onClick={() => setIsBookDialogOpen(true)}
-          className="flex items-center gap-2 rounded-xl bg-[#dd5437] hover:bg-[#dd5437]/90 text-white font-bold text-xs py-2 px-4 shadow-sm shadow-[#dd5437]/20 transition-colors cursor-pointer border-0 outline-none"
+          className="flex items-center gap-2 rounded-lg bg-[#dd5437] hover:bg-[#dd5437]/90 text-white font-bold text-xs py-2.5 px-4 shadow-sm shadow-[#dd5437]/20 transition-colors cursor-pointer border-0 outline-none"
         >
-          <Calendar className="h-4 w-4 text-white" />
+          <CalendarPlus className="h-4 w-4 text-white" />
           Book Meeting
         </button>
       </div>
 
-      <div className="rounded-3xl border border-slate-100 bg-white p-6 shadow-2xs">
+      <div className="rounded-xl border border-slate-100 bg-white overflow-hidden shadow-2xs mt-4">
         <div className="overflow-x-auto">
-          <table className="w-full border-collapse border-separate border-spacing-y-2.5">
+          <table className="w-full border-collapse">
             <thead>
-              <tr className="text-[10px] font-black uppercase text-slate-400 tracking-wider">
-                <th className="px-4 py-3 text-left">
-                  <div className="flex items-center gap-1 cursor-pointer hover:text-slate-600 transition-colors">
-                    Title <ChevronsUpDown className="h-3.5 w-3.5 text-slate-400" />
+              <tr className="bg-[#f8fafc] border-b border-slate-100 text-xs font-semibold text-slate-500">
+                <th className="px-6 py-3.5 text-left">
+                  <div className="flex items-center gap-1 cursor-pointer hover:text-slate-700 transition-colors select-none">
+                    Title <ChevronsUpDown className="h-3 w-3 text-slate-400" />
                   </div>
                 </th>
-                <th className="px-4 py-3 text-left">
-                  <div className="flex items-center gap-1 cursor-pointer hover:text-slate-600 transition-colors">
-                    Type <ChevronsUpDown className="h-3.5 w-3.5 text-slate-400" />
+                <th className="px-6 py-3.5 text-left">
+                  <div className="flex items-center gap-1 cursor-pointer hover:text-slate-700 transition-colors select-none">
+                    Type <ChevronsUpDown className="h-3 w-3 text-slate-400" />
                   </div>
                 </th>
-                <th className="px-4 py-3 text-left">
-                  <div className="flex items-center gap-1 cursor-pointer hover:text-slate-600 transition-colors">
-                    Date <ChevronsUpDown className="h-3.5 w-3.5 text-slate-400" />
+                <th className="px-6 py-3.5 text-left">
+                  <div className="flex items-center gap-1 cursor-pointer hover:text-slate-700 transition-colors select-none">
+                    Date <ChevronsUpDown className="h-3 w-3 text-slate-400" />
                   </div>
                 </th>
-                <th className="px-4 py-3 text-left">
-                  <div className="flex items-center gap-1 cursor-pointer hover:text-slate-600 transition-colors">
-                    Account Manager <ChevronsUpDown className="h-3.5 w-3.5 text-slate-400" />
+                <th className="px-6 py-3.5 text-left">
+                  <div className="flex items-center gap-1 cursor-pointer hover:text-slate-700 transition-colors select-none">
+                    Account Manager <ChevronsUpDown className="h-3 w-3 text-slate-400" />
                   </div>
                 </th>
-                <th className="px-4 py-3 text-left">
-                  <div className="flex items-center gap-1 cursor-pointer hover:text-slate-600 transition-colors">
-                    Status <ChevronsUpDown className="h-3.5 w-3.5 text-slate-400" />
+                <th className="px-6 py-3.5 text-left">
+                  <div className="flex items-center gap-1 cursor-pointer hover:text-slate-700 transition-colors select-none">
+                    Status <ChevronsUpDown className="h-3 w-3 text-slate-400" />
                   </div>
                 </th>
               </tr>
@@ -1780,47 +1894,34 @@ function MeetingsTab({ officeId, officeName, accountManagerName }: MeetingsTabPr
                 </tr>
               ) : (
                 meetings.map((m) => {
-                  const isScheduled = m.status === "Scheduled";
-                  const isCompleted = m.status === "Completed";
-                  
                   return (
                     <tr 
                       key={m.id} 
-                      className="bg-white hover:bg-slate-50/40 border border-slate-100 transition-all"
+                      className="border-b border-slate-100/80 last:border-b-0 bg-white hover:bg-slate-50/30 transition-colors"
                     >
                       {/* Title */}
-                      <td className="px-4 py-4 border-y border-l rounded-l-2xl border-slate-100/70 font-extrabold text-xs text-slate-700">
+                      <td className="px-6 py-4.5 text-xs font-semibold text-slate-800">
                         {m.title}
                       </td>
 
                       {/* Type */}
-                      <td className="px-4 py-4 border-y border-slate-100/70 text-xs font-semibold text-slate-500">
+                      <td className="px-6 py-4.5 text-xs font-medium text-slate-500">
                         {m.type}
                       </td>
 
                       {/* Date */}
-                      <td className="px-4 py-4 border-y border-slate-100/70 text-xs font-semibold text-slate-500">
+                      <td className="px-6 py-4.5 text-xs font-medium text-slate-500">
                         {m.date}
                       </td>
 
                       {/* Account Manager */}
-                      <td className="px-4 py-4 border-y border-slate-100/70 text-xs font-semibold text-slate-500">
+                      <td className="px-6 py-4.5 text-xs font-medium text-slate-500">
                         {m.accountManager}
                       </td>
 
                       {/* Status */}
-                      <td className="px-4 py-4 border-y border-r rounded-r-2xl border-slate-100/70">
-                        <span 
-                          className={`inline-flex items-center justify-center rounded-full px-3 py-1 text-xs font-semibold ${
-                            isScheduled 
-                              ? "border border-slate-200 bg-slate-50/50 text-slate-600" 
-                              : isCompleted
-                                ? "bg-teal-50 text-teal-700 border border-teal-100/50"
-                                : "bg-rose-50 text-rose-700 border border-rose-100/50"
-                          }`}
-                        >
-                          {m.status}
-                        </span>
+                      <td className="px-6 py-4.5">
+                        <StatusPill status={m.status} />
                       </td>
                     </tr>
                   );
@@ -2150,18 +2251,16 @@ function NotesTab({ officeId }: { officeId: string }) {
   return (
     <div className="space-y-6 text-left animate-in fade-in-50 mt-2">
       {/* AI Account Health Summary Box */}
-      <div className="rounded-[2rem] border border-[#feebe7] bg-[#fffbfb] p-6 shadow-3xs flex flex-col md:flex-row md:items-center md:justify-between gap-4 transition-all">
-        <div className="flex items-start gap-4">
-          <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-[#feebe7] bg-white text-[#dd5437] shrink-0 mt-0.5 shadow-3xs">
-            <Sparkles className="h-5.5 w-5.5" />
-          </div>
-          <div>
-            <h3 className="text-sm font-extrabold text-slate-800 tracking-wide">AI Account Health Summary</h3>
-            <p className="text-xs text-slate-400 font-semibold mt-1">
+      <div className="rounded-xl border border-[#feebe7] bg-white p-5 shadow-3xs flex flex-col md:flex-row md:items-center md:justify-between gap-4 transition-all">
+        <div className="flex items-start gap-3">
+          <Sparkles className="h-5 w-5 text-[#dd5437] shrink-0 mt-0.5" />
+          <div className="text-left">
+            <h3 className="text-sm font-bold text-slate-800 tracking-tight">AI Account Health Summary</h3>
+            <p className="text-xs text-slate-400 font-semibold mt-0.5">
               Click "Generate Summary" to get an AI-powered account health snapshot for this office.
             </p>
             {aiSummary && (
-              <p className="text-xs text-slate-600 font-bold bg-white border border-[#feebe7] p-4.5 rounded-2xl mt-4 leading-relaxed shadow-3xs max-w-2xl animate-in slide-in-from-top-2 duration-300">
+              <p className="text-xs text-slate-600 font-semibold bg-slate-50 border border-[#feebe7] p-4 rounded-xl mt-3 leading-relaxed max-w-2xl animate-in slide-in-from-top-2 duration-300">
                 {aiSummary}
               </p>
             )}
@@ -2170,7 +2269,7 @@ function NotesTab({ officeId }: { officeId: string }) {
         <button
           onClick={handleGenerateSummary}
           disabled={isAiLoading}
-          className="flex items-center justify-center shrink-0 px-6 py-2.5 bg-gradient-to-r from-[#ea7a8f] to-[#784ca2] hover:opacity-95 text-white font-extrabold text-xs rounded-2xl transition-all shadow-sm shadow-[#ea7a8f]/10 cursor-pointer border-0 outline-none disabled:opacity-50 select-none"
+          className="flex items-center justify-center shrink-0 h-10 px-3 w-[154px] bg-gradient-to-r from-[#e88185] to-[#6d459d] hover:opacity-90 active:opacity-95 text-white font-semibold text-xs rounded-lg transition-all cursor-pointer border-0 outline-none disabled:opacity-50 select-none"
         >
           {isAiLoading ? (
             <Loader2 className="h-4 w-4 animate-spin text-white" />
@@ -2181,13 +2280,13 @@ function NotesTab({ officeId }: { officeId: string }) {
       </div>
 
       {/* Notes Section Header */}
-      <div className="flex items-center justify-between gap-4 mt-2">
+      <div className="flex items-center justify-between gap-4 mt-4">
         <div>
-          <h2 className="text-lg font-black text-slate-800 tracking-tight">Notes({notes.length})</h2>
+          <h2 className="text-lg font-bold text-slate-800 tracking-tight">Notes ({notes.length})</h2>
         </div>
         <button
           onClick={() => setIsAddOpen(true)}
-          className="flex items-center gap-1.5 rounded-xl bg-[#dd5437] hover:bg-[#c9492f] text-white font-extrabold text-xs py-2 px-4 shadow-sm shadow-[#dd5437]/15 transition-all cursor-pointer border-0 outline-none"
+          className="flex items-center gap-1.5 rounded-lg bg-[#dd5437] hover:bg-[#dd5437]/90 text-white font-semibold text-xs py-2 px-3.5 shadow-sm shadow-[#dd5437]/15 transition-all cursor-pointer border-0 outline-none"
         >
           <Plus className="h-4 w-4 text-white stroke-[2.5px]" />
           Add Note
@@ -2195,9 +2294,9 @@ function NotesTab({ officeId }: { officeId: string }) {
       </div>
 
       {/* Notes List Cards */}
-      <div className="space-y-5">
+      <div className="space-y-4 mt-6">
         {notes.length === 0 ? (
-          <div className="rounded-[2rem] border border-slate-100 bg-white p-16 text-center text-slate-400 font-bold shadow-2xs">
+          <div className="rounded-xl border border-slate-100 bg-white p-16 text-center text-slate-400 font-bold shadow-2xs">
             No notes added yet. Click 'Add Note' to create your first note log!
           </div>
         ) : (
@@ -2208,40 +2307,38 @@ function NotesTab({ officeId }: { officeId: string }) {
             return (
               <div 
                 key={n.id} 
-                className="rounded-[2rem] border border-slate-100/70 bg-white p-6 shadow-3xs hover:shadow-2xs transition-shadow duration-300"
+                className="rounded-xl border border-slate-100 bg-white p-4 shadow-3xs hover:shadow-2xs transition-shadow duration-300 text-left"
               >
                 {/* Note Header */}
-                <div className="flex items-center justify-between border-b border-slate-50/60 pb-4">
-                  <div className="flex items-center gap-3">
+                <div className="flex items-center justify-between pb-3">
+                  <div className="flex items-center gap-2.5">
                     <img 
                       src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=120&h=120&fit=crop" 
                       alt={n.author}
-                      className="h-9 w-9 rounded-full object-cover border border-slate-100 shadow-3xs shrink-0 select-none" 
+                      className="h-8 w-8 rounded-full object-cover border border-slate-100 shadow-3xs shrink-0 select-none" 
                     />
-                    <div className="text-left">
-                      <div className="flex items-center gap-2">
-                        <span className="font-extrabold text-xs text-slate-700">{n.author}</span>
-                        {n.badge && (
-                          <span className="bg-[#dd5437] text-white font-black text-[9px] uppercase tracking-wider px-2.5 py-0.5 rounded-full shadow-3xs leading-none">
-                            {n.badge}
-                          </span>
-                        )}
-                      </div>
+                    <div className="flex items-center gap-2">
+                      <span className="font-bold text-xs text-slate-800">{n.author}</span>
+                      {n.badge && (
+                        <span className="bg-[#dd5437] text-white font-semibold text-[10px] px-2.5 py-0.5 rounded-full leading-none">
+                          {n.badge}
+                        </span>
+                      )}
                     </div>
                   </div>
 
                   {/* Actions */}
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1.5">
                     <button
                       onClick={() => handleOpenEdit(n)}
-                      className="p-1.5 hover:bg-slate-50 rounded-lg text-slate-400 hover:text-slate-600 transition-colors cursor-pointer border-0 bg-transparent"
+                      className="p-1 hover:bg-slate-50 rounded text-slate-400 hover:text-slate-600 transition-colors cursor-pointer border-0 bg-transparent"
                       title="Edit Note"
                     >
                       <Pencil className="h-3.5 w-3.5" />
                     </button>
                     <button
                       onClick={() => handleDeleteNote(n.id)}
-                      className="p-1.5 hover:bg-rose-50 rounded-lg text-slate-400 hover:text-rose-600 transition-colors cursor-pointer border-0 bg-transparent"
+                      className="p-1 hover:bg-rose-50 rounded text-slate-400 hover:text-rose-600 transition-colors cursor-pointer border-0 bg-transparent"
                       title="Delete Note"
                     >
                       <Trash2 className="h-3.5 w-3.5" />
@@ -2250,45 +2347,46 @@ function NotesTab({ officeId }: { officeId: string }) {
                 </div>
 
                 {/* Note Content */}
-                <div className="mt-4 text-xs font-bold text-slate-600 leading-relaxed whitespace-pre-line text-left">
+                <div className="text-xs font-semibold text-slate-600 leading-relaxed whitespace-pre-line text-left">
                   {n.content}
                 </div>
 
                 {/* PDF Attachment Badge */}
                 {n.fileAttachment && (
-                  <div className="mt-3 bg-slate-50 hover:bg-slate-100/70 text-slate-500 text-[10px] font-black px-3.5 py-2 rounded-xl border border-slate-200/40 w-fit flex items-center gap-2 hover:bg-slate-100 transition-colors cursor-pointer shadow-3xs select-none">
-                    <FileText className="h-4 w-4 text-slate-400 shrink-0" />
+                  <div className="mt-2.5 bg-slate-50 hover:bg-slate-100/50 text-slate-500 text-[10px] font-bold px-3 py-1.5 rounded-lg border border-slate-200/50 w-fit flex items-center gap-1.5 transition-colors cursor-pointer shadow-3xs select-none">
+                    <Paperclip className="h-3.5 w-3.5 text-slate-400 shrink-0" />
                     <span>{n.fileAttachment}</span>
                   </div>
                 )}
 
                 {/* Note Timestamp */}
-                <div className="flex items-center gap-1.5 text-[10px] text-slate-400 font-semibold mt-4.5 select-none">
-                  <Calendar className="h-3.5 w-3.5 text-slate-300" />
+                <div className="flex items-center gap-1.5 text-[10px] text-slate-400 font-semibold mt-3 select-none">
+                  <Clock className="h-3.5 w-3.5 text-slate-300" />
                   <span>{n.date} {n.edited && "(edited)"}</span>
                 </div>
 
                 {/* Edit History Expander */}
                 {hasHistory && (
-                  <div className="mt-3.5 text-left">
+                  <div className="mt-3 text-left">
                     <button
                       onClick={() => toggleHistory(n.id)}
-                      className="inline-flex items-center gap-1.5 rounded-full border border-orange-100 bg-[#fff8f6] px-3 py-1 text-[10px] font-extrabold text-[#dd5437] hover:bg-[#fff0ed] transition-all cursor-pointer border-0 outline-none select-none shadow-3xs"
+                      className="inline-flex items-center gap-1.5 rounded-full border border-orange-100 bg-[#fff8f6] px-3 py-1 text-[10px] font-semibold text-[#dd5437] hover:bg-[#fff0ed] transition-all cursor-pointer border-0 outline-none select-none shadow-3xs"
                     >
-                      ✦ Edited {n.editHistory!.length} time{n.editHistory!.length > 1 ? "s" : ""} • {isHistoryOpen ? "Hide history" : "View history"}
+                      <History className="h-3 w-3" />
+                      Edited {n.editHistory!.length} time{n.editHistory!.length > 1 ? "s" : ""} • {isHistoryOpen ? "Hide history" : "View history"}
                     </button>
 
                     {isHistoryOpen && (
-                      <div className="mt-4 space-y-3.5 pl-3 border-l-2 border-orange-100 animate-in slide-in-from-top-1 duration-200">
+                      <div className="mt-3 space-y-3 pl-3 border-l-2 border-orange-100 animate-in slide-in-from-top-1 duration-200">
                         {n.editHistory!.map((history, idx) => (
-                          <div key={idx} className="bg-slate-50 border border-slate-200/40 p-4.5 rounded-2xl">
-                            <div className="text-[10px] font-black uppercase text-slate-400 tracking-wider">
+                          <div key={idx} className="bg-slate-50 border border-slate-100 p-3.5 rounded-xl">
+                            <div className="text-[10px] font-bold uppercase text-slate-400 tracking-wider">
                               {history.title}
                             </div>
-                            <div className="mt-2 text-xs font-semibold text-slate-500 whitespace-pre-line leading-relaxed">
+                            <div className="mt-1.5 text-xs font-semibold text-slate-500 whitespace-pre-line leading-relaxed">
                               {history.content}
                             </div>
-                            <div className="mt-2.5 text-[9px] text-slate-400 font-semibold">
+                            <div className="mt-2 text-[9px] text-slate-400 font-semibold">
                               {history.metadata}
                             </div>
                           </div>

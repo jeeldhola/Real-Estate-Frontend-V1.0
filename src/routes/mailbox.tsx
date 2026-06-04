@@ -547,13 +547,13 @@ function MailboxPage() {
       <div className="flex h-16 w-full items-center justify-between border-b bg-white px-8 shrink-0 select-none">
         <div className="flex items-center gap-1">
           {/* Sub tabs */}
-          <div className="flex items-center gap-1 rounded-2xl bg-slate-50 border border-slate-100 p-1">
+          <div className="flex items-center gap-1 rounded-lg bg-slate-50 border border-slate-100 p-1">
             <button
               onClick={() => {
                 setActiveTab("inboxes");
                 toast.success("Inboxes view selected");
               }}
-              className={`flex items-center gap-1.5 rounded-xl px-4 py-2 text-xs font-extrabold cursor-pointer transition-all border ${
+              className={`flex items-center gap-1.5 rounded-md px-4 py-2 text-xs font-extrabold cursor-pointer transition-all border ${
                 activeTab === "inboxes"
                   ? "text-[#dd5437] bg-[#fdf2f0] border-[#dd5437]/15"
                   : "text-slate-500 hover:text-slate-800 hover:bg-slate-100/50 border-transparent bg-transparent"
@@ -568,7 +568,7 @@ function MailboxPage() {
                 setActiveTab("docs");
                 toast.success("Docs view selected");
               }}
-              className={`flex items-center gap-1.5 rounded-xl px-4 py-2 text-xs font-semibold cursor-pointer transition-all border ${
+              className={`flex items-center gap-1.5 rounded-md px-4 py-2 text-xs font-semibold cursor-pointer transition-all border ${
                 activeTab === "docs"
                   ? "text-[#dd5437] bg-[#fdf2f0] border-[#dd5437]/15 font-extrabold"
                   : "text-slate-500 hover:text-slate-800 hover:bg-slate-100/50 border-transparent bg-transparent"
@@ -582,7 +582,7 @@ function MailboxPage() {
                 setActiveTab("templates");
                 toast.success("Templates view selected");
               }}
-              className={`flex items-center gap-1.5 rounded-xl px-4 py-2 text-xs font-semibold cursor-pointer transition-all border ${
+              className={`flex items-center gap-1.5 rounded-md px-4 py-2 text-xs font-semibold cursor-pointer transition-all border ${
                 activeTab === "templates"
                   ? "text-[#dd5437] bg-[#fdf2f0] border-[#dd5437]/15 font-extrabold"
                   : "text-slate-500 hover:text-slate-800 hover:bg-slate-100/50 border-transparent bg-transparent"
@@ -596,7 +596,7 @@ function MailboxPage() {
                 setActiveTab("report");
                 toast.success("Report view selected");
               }}
-              className={`flex items-center gap-1.5 rounded-xl px-4 py-2 text-xs font-semibold cursor-pointer transition-all border ${
+              className={`flex items-center gap-1.5 rounded-md px-4 py-2 text-xs font-semibold cursor-pointer transition-all border ${
                 activeTab === "report"
                   ? "text-[#dd5437] bg-[#fdf2f0] border-[#dd5437]/15 font-extrabold"
                   : "text-slate-500 hover:text-slate-800 hover:bg-slate-100/50 border-transparent bg-transparent"
@@ -610,7 +610,7 @@ function MailboxPage() {
                 setActiveTab("manage");
                 toast.success("Manage view selected");
               }}
-              className={`flex items-center gap-1.5 rounded-xl px-4 py-2 text-xs font-semibold cursor-pointer transition-all border ${
+              className={`flex items-center gap-1.5 rounded-md px-4 py-2 text-xs font-semibold cursor-pointer transition-all border ${
                 activeTab === "manage"
                   ? "text-[#dd5437] bg-[#fdf2f0] border-[#dd5437]/15 font-extrabold"
                   : "text-slate-500 hover:text-slate-800 hover:bg-slate-100/50 border-transparent bg-transparent"

@@ -287,14 +287,14 @@ function PropertyManagerDetailsPage() {
 
       {/* Tabs and Edit Row */}
       <div className="mb-6 flex items-center justify-between">
-        <div className="flex items-center gap-1 rounded-2xl bg-slate-100/60 p-1">
+        <div className="flex items-center gap-1 rounded-lg bg-slate-100/60 p-1 border border-[#1F1F1F]/4">
           {(["Overview", "Meetings", "Notes"] as TabType[]).map((tab) => {
             const isSelected = activeTab === tab;
             return (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`rounded-xl px-5 py-2 text-xs font-black transition-all cursor-pointer border-0 ${
+                className={`rounded-md px-5 py-2 text-xs font-black transition-all cursor-pointer border-0 ${
                   isSelected
                     ? "bg-white text-slate-800 shadow-sm"
                     : "text-slate-500 hover:text-slate-700 bg-transparent"

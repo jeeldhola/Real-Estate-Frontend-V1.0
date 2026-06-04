@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/sheet";
 import { Switch } from "@/components/ui/switch";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import {
   Loader2,
   Eye,
@@ -955,27 +956,27 @@ function OfficeMap({ offices }: { offices: Office[] }) {
     const style = document.createElement("style");
     style.innerHTML = `
       .leaflet-tooltip.custom-map-tooltip {
-        background-color: #1a1a1a !important;
+        background-color: #1F1F1F !important;
         color: #ffffff !important;
         border: 0 !important;
-        border-radius: 6px !important;
-        padding: 5px 12px !important;
-        font-size: 10px !important;
-        font-weight: 800 !important;
+        border-radius: 8px !important;
+        padding: 6px 12px !important;
+        font-size: 11px !important;
+        font-weight: 700 !important;
         font-family: Inter, sans-serif !important;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1) !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
         pointer-events: none !important;
-        transition: all 0.2s ease-in-out !important;
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
       }
       .leaflet-tooltip-top.custom-map-tooltip::before {
-        border-top-color: #1a1a1a !important;
-        transition: all 0.2s ease-in-out !important;
+        border-top-color: #1F1F1F !important;
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
       }
       .leaflet-tooltip.custom-map-tooltip.active-map-tooltip {
         background-color: #ffffff !important;
-        color: #1a1a1a !important;
-        border: 1px solid #e2e8f0 !important;
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1) !important;
+        color: #1F1F1F !important;
+        border: 1px solid rgba(31, 31, 31, 0.08) !important;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12) !important;
       }
       .leaflet-tooltip-top.custom-map-tooltip.active-map-tooltip::before {
         border-top-color: #ffffff !important;
@@ -1027,21 +1028,17 @@ function OfficeMap({ offices }: { offices: Office[] }) {
       const coords = getOfficeCoordinates(o);
       if (coords) {
         // Create custom divIcon marker showing white circles with red-orange border and center bullets
-        const isJacksonRowe = o.name.toLowerCase().includes("jackson");
         const customIcon = L.divIcon({
           className: "custom-map-marker-container",
           html: `
-            <div style="display: flex; align-items: center; gap: 6px; position: relative;">
-              <div style="display: flex; align-items: center; justify-content: center; width: 18px; height: 18px; border-radius: 50%; background-color: white; border: 3.5px solid #dd5437; box-shadow: 0 1px 3px rgba(0,0,0,0.15); shrink-0;">
-                <div style="width: 5px; height: 5px; border-radius: 50%; background-color: #dd5437;"></div>
+            <div style="display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 50%; background-color: rgba(216, 90, 43, 0.32); select-none;">
+              <div style="display: flex; align-items: center; justify-content: center; width: 18px; height: 18px; border-radius: 50%; background-color: white; border: 3px solid #D85A2B;">
+                <div style="width: 6px; height: 6px; border-radius: 50%; background-color: #D85A2B;"></div>
               </div>
-              ${isJacksonRowe ? `
-                <span style="font-family: Inter, sans-serif; font-size: 11px; font-weight: 800; color: #475569; background-color: white; padding: 1.5px 4.5px; border-radius: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.08); border: 1px solid #f1f5f9; select-none;">A1</span>
-              ` : ""}
             </div>
           `,
-          iconSize: [40, 20],
-          iconAnchor: [9, 9],
+          iconSize: [28, 28],
+          iconAnchor: [14, 14],
         });
 
         const marker = L.marker(coords, { icon: customIcon }).addTo(map);
@@ -1111,20 +1108,20 @@ function OfficeMap({ offices }: { offices: Office[] }) {
         <div
           onMouseDown={(e) => e.stopPropagation()}
           onClick={(e) => e.stopPropagation()}
-          className="absolute bottom-4 right-4 z-[400] w-[350px] bg-white rounded-3xl border border-slate-100 shadow-2xl p-5 animate-in slide-in-from-bottom-2 fade-in duration-200"
+          className="absolute bottom-4 right-4 z-[400] w-[350px] bg-white rounded-3xl border border-[#1F1F1F]/8 shadow-2xl p-4 animate-in slide-in-from-bottom-2 fade-in duration-200"
         >
           <button
             onClick={() => setSelectedOffice(null)}
-            className="absolute top-5 right-5 text-slate-400 hover:text-slate-650 transition-colors cursor-pointer border-0 bg-transparent"
+            className="absolute top-4 right-4 text-[#1F1F1F]/64 hover:text-[#1F1F1F] transition-colors cursor-pointer border-0 bg-transparent p-1 rounded-full hover:bg-slate-50 flex items-center justify-center"
           >
-            <X className="h-4.5 w-4.5 stroke-[2.5px]" />
+            <X className="h-5 w-5" />
           </button>
 
-          <div className="flex flex-col pr-6">
-            <h4 className="text-sm font-black text-slate-800 leading-tight">
+          <div className="flex flex-col pr-8">
+            <h4 className="text-base font-extrabold text-[#1F1F1F] leading-tight">
               {selectedOffice.name}
             </h4>
-            <span className="text-[11px] text-slate-400 font-bold mt-1 leading-snug truncate">
+            <span className="text-xs text-[#1F1F1F]/64 font-medium mt-1 leading-snug">
               {selectedOffice.address || "No address listed"}
             </span>
           </div>
@@ -1133,46 +1130,47 @@ function OfficeMap({ offices }: { offices: Office[] }) {
             <StatusPill status={selectedOffice.status ?? "Active"} />
           </div>
 
-          <div className="my-4 border-b border-slate-100" />
+          <div className="mt-4" />
 
-          <div className="grid grid-cols-2 gap-x-6 gap-y-3.5">
+          <div className="grid grid-cols-2 gap-x-6 gap-y-4">
             <div>
-              <span className="block text-[9px] font-extrabold uppercase tracking-wider text-slate-400 mb-0.5">Phone</span>
-              <span className="text-[11px] font-black text-slate-700">{selectedOffice.phone || "—"}</span>
+              <span className="block text-[11px] font-medium text-[#1F1F1F]/64 mb-0.5">Phone</span>
+              <span className="text-xs font-bold text-[#1F1F1F]">{selectedOffice.phone || "—"}</span>
             </div>
             <div>
-              <span className="block text-[9px] font-extrabold uppercase tracking-wider text-slate-400 mb-0.5">Address</span>
-              <span className="text-[11px] font-black text-slate-700 truncate block" title={selectedOffice.address}>
+              <span className="block text-[11px] font-medium text-[#1F1F1F]/64 mb-0.5">Address</span>
+              <span className="text-xs font-bold text-[#1F1F1F] truncate block" title={selectedOffice.address}>
                 {selectedOffice.address || "—"}
               </span>
             </div>
             <div>
-              <span className="block text-[9px] font-extrabold uppercase tracking-wider text-slate-400 mb-0.5">Suburb</span>
-              <span className="text-[11px] font-black text-slate-700">{selectedOffice.suburb || "—"}</span>
+              <span className="block text-[11px] font-medium text-[#1F1F1F]/64 mb-0.5">Suburb</span>
+              <span className="text-xs font-bold text-[#1F1F1F]">{selectedOffice.suburb || "—"}</span>
             </div>
             <div>
-              <span className="block text-[9px] font-extrabold uppercase tracking-wider text-slate-400 mb-0.5">State</span>
-              <span className="text-[11px] font-black text-slate-700">{selectedOffice.state || "—"}</span>
+              <span className="block text-[11px] font-medium text-[#1F1F1F]/64 mb-0.5">State</span>
+              <span className="text-xs font-bold text-[#1F1F1F]">{selectedOffice.state || "—"}</span>
             </div>
             <div>
-              <span className="block text-[9px] font-extrabold uppercase tracking-wider text-slate-400 mb-0.5">Account Manager</span>
-              <span className="text-[11px] font-black text-slate-700">
+              <span className="block text-[11px] font-medium text-[#1F1F1F]/64 mb-0.5">Account Manager</span>
+              <span className="text-xs font-bold text-[#1F1F1F]">
                 {accountManagerName(selectedOffice.accountManager) || "Unassigned"}
               </span>
             </div>
             <div>
-              <span className="block text-[9px] font-extrabold uppercase tracking-wider text-slate-400 mb-0.5">Total Properties</span>
-              <span className="text-[11px] font-black text-slate-700">{selectedOffice.pum ?? 0}</span>
+              <span className="block text-[11px] font-medium text-[#1F1F1F]/64 mb-0.5">Total Properties</span>
+              <span className="text-xs font-bold text-[#1F1F1F]">{selectedOffice.pum ?? 0}</span>
             </div>
             <div className="col-span-2">
-              <span className="block text-[9px] font-extrabold uppercase tracking-wider text-slate-400 mb-0.5">Inactivity Alert Threshold</span>
-              <span className="text-[11px] font-black text-slate-700">14 days</span>
+              <span className="block text-[11px] font-medium text-[#1F1F1F]/64 mb-0.5">Inactivity Alert Threshold</span>
+              <span className="text-xs font-bold text-[#1F1F1F]">14 days</span>
             </div>
           </div>
 
           <button
             onClick={() => navigate({ to: "/agency-offices/$officeId", params: { officeId: selectedOffice.id } })}
-            className="w-full mt-5 rounded-xl bg-[#dd5437] hover:bg-[#c9452b] py-3 text-xs font-black text-white text-center cursor-pointer transition-colors border-0 shadow-xs"
+            style={{ background: 'radial-gradient(circle, #FF6A33 0%, #D85A2B 100%)' }}
+            className="w-full mt-4 rounded-xl py-3 text-xs font-black text-white text-center cursor-pointer transition-all border-0 shadow-md hover:brightness-105 active:scale-[0.98]"
           >
             View Details
           </button>
@@ -1184,80 +1182,34 @@ function OfficeMap({ offices }: { offices: Office[] }) {
 
 
 function StatusPill({ status }: { status: OfficeStatus }) {
-  if (status === "Active") {
-    return (
-      <svg width="65" height="24" viewBox="0 0 65 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0 select-none">
-        <rect width="65" height="24" rx="8" fill="#2093A3" fillOpacity="0.08"/>
-        <g clipPath="url(#clip0_235_7792)">
-          <path d="M10 14C11.1046 14 12 13.1046 12 12C12 10.8954 11.1046 10 10 10C8.89543 10 8 10.8954 8 12C8 13.1046 8.89543 14 10 14Z" fill="#2093A3"/>
-        </g>
-        <path d="M20.132 16.5L23.336 7.56H24.728L27.932 16.5H26.672L25.94 14.4H22.124L21.392 16.5H20.132ZM22.496 13.32H25.568L23.864 8.412H24.2L22.496 13.32ZM31.6921 16.644C31.0601 16.644 30.4961 16.496 30.0001 16.2C29.5121 15.904 29.1281 15.5 28.8481 14.988C28.5681 14.476 28.4281 13.9 28.4281 13.26C28.4281 12.612 28.5681 12.036 28.8481 11.532C29.1281 11.028 29.5121 10.628 30.0001 10.332C30.4961 10.036 31.0601 9.888 31.6921 9.888C32.1161 9.888 32.5121 9.964 32.8801 10.116C33.2481 10.268 33.5721 10.472 33.8521 10.728C34.1321 10.984 34.3361 11.284 34.4641 11.628L33.4681 12.108C33.3161 11.772 33.0841 11.5 32.7721 11.292C32.4601 11.076 32.1001 10.968 31.6921 10.968C31.3001 10.968 30.9441 11.068 30.6241 11.268C30.3121 11.468 30.0641 11.74 29.8801 12.084C29.6961 12.428 29.6041 12.824 29.6041 13.272C29.6041 13.704 29.6961 14.096 29.8801 14.448C30.0641 14.792 30.3121 15.064 30.6241 15.264C30.9441 15.564 31.3001 15.564 31.6921 15.564C32.1001 15.564 32.4601 15.46 32.7721 15.252C33.0841 15.036 33.3161 14.752 33.4681 14.4L34.4641 14.904C34.3361 15.24 34.1321 15.54 33.8521 15.804C33.5721 16.06 33.2481 16.264 32.8801 16.416C32.5121 16.568 32.1161 16.644 31.6921 16.644ZM38.5506 16.572C37.9186 16.572 37.4306 16.392 37.0866 16.032C36.7506 15.672 36.5826 15.164 36.5826 14.508V11.1H35.4066V10.032H35.6466C35.9346 10.032 36.1626 9.944 36.3306 9.768C36.4986 9.592 36.5826 9.36 36.5826 9.072V8.544H37.6986V10.032H39.1506V11.1H37.6986V14.472C37.6986 14.688 37.7306 14.876 37.7946 15.036C37.8666 15.196 37.9826 15.324 38.1426 15.42C38.3026 15.508 38.5146 15.552 38.7786 15.552C38.8346 15.552 38.9026 15.548 38.9826 15.54C39.0706 15.532 39.1506 15.524 39.2226 15.516V16.5C39.1186 16.524 39.0026 16.54 38.8746 16.548C38.7466 16.564 38.6386 16.572 38.5506 16.572ZM40.6804 16.5V10.032H41.7964V16.5H40.6804ZM40.6804 9V7.56H41.7964V9H40.6804ZM45.3281 16.5L42.7961 10.032H44.0441L46.0721 15.504H45.6401L47.6801 10.032H48.9281L46.3841 16.5H45.3281ZM52.7853 16.644C52.1613 16.644 51.6053 16.496 51.1173 16.2C50.6293 15.904 50.2453 15.5 49.9653 14.988C49.6853 14.468 49.5453 13.888 49.5453 13.248C49.5453 12.6 49.6813 12.024 49.9533 11.52C50.2333 11.016 50.6093 10.62 51.0813 10.332C51.5613 10.036 52.0973 9.888 52.6893 9.888C53.1693 9.888 53.5933 9.976 53.9613 10.152C54.3373 10.32 54.6533 10.552 54.9093 10.848C55.1733 11.136 55.3733 11.468 55.5093 11.844C55.6533 12.212 55.7253 12.596 55.7253 12.996C55.7253 13.084 55.7173 13.184 55.7013 13.296C55.6933 13.4 55.6813 13.5 55.6653 13.596H50.3613V12.636H55.0173L54.4893 13.068C54.5613 12.652 54.5213 12.28 54.3693 11.952C54.2173 11.624 53.9933 11.364 53.6973 11.172C53.4013 10.98 53.0653 10.884 52.6893 10.884C52.3133 10.884 51.9693 10.98 51.6573 11.172C51.3453 11.364 51.1013 11.64 50.9253 12C50.7573 12.352 50.6893 12.772 50.7213 13.26C50.6893 13.732 50.7613 14.148 50.9373 14.508C51.1213 14.86 51.3773 15.136 51.7053 15.336C52.0413 15.528 52.4053 15.624 52.7973 15.624C53.2293 15.624 53.5933 15.524 53.8893 15.324C54.1853 15.124 54.4253 14.868 54.6093 14.556L55.5453 15.036C55.4173 15.332 55.2173 15.604 54.9453 15.852C54.6813 16.092 54.3653 16.284 53.9973 16.428C53.6373 16.572 53.2333 16.644 52.7853 16.644Z" fill="#2093A3"/>
-        <defs>
-          <clipPath id="clip0_235_7792">
-            <rect width="12" height="12" fill="white" transform="translate(4 6)"/>
-          </clipPath>
-        </defs>
-      </svg>
-    );
-  }
-
-  if (status === "Inactive") {
-    return (
-      <svg width="74" height="24" viewBox="0 0 74 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0 select-none">
-        <rect width="74" height="24" rx="8" fill="#EF4444" fillOpacity="0.08"/>
-        <g clipPath="url(#clip0_235_7864)">
-          <path d="M10 14C11.1046 14 12 13.1046 12 12C12 10.8954 11.1046 10 10 10C8.89543 10 8 10.8954 8 12C8 13.1046 8.89543 14 10 14Z" fill="#EF4444"/>
-        </g>
-        <path d="M20.996 16.5V7.56H22.172V16.5H20.996ZM24.0281 16.5V10.032H25.1201V11.292L24.9401 11.184C25.1001 10.776 25.3561 10.46 25.7081 10.236C26.0681 10.004 26.4881 9.888 26.9681 9.888C27.4321 9.888 27.8441 9.992 28.2041 10.2C28.5721 10.408 28.8601 10.696 29.0681 11.064C29.2841 11.432 29.3921 11.848 29.3921 12.312V16.5H28.2641V12.672C28.2641 12.312 28.2001 12.008 28.0721 11.76C27.9441 11.512 27.7601 11.32 27.5201 11.184C27.2881 11.04 27.0201 10.968 26.7161 10.968C26.4121 10.968 26.1401 11.04 25.9001 11.184C25.6681 11.32 25.4841 11.516 25.3481 11.772C25.2121 12.02 25.1441 12.32 25.1441 12.672V16.5H24.0281ZM32.885 16.644C32.461 16.644 32.085 16.568 31.757 16.416C31.437 16.256 31.185 16.04 31.001 15.768C30.817 15.488 30.725 15.168 30.725 14.808C30.725 14.464 30.797 14.156 30.941 13.884C31.093 13.604 31.325 13.368 31.637 13.176C31.957 12.984 32.357 12.848 32.837 12.768L35.237 12.372V13.308L33.089 13.668C32.673 13.74 32.369 13.872 32.177 14.064C31.993 14.256 31.901 14.492 31.901 14.772C31.901 15.036 32.005 15.256 32.213 15.432C32.429 15.608 32.697 15.696 33.017 15.696C33.425 15.696 33.777 15.612 34.073 15.444C34.377 15.268 34.613 15.032 34.781 14.736C34.957 14.44 35.045 14.112 35.045 13.752V12.108C35.045 11.756 34.913 11.472 34.649 11.256C34.393 11.032 34.053 10.92 33.629 10.92C33.261 10.92 32.933 11.016 32.645 11.208C32.365 11.392 32.157 11.64 32.021 11.952L31.049 11.448C31.169 11.152 31.361 10.888 31.625 10.656C31.889 10.416 32.197 10.228 32.549 10.092C32.901 9.956 33.269 9.888 33.653 9.888C34.149 9.888 34.585 9.984 34.961 10.176C35.337 10.36 35.629 10.62 35.837 10.956C36.053 11.284 36.161 11.668 36.161 12.108V16.5H35.069V15.276L35.273 15.348C35.137 15.604 34.953 15.828 34.721 16.02C34.489 16.212 34.217 16.364 33.905 16.476C33.593 16.588 33.253 16.644 32.885 16.644ZM40.8913 16.644C40.2593 16.644 39.6953 16.496 39.1993 16.2C38.7113 15.904 38.3273 15.5 38.0473 14.988C37.7673 14.476 37.6273 13.9 37.6273 13.26C37.6273 12.612 37.7673 12.036 38.0473 11.532C38.3273 11.028 38.7113 10.628 39.1993 10.332C39.6953 10.036 40.2593 9.888 40.8913 9.888C41.3153 9.888 41.7113 9.964 42.0793 10.116C42.4473 10.268 42.7713 10.472 43.0513 10.728C43.3313 10.984 43.5353 11.284 43.6633 11.628L42.6673 12.108C42.5153 11.772 42.2833 11.5 41.9713 11.292C41.6593 11.076 41.2993 10.968 40.8913 10.968C40.4993 10.968 40.1433 11.068 39.8233 11.268C39.5113 11.468 39.2633 11.74 39.0793 12.084C38.8953 12.428 38.8033 12.824 38.8033 13.272C38.8033 13.704 38.8953 14.096 39.0793 14.448C39.2633 14.792 39.5113 15.064 39.8233 15.264C40.1433 15.464 40.4993 15.564 40.8913 15.564C41.2993 15.564 41.6593 15.46 41.9713 15.252C42.2833 15.036 42.5153 14.752 42.6673 14.4L43.6633 14.904C43.5353 15.24 43.3313 15.54 43.0513 15.804C42.7713 16.06 42.4473 16.264 42.0793 16.416C41.7113 16.568 41.3153 16.644 40.8913 16.644ZM47.7498 16.572C47.1178 16.572 46.6298 16.392 46.2858 16.032C45.9498 15.672 45.7818 15.164 45.7818 14.508V11.1H44.6058V10.032H44.8458C45.1338 10.032 45.3618 9.944 45.5298 9.768C45.6978 9.592 45.7818 9.36 45.7818 9.072V8.544H46.8978V10.032H48.3498V11.1H46.8978V14.472C46.8978 14.688 46.9298 14.876 46.9938 15.036C47.0658 15.196 47.1818 15.324 47.3418 15.42C47.5018 15.508 47.7138 15.552 47.9778 15.552C48.0338 15.552 48.1018 15.548 48.1818 15.54C48.2698 15.54 48.3498 15.524 48.4218 15.516V16.5C48.3178 16.524 48.2018 16.54 48.0738 16.548C47.9458 16.564 47.8378 16.572 47.7498 16.572ZM49.8796 16.5V10.032H50.9956V16.5H49.8796ZM49.8796 9V7.56H50.9956V9H49.8796ZM54.5273 16.5L51.9953 10.032H53.2433L55.2713 15.504H54.8393L56.8793 10.032H58.1273L55.5833 16.5H54.5273ZM61.9845 16.644C61.3605 16.644 60.8045 16.496 60.3165 16.2C59.8285 15.904 59.4445 15.5 59.1645 14.988C58.8845 14.468 58.7445 13.888 58.7445 13.248C58.7445 12.6 58.8805 12.024 59.1525 11.52C59.4325 11.016 59.8085 10.62 60.2805 10.332C60.7605 10.036 61.2965 9.888 61.8885 9.888C62.3685 9.888 62.7925 9.976 63.1605 10.152C63.5365 10.32 63.8525 10.552 64.1085 10.848C64.3725 11.136 64.5725 11.468 64.7085 11.844C64.8525 12.212 64.9245 12.596 64.9245 12.996C64.9245 13.084 64.9165 13.184 64.9005 13.296C64.8925 13.4 64.8805 13.5 64.8645 13.596H59.5605V12.636H64.2165L63.6885 13.068C63.7605 12.652 63.7205 12.28 63.5685 11.952C63.4165 11.624 63.1925 11.364 62.8965 11.172C62.6005 10.98 62.2645 10.884 61.8885 10.884C61.5125 10.884 61.1685 10.98 60.8565 11.172C60.5445 11.364 60.3005 11.64 60.1245 12C59.9565 12.352 59.8885 12.772 59.9205 13.26C59.8885 13.732 59.9605 14.148 60.1365 14.508C60.3205 14.86 60.5765 15.136 60.9045 15.336C61.2405 15.528 61.6045 15.624 61.9965 15.624C62.4285 15.624 62.7925 15.524 63.0885 15.324C63.3845 15.124 63.6245 14.868 63.8085 14.556L64.7445 15.036C64.6165 15.332 64.4165 15.604 64.1445 15.852C63.8805 16.092 63.5645 16.284 63.1965 16.428C62.8365 16.572 62.4325 16.644 61.9845 16.644Z" fill="#EF4444"/>
-        <defs>
-          <clipPath id="clip0_235_7864">
-            <rect width="12" height="12" fill="white" transform="translate(4 6)"/>
-          </clipPath>
-        </defs>
-      </svg>
-    );
-  }
-
-  const pillColors: Record<Exclude<OfficeStatus, "Active" | "Inactive">, { bg: string; text: string; border: string; dot: string }> = {
+  const statusConfig: Record<OfficeStatus, { bg: string; text: string; dot: string }> = {
+    Active: {
+      bg: "bg-[#2093A3]/8",
+      text: "text-[#2093A3]",
+      dot: "bg-[#2093A3]",
+    },
+    Inactive: {
+      bg: "bg-rose-500/8",
+      text: "text-rose-500",
+      dot: "bg-rose-500",
+    },
     Lapsing: {
-      bg: "#FEF7E0",
-      text: "#B06000",
-      border: "rgba(254, 239, 195, 0.6)",
-      dot: "#B06000",
+      bg: "bg-amber-500/8",
+      text: "text-amber-600",
+      dot: "bg-amber-500",
     },
     Archived: {
-      bg: "#F1F3F4",
-      text: "#5F6368",
-      border: "rgba(232, 234, 237, 0.6)",
-      dot: "#5F6368",
+      bg: "bg-slate-500/8",
+      text: "text-slate-500",
+      dot: "bg-slate-500",
     },
   };
 
-  const colors = pillColors[status as Exclude<OfficeStatus, "Active" | "Inactive">] || pillColors.Lapsing;
+  const config = statusConfig[status] || statusConfig.Active;
 
   return (
-    <span
-      style={{
-        display: "inline-flex",
-        alignItems: "center",
-        gap: "6px",
-        borderRadius: "9999px",
-        padding: "4px 10px",
-        backgroundColor: colors.bg,
-        color: colors.text,
-        border: `1px solid ${colors.border}`,
-      }}
-      className="text-[10px] font-extrabold tracking-wide uppercase select-none shrink-0"
-    >
-      <span
-        style={{
-          width: "6px",
-          height: "6px",
-          borderRadius: "50%",
-          backgroundColor: colors.dot,
-        }}
-        className="shrink-0"
-      />
+    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold leading-none ${config.bg} ${config.text} select-none`}>
+      <span className={`w-1.5 h-1.5 rounded-full ${config.dot}`} />
       {status}
     </span>
   );
@@ -1735,6 +1687,32 @@ function ImportFileDialog({ open, onOpenChange }: ImportFileDialogProps) {
   );
 }
 
+function parseDateString(str: string): Date | undefined {
+  if (!str) return undefined;
+  const parts = str.split('/');
+  if (parts.length === 3) {
+    const day = parseInt(parts[0], 10);
+    const month = parseInt(parts[1], 10) - 1;
+    let year = parseInt(parts[2], 10);
+    if (year < 100) {
+      year += 2000;
+    }
+    const d = new Date(year, month, day);
+    if (!isNaN(d.getTime())) {
+      return d;
+    }
+  }
+  const parsed = new Date(str);
+  return isNaN(parsed.getTime()) ? undefined : parsed;
+}
+
+function formatDate(date: Date): string {
+  const dd = String(date.getDate()).padStart(2, '0');
+  const mm = String(date.getMonth() + 1).padStart(2, '0');
+  const yyyy = date.getFullYear();
+  return `${dd}/${mm}/${yyyy}`;
+}
+
 interface AddLocationSheetProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -1828,24 +1806,42 @@ function AddLocationSheet({ open, onOpenChange }: AddLocationSheetProps) {
     }
   };
 
-  const labelCls = "block text-[11px] font-bold text-slate-700 uppercase tracking-wide mb-1.5";
-  const inputCls = "w-full rounded-xl border border-slate-200 bg-white py-2 px-3.5 text-xs font-semibold text-slate-700 outline-none focus:border-[#dd5437] focus:ring-2 focus:ring-[#dd5437]/20 transition-all placeholder:text-slate-400";
-  const selectCls = "w-full rounded-xl border border-slate-200 bg-white py-2 px-3.5 text-xs font-semibold text-slate-700 outline-none focus:border-[#dd5437] focus:ring-2 focus:ring-[#dd5437]/20 transition-all cursor-pointer appearance-none";
+  const labelCls = "block text-xs font-semibold text-[#1F1F1F]/70 mb-1.5 text-left";
+  const inputCls = "w-full rounded-xl border border-slate-200/80 bg-white py-2.5 px-3.5 text-xs font-semibold text-[#1F1F1F] outline-none focus:border-[#dd5437] focus:ring-2 focus:ring-[#dd5437]/20 transition-all placeholder:text-[#888888]";
+  const selectCls = "w-full rounded-xl border border-slate-200/80 bg-white py-2.5 px-3.5 text-xs font-semibold text-[#1F1F1F] outline-none focus:border-[#dd5437] focus:ring-2 focus:ring-[#dd5437]/20 transition-all cursor-pointer appearance-none";
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="flex w-full flex-col p-0 sm:max-w-[480px] overflow-hidden bg-white border-l border-slate-100 shadow-xl focus-visible:outline-none">
+      <SheetContent
+        style={{
+          top: "16px",
+          bottom: "16px",
+          right: "16px",
+          height: "calc(100vh - 32px)",
+          borderRadius: "24px",
+          border: "1px solid rgba(31, 31, 31, 0.08)",
+        }}
+        className="w-full sm:max-w-[460px] bg-white shadow-2xl flex flex-col p-0 overflow-hidden focus-visible:outline-none z-[500] transition-all duration-300 [&>button]:hidden"
+      >
         {/* Header */}
-        <SheetHeader className="border-b px-6 py-5">
-          <SheetTitle className="text-xl font-bold text-slate-800 tracking-tight">Add Location</SheetTitle>
+        <SheetHeader className="px-6 py-5 pb-3 flex flex-row items-center justify-between space-y-0">
+          <SheetTitle className="text-xl font-bold text-[#1F1F1F] tracking-tight">Add Location</SheetTitle>
+          <button
+            type="button"
+            onClick={() => onOpenChange(false)}
+            className="text-[#1F1F1F] hover:opacity-70 transition-opacity cursor-pointer border-0 bg-transparent p-1 -mr-1 flex items-center justify-center"
+            aria-label="Close"
+          >
+            <X className="h-5 w-5 stroke-[1.5]" />
+          </button>
         </SheetHeader>
 
         {/* Scrollable Form Body */}
-        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-6 space-y-6">
+        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-6 pt-2 space-y-6">
           
           {/* Business Details */}
           <div className="space-y-4 text-left">
-            <h3 className="text-sm font-black text-slate-800 tracking-wide border-b border-slate-100 pb-1">Business Details</h3>
+            <h3 className="text-base font-extrabold text-[#1F1F1F]">Business Details</h3>
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className={labelCls}>Agency Name</label>
@@ -1873,7 +1869,7 @@ function AddLocationSheet({ open, onOpenChange }: AddLocationSheetProps) {
 
           {/* Inactivity Alert */}
           <div className="space-y-4 text-left">
-            <h3 className="text-sm font-black text-slate-800 tracking-wide border-b border-slate-100 pb-1 font-bold">Inactivity Alert</h3>
+            <h3 className="text-base font-extrabold text-[#1F1F1F]">Inactivity Alert</h3>
             
             <div className="grid grid-cols-2 gap-4">
               <div>
@@ -1942,16 +1938,34 @@ function AddLocationSheet({ open, onOpenChange }: AddLocationSheetProps) {
               </div>
               <div>
                 <label className={labelCls}>Opened Date</label>
-                <div className="relative">
-                  <input
-                    type="text"
-                    placeholder="dd/mm/yy"
-                    value={form.openedAt}
-                    onChange={(e) => updateField("openedAt", e.target.value)}
-                    className={inputCls}
-                  />
-                  <Calendar className="absolute right-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400 pointer-events-none" />
-                </div>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <div className="relative cursor-pointer">
+                      <input
+                        type="text"
+                        placeholder="dd/mm/yy"
+                        value={form.openedAt}
+                        onChange={(e) => updateField("openedAt", e.target.value)}
+                        className={`${inputCls} pr-10 cursor-pointer`}
+                      />
+                      <div className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-655 transition-colors flex items-center justify-center pointer-events-none">
+                        <Calendar className="h-4 w-4" />
+                      </div>
+                    </div>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0 rounded-2xl bg-white border border-slate-100 shadow-xl z-[600]" align="end">
+                    <CalendarComponent
+                      mode="single"
+                      selected={form.openedAt ? parseDateString(form.openedAt) : undefined}
+                      onSelect={(date) => {
+                        if (date) {
+                          updateField("openedAt", formatDate(date));
+                        }
+                      }}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
               </div>
             </div>
 
@@ -2002,7 +2016,7 @@ function AddLocationSheet({ open, onOpenChange }: AddLocationSheetProps) {
 
           {/* Key Contact & Metrics */}
           <div className="space-y-4 text-left">
-            <h3 className="text-sm font-black text-slate-800 tracking-wide border-b border-slate-100 pb-1">Key Contact & Metrics</h3>
+            <h3 className="text-base font-extrabold text-[#1F1F1F]">Key Contact & Metrics</h3>
             
             <div className="grid grid-cols-2 gap-4">
               <div>
@@ -2084,15 +2098,16 @@ function AddLocationSheet({ open, onOpenChange }: AddLocationSheetProps) {
                 />
               </div>
             </div>
+            <div className="h-12 shrink-0" />
           </div>
         </form>
 
         {/* Footer */}
-        <div className="border-t border-slate-100 p-4 px-6 bg-slate-50/50 flex gap-4">
+        <div className="p-4 px-6 pb-6 bg-white flex gap-4">
           <button
             type="button"
             onClick={() => onOpenChange(false)}
-            className="flex-1 rounded-2xl border border-slate-200 bg-white py-3 text-xs font-extrabold text-slate-600 hover:bg-slate-50 transition-all cursor-pointer shadow-3xs border-0 text-center"
+            className="flex-1 rounded-xl border border-[#1F1F1F]/16 bg-white py-3 text-xs font-black text-slate-650 hover:bg-slate-50 transition-all cursor-pointer text-center"
           >
             Cancel
           </button>
@@ -2100,7 +2115,7 @@ function AddLocationSheet({ open, onOpenChange }: AddLocationSheetProps) {
             type="button"
             onClick={handleSubmit}
             disabled={isSubmitting || createOffice.isPending}
-            className="flex-1 flex items-center justify-center gap-2 rounded-2xl bg-[#dd5437] hover:bg-[#c9452b] py-3 text-xs font-extrabold text-white shadow-md active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer border-0"
+            className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-[#dd5437] hover:bg-[#c9452b] py-3 text-xs font-black text-white shadow-md active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer border-0"
           >
             {isSubmitting || createOffice.isPending ? (
               <>
@@ -2216,14 +2231,32 @@ function CustomizeWidgetsSheet({ open, onOpenChange, activeWidgets, onSave }: {
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="flex w-full flex-col p-0 sm:max-w-[480px] overflow-hidden bg-white border-l border-slate-100 shadow-xl focus-visible:outline-none">
+      <SheetContent
+        style={{
+          top: "16px",
+          bottom: "16px",
+          right: "16px",
+          height: "calc(100vh - 32px)",
+          borderRadius: "24px",
+          border: "1px solid rgba(31, 31, 31, 0.08)",
+        }}
+        className="w-full sm:max-w-[460px] bg-white shadow-2xl flex flex-col p-0 overflow-hidden focus-visible:outline-none z-[500] transition-all duration-300 [&>button]:hidden"
+      >
         {/* Header */}
-        <SheetHeader className="border-b px-6 py-5">
-          <SheetTitle className="text-xl font-bold text-slate-800 tracking-tight">Customize Widgets</SheetTitle>
+        <SheetHeader className="px-6 py-5 pb-3 flex flex-row items-center justify-between space-y-0">
+          <SheetTitle className="text-xl font-bold text-[#1F1F1F] tracking-tight">Customize Widgets</SheetTitle>
+          <button
+            type="button"
+            onClick={() => onOpenChange(false)}
+            className="text-[#1F1F1F] hover:opacity-70 transition-opacity cursor-pointer border-0 bg-transparent p-1 -mr-1 flex items-center justify-center"
+            aria-label="Close"
+          >
+            <X className="h-5 w-5 stroke-[1.5]" />
+          </button>
         </SheetHeader>
 
         {/* Scrollable List Body */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-5">
+        <div className="flex-1 overflow-y-auto p-6 pt-2 space-y-5">
           <div className="flex items-center justify-between text-xs font-bold text-slate-700 uppercase tracking-wide">
             <span>Active Widgets ({activeCount}/5)</span>
           </div>
@@ -2236,7 +2269,7 @@ function CustomizeWidgetsSheet({ open, onOpenChange, activeWidgets, onSave }: {
           )}
 
           {/* Widgets List */}
-          <div className="rounded-2xl border border-slate-100 bg-white p-3 space-y-1">
+          <div className="rounded-2xl border border-[#1F1F1F]/8 bg-white p-3 space-y-1">
             {WIDGET_OPTIONS.map((opt) => {
               const isChecked = !!localWidgets[opt];
               const isMaxReached = activeCount === 5;
@@ -2245,12 +2278,19 @@ function CustomizeWidgetsSheet({ open, onOpenChange, activeWidgets, onSave }: {
               return (
                 <div 
                   key={opt}
-                  className={`flex items-center justify-between py-3 px-2 border-b border-slate-50 last:border-0 transition-all duration-200 ${
+                  className={`flex items-center justify-between py-3.5 px-3 border-b border-[#1F1F1F]/4 last:border-0 transition-all duration-200 ${
                     isDisabled ? "opacity-40" : ""
                   }`}
                 >
                   <div className="flex items-center gap-3">
-                    <GripVertical className="h-4 w-4 text-slate-300 cursor-grab shrink-0" />
+                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-slate-300 cursor-grab shrink-0">
+                      <circle cx="6.5" cy="4.5" r="1.5" fill="currentColor"/>
+                      <circle cx="6.5" cy="9" r="1.5" fill="currentColor"/>
+                      <circle cx="6.5" cy="13.5" r="1.5" fill="currentColor"/>
+                      <circle cx="11.5" cy="4.5" r="1.5" fill="currentColor"/>
+                      <circle cx="11.5" cy="9" r="1.5" fill="currentColor"/>
+                      <circle cx="11.5" cy="13.5" r="1.5" fill="currentColor"/>
+                    </svg>
                     <span className="text-xs font-bold text-slate-700/90">{opt}</span>
                   </div>
                   <Switch
@@ -2266,16 +2306,16 @@ function CustomizeWidgetsSheet({ open, onOpenChange, activeWidgets, onSave }: {
         </div>
 
         {/* Footer */}
-        <div className="border-t border-slate-100 p-4 px-6 bg-slate-50/50 flex gap-4">
+        <div className="p-4 px-6 pb-6 bg-white flex gap-4">
           <button
             onClick={handleReset}
-            className="flex-1 rounded-2xl border border-slate-200 bg-white py-3 text-xs font-extrabold text-slate-600 hover:bg-slate-50 transition-all cursor-pointer shadow-3xs border-0 text-center"
+            className="flex-1 rounded-xl border border-[#1F1F1F]/16 bg-white py-3 text-xs font-black text-slate-655 hover:bg-slate-50 transition-all cursor-pointer text-center"
           >
             Reset to Default
           </button>
           <button
             onClick={handleSave}
-            className="flex-1 flex items-center justify-center gap-2 rounded-2xl bg-[#dd5437] hover:bg-[#c9452b] py-3 text-xs font-extrabold text-white shadow-md active:scale-[0.98] transition-all cursor-pointer border-0"
+            className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-[#dd5437] hover:bg-[#c9452b] py-3 text-xs font-black text-white shadow-md active:scale-[0.98] transition-all cursor-pointer border-0"
           >
             Save
           </button>

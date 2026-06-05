@@ -162,19 +162,24 @@ function LoginPage() {
   };
 
   return (
-    <div className="flex h-screen w-screen bg-white overflow-hidden">
+    <div className="flex min-h-screen w-screen bg-white overflow-y-auto overflow-x-hidden">
       {/* Left Pane - Form and branding */}
-      <div className="w-full lg:w-1/2 flex flex-col justify-between p-8 sm:p-12 md:py-10 md:px-20 overflow-y-auto h-full">
+      <div className="w-full lg:w-1/2 flex flex-col justify-between p-8 sm:p-12 md:py-10 md:px-20 min-h-screen">
         <div className="my-auto py-4">
-          <div className="w-full max-w-[460px] mx-auto space-y-6">
+          <div className="w-full max-w-[576px] mx-auto flex flex-col items-center gap-8">
             {/* Logo */}
-            <div className="flex justify-center -mb-2">
-              <img src={logoUrl} alt="HubKonnect" className="h-32 w-auto object-contain" />
+            <div className="flex justify-center w-full">
+              <img 
+                src={logoUrl} 
+                alt="HubKonnect" 
+                style={{ width: "245.2px", height: "183.9px" }} 
+                className="object-contain" 
+              />
             </div>
 
             {showOtpScreen ? (
-              <form onSubmit={verifyOtpAndLogin} className="space-y-6">
-                <div className="text-center space-y-2">
+              <form onSubmit={verifyOtpAndLogin} className="space-y-6 w-full">
+                <div className="text-center space-y-2 mb-8">
                   <h2 className="text-2xl font-extrabold text-[#1c1c1c] tracking-tight">
                     Verify Your Email
                   </h2>
@@ -261,9 +266,9 @@ function LoginPage() {
                 </div>
               </form>
             ) : (
-              <>
+              <div className="w-full flex flex-col items-center gap-8">
                 {/* Welcome text */}
-                <div className="text-center space-y-2">
+                <div className="text-center space-y-2 w-full">
                   <h1 className="text-3xl font-extrabold text-[#1c1c1c] tracking-tight">
                     Welcome Back!
                   </h1>
@@ -272,101 +277,107 @@ function LoginPage() {
                   </p>
                 </div>
 
-                {/* Google OAuth Button */}
-                <button
-                  type="button"
-                  className="w-full border border-gray-300 rounded-lg py-3 px-4 text-sm font-semibold text-gray-700 bg-white hover:bg-gray-50 flex items-center justify-center gap-2 cursor-pointer shadow-sm active:scale-[0.98] transition-all border-solid"
-                >
-                  <svg className="w-4 h-4" viewBox="0 0 24 24">
-                    <path fill="#EA4335" d="M12 5.04c1.78 0 3.38.61 4.64 1.82l3.46-3.46C17.98 1.43 15.2 0 12 0 7.33 0 3.3 2.67 1.34 6.56l4.08 3.16C6.38 6.96 8.94 5.04 12 5.04z" />
-                    <path fill="#4285F4" d="M23.49 12.27c0-.81-.07-1.59-.2-2.36H12v4.51h6.46c-.29 1.48-1.14 2.73-2.4 3.58l3.76 2.91c2.2-2.02 3.67-5 3.67-8.64z" />
-                    <path fill="#FBBC05" d="M5.42 14.56c-.24-.72-.38-1.49-.38-2.28 0-.79.14-1.56.38-2.28L1.34 6.84C.48 8.56 0 10.48 0 12.5s.48 3.94 1.34 5.66l4.08-3.6z" />
-                    <path fill="#34A853" d="M12 24c3.24 0 5.97-1.08 7.96-2.91l-3.76-2.91c-1.1.74-2.5 1.18-4.2 1.18-3.06 0-5.62-1.92-6.58-4.68l-4.08 3.16C3.3 21.33 7.33 24 12 24z" />
-                  </svg>
-                  Continue with Google
-                </button>
-
-                {/* Separator */}
-                <div className="relative py-1.5">
-                  <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-gray-200"></div>
-                  </div>
-                  <div className="relative flex justify-center text-xs uppercase">
-                    <span className="bg-white px-3 text-[#8e8e93] font-semibold">Or</span>
-                  </div>
-                </div>
-
-                {/* Credentials form */}
-                <form onSubmit={startOtpFlow} className="space-y-4">
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-semibold uppercase tracking-wider text-gray-600">
-                      Email
-                    </label>
-                    <input
-                      type="email"
-                      autoComplete="email"
-                      required
-                      placeholder="youremail@company.com"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="w-full rounded-lg border border-gray-300 bg-white px-3.5 py-3 text-sm text-gray-900 placeholder-gray-400 outline-none transition-all focus:border-[#dd5437] focus:ring-2 focus:ring-[#dd5437]/10"
-                    />
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <div className="flex justify-between items-center">
-                      <label className="text-xs font-semibold uppercase tracking-wider text-gray-600">
-                        Password
-                      </label>
-                      <a href="#" className="text-xs font-semibold text-[#dd5437] hover:underline">
-                        Forgot Password?
-                      </a>
-                    </div>
-                    <div className="relative">
-                      <input
-                        type={showPassword ? "text" : "password"}
-                        autoComplete="current-password"
-                        required
-                        placeholder="Enter your password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        className="w-full rounded-lg border border-gray-300 bg-white pl-3.5 pr-10 py-3 text-sm text-gray-900 placeholder-gray-400 outline-none transition-all focus:border-[#dd5437] focus:ring-2 focus:ring-[#dd5437]/10"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none cursor-pointer"
-                      >
-                        {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                      </button>
-                    </div>
-                  </div>
-
-                  {error && (
-                    <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600">
-                      {error}
-                    </div>
-                  )}
-
-                  {/* Submit Button */}
+                {/* Form & Actions Group */}
+                <div className="w-full space-y-4">
+                  {/* Google OAuth Button */}
                   <button
-                    type="submit"
-                    disabled={submitting}
-                    className="w-full bg-[#dd5437] hover:bg-[#c9452b] text-white font-semibold py-3 px-4 rounded-lg shadow-md transition-all active:scale-[0.98] disabled:opacity-60 disabled:pointer-events-none cursor-pointer text-sm flex items-center justify-center gap-2 mt-4"
+                    type="button"
+                    className="w-full border border-gray-300 rounded-lg py-3 px-4 text-sm font-semibold text-gray-700 bg-white hover:bg-gray-50 flex items-center justify-center gap-2 cursor-pointer shadow-sm active:scale-[0.98] transition-all border-solid"
                   >
-                    {submitting && <Loader2 className="h-4 w-4 animate-spin" />}
-                    Sign In
+                    <svg className="w-4 h-4" viewBox="0 0 24 24">
+                      <path fill="#EA4335" d="M12 5.04c1.78 0 3.38.61 4.64 1.82l3.46-3.46C17.98 1.43 15.2 0 12 0 7.33 0 3.3 2.67 1.34 6.56l4.08 3.16C6.38 6.96 8.94 5.04 12 5.04z" />
+                      <path fill="#4285F4" d="M23.49 12.27c0-.81-.07-1.59-.2-2.36H12v4.51h6.46c-.29 1.48-1.14 2.73-2.4 3.58l3.76 2.91c2.2-2.02 3.67-5 3.67-8.64z" />
+                      <path fill="#FBBC05" d="M5.42 14.56c-.24-.72-.38-1.49-.38-2.28 0-.79.14-1.56.38-2.28L1.34 6.84C.48 8.56 0 10.48 0 12.5s.48 3.94 1.34 5.66l4.08-3.6z" />
+                      <path fill="#34A853" d="M12 24c3.24 0 5.97-1.08 7.96-2.91l-3.76-2.91c-1.1.74-2.5 1.18-4.2 1.18-3.06 0-5.62-1.92-6.58-4.68l-4.08 3.16C3.3 21.33 7.33 24 12 24z" />
+                    </svg>
+                    Continue with Google
                   </button>
-                </form>
-              </>
+
+                  {/* Separator */}
+                  <div className="relative py-1.5">
+                    <div className="absolute inset-0 flex items-center">
+                      <div className="w-full border-t border-gray-200"></div>
+                    </div>
+                    <div className="relative flex justify-center text-xs uppercase">
+                      <span className="bg-white px-3 text-[#8e8e93] font-semibold">Or</span>
+                    </div>
+                  </div>
+
+                  {/* Credentials form */}
+                  <form onSubmit={startOtpFlow} className="space-y-4">
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-semibold uppercase tracking-wider text-gray-600">
+                        Email
+                      </label>
+                      <input
+                        type="email"
+                        autoComplete="email"
+                        required
+                        placeholder="youremail@company.com"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        className="w-full rounded-lg border border-gray-300 bg-white px-3.5 py-3 text-sm text-gray-900 placeholder-gray-400 outline-none transition-all focus:border-[#dd5437] focus:ring-2 focus:ring-[#dd5437]/10"
+                      />
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <div className="flex justify-between items-center">
+                        <label className="text-xs font-semibold uppercase tracking-wider text-gray-600">
+                          Password
+                        </label>
+                        <a href="#" className="text-xs font-semibold text-[#dd5437] hover:underline">
+                          Forgot Password?
+                        </a>
+                      </div>
+                      <div className="relative">
+                        <input
+                          type={showPassword ? "text" : "password"}
+                          autoComplete="current-password"
+                          required
+                          placeholder="Enter your password"
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          className="w-full rounded-lg border border-gray-300 bg-white pl-3.5 pr-10 py-3 text-sm text-gray-900 placeholder-gray-400 outline-none transition-all focus:border-[#dd5437] focus:ring-2 focus:ring-[#dd5437]/10"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none cursor-pointer"
+                        >
+                          {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                        </button>
+                      </div>
+                    </div>
+
+                    {error && (
+                      <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600">
+                        {error}
+                      </div>
+                    )}
+
+                    {/* Submit Button */}
+                    <button
+                      type="submit"
+                      disabled={submitting}
+                      className="w-full bg-[#dd5437] hover:bg-[#c9452b] text-white font-semibold py-3 px-4 rounded-lg shadow-md transition-all active:scale-[0.98] disabled:opacity-60 disabled:pointer-events-none cursor-pointer text-sm flex items-center justify-center gap-2 !mt-8"
+                    >
+                      {submitting && <Loader2 className="h-4 w-4 animate-spin" />}
+                      Sign In
+                    </button>
+                  </form>
+                </div>
+              </div>
             )}
 
             {/* Signup offer */}
-            <p className="text-sm text-center text-gray-500 pt-1">
-              Are you a property manager and need an account?{" "}
-              <Link to="/signup" className="text-[#dd5437] font-semibold hover:underline">
-                Sign Up
-              </Link>
+            <p 
+              className="text-base text-center font-medium leading-[1.2] whitespace-nowrap pt-1 w-full"
+              style={{ color: "rgba(31, 31, 31, 0.64)" }}
+            >
+              Are you a property manager and need an account? Call us on{" "}
+              <a href="tel:1300567637" className="text-[#dd5437] font-semibold hover:underline">
+                1300 567 637
+              </a>
             </p>
           </div>
 
@@ -402,20 +413,18 @@ function LoginPage() {
         </div>
 
         {/* Footer */}
-        <p className="text-center text-xs text-gray-400 mt-8 shrink-0">
+        <p className="text-center text-xs text-gray-400 mt-12 shrink-0">
           2026 The Appliance Guys. All Rights Reserved
         </p>
       </div>
 
       {/* Right Pane - Feature image banner */}
-      <div className="hidden lg:block lg:w-1/2 p-4 h-full shrink-0">
-        <div className="w-full h-full rounded-[24px] overflow-hidden shadow-2xl bg-[#fafafa]">
-          <img
-            src={sidePortionUrl}
-            alt="One less thing to stress about - HubKonnect"
-            className="w-full h-full object-cover object-center"
-          />
-        </div>
+      <div className="hidden lg:block lg:w-1/2 h-screen fixed right-0 top-0 shrink-0">
+        <img
+          src={sidePortionUrl}
+          alt="One less thing to stress about - HubKonnect"
+          className="w-full h-full object-fill object-center"
+        />
       </div>
     </div>
   );

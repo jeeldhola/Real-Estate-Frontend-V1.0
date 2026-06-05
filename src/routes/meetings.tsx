@@ -44,9 +44,11 @@ import {
   useUpdateMeeting,
   useUsers,
   usePropertyManagers,
+  useTasks,
 } from "@/lib/queries";
 import type { Meeting, MeetingStatus, MeetingType } from "@/lib/api-types";
 import { ApiError } from "@/lib/api";
+
 
 export const Route = createFileRoute("/meetings")({
   component: MeetingsPage,
@@ -62,7 +64,7 @@ type CalendarView = "month" | "week" | "day" | "agenda";
 
 // Constants for display
 const meetingTypeColors: Record<MeetingType, { bg: string; border: string }> = {
-  "Cold Visit": { bg: "bg-blue-50/80 text-blue-700 border-blue-100", border: "border-l-blue-500" },
+  "Cold Visit": { bg: "bg-orange-50/80 text-orange-700 border-orange-100", border: "border-l-[#e05638]" },
   "Property Manager Meeting": { bg: "bg-orange-50/80 text-orange-700 border-orange-100", border: "border-l-[#e05638]" },
   "Follow-up": { bg: "bg-amber-50/80 text-amber-700 border-amber-100", border: "border-l-amber-500" },
   "Training": { bg: "bg-purple-50/80 text-purple-700 border-purple-100", border: "border-l-purple-500" },
@@ -83,13 +85,18 @@ const statusColors: Record<MeetingStatus, string> = {
   no_show: "bg-slate-100 text-slate-600 border-slate-200",
 };
 
-// Generate time slots from 5:00 AM to 8:00 PM in 1-hour increments
-const HOURS = Array.from({ length: 16 }, (_, i) => i + 5); // 5 to 20
+// Generate time slots from 12:00 AM to 11:00 PM (all 24 hours)
+const HOURS = Array.from({ length: 24 }, (_, i) => i); // 0 to 23
 
 // Time display helper
 function formatHour(h: number) {
   const ampm = h >= 12 ? "PM" : "AM";
-  const displayHour = h > 12 ? h - 12 : h === 0 ? 12 : h;
+  let displayHour = h % 12;
+  if (displayHour === 0) displayHour = 12;
+  
+  if (ampm === "PM" && displayHour !== 12) {
+    return `${displayHour.toString().padStart(2, "0")}:00 ${ampm}`;
+  }
   return `${displayHour}:00 ${ampm}`;
 }
 
@@ -109,7 +116,7 @@ const TIME_PICKER_SLOTS = (() => {
 
 function MeetingsPage() {
   const [view, setView] = useState<CalendarView>("week");
-  const [currentDate, setCurrentDate] = useState<Date>(new Date("2026-05-28T17:25:08")); // May 28, 2026
+  const [currentDate, setCurrentDate] = useState<Date>(new Date(2026, 5, 3, 17, 25, 8)); // June 3, 2026
   
   // Filter states
   const [selectedManager, setSelectedManager] = useState<string>("all");
@@ -120,13 +127,26 @@ function MeetingsPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingMeeting, setEditingMeeting] = useState<Meeting | null>(null);
 
+  // Selected slot state (initial state matches mockup: June 2, 2026 at 1:00 AM)
+  const [selectedSlot, setSelectedSlot] = useState<{ date: Date; hour: number } | null>({
+    date: new Date(2026, 5, 2),
+    hour: 1,
+  });
+
+  // Highlighted column state (toggled by clicking the day column header)
+  const [highlightedColumn, setHighlightedColumn] = useState<string | null>(null);
+
   // Queries
   const meetingsQuery = useMeetings({ limit: 200 });
   const officesQuery = useOffices({ limit: 200 });
   const usersQuery = useUsers({ limit: 200 });
   const propertyManagersQuery = usePropertyManagers({ limit: 200 });
+  const tasksQuery = useTasks({ limit: 200 });
   const updateMeeting = useUpdateMeeting();
   const deleteMeeting = useDeleteMeeting();
+
+  // All tasks retrieved
+  const allTasks = tasksQuery.data?.items ?? [];
 
   // All meetings retrieved
   const allMeetings = meetingsQuery.data?.items ?? [];
@@ -150,7 +170,7 @@ function MeetingsPage() {
 
   // Date Navigation Helpers
   function handleToday() {
-    setCurrentDate(new Date("2026-05-28T17:25:08"));
+    setCurrentDate(new Date(2026, 5, 3, 17, 25, 8));
   }
 
   function handleBack() {
@@ -175,25 +195,38 @@ function MeetingsPage() {
 
   // Active range display text
   const dateRangeText = useMemo(() => {
-    if (view === "month") {
+    if (view === "month" || view === "week" || view === "day") {
       return currentDate.toLocaleString("default", { month: "long", year: "numeric" });
     }
-    if (view === "week") {
-      const sun = new Date(currentDate);
-      sun.setDate(sun.getDate() - sun.getDay());
-      const sat = new Date(sun);
-      sat.setDate(sat.getDate() + 6);
-      
-      const startMonth = sun.toLocaleString("default", { month: "short" });
-      const endMonth = sat.toLocaleString("default", { month: "short" });
-      
-      if (startMonth === endMonth) {
-        return `${startMonth} ${sun.getDate()} – ${sat.getDate()}, ${sun.getFullYear()}`;
-      }
-      return `${startMonth} ${sun.getDate()} – ${endMonth} ${sat.getDate()}, ${sun.getFullYear()}`;
-    }
-    return currentDate.toLocaleString("default", { weekday: "long", month: "long", day: "numeric", year: "numeric" });
+    
+    // For agenda view: DD/MM/YYYY – DD/MM/YYYY
+    const nextDay = new Date(currentDate);
+    nextDay.setDate(nextDay.getDate() + 1);
+    
+    const formatDDMMYYYY = (d: Date) => {
+      const day = d.getDate().toString().padStart(2, "0");
+      const month = (d.getMonth() + 1).toString().padStart(2, "0");
+      const year = d.getFullYear();
+      return `${day}/${month}/${year}`;
+    };
+    
+    return `${formatDDMMYYYY(currentDate)} – ${formatDDMMYYYY(nextDay)}`;
   }, [currentDate, view]);
+
+  // Agenda meetings for the 2-day range starting at currentDate
+  const agendaMeetings = useMemo(() => {
+    const startRange = new Date(currentDate);
+    startRange.setHours(0, 0, 0, 0);
+    
+    const endRange = new Date(currentDate);
+    endRange.setDate(endRange.getDate() + 1);
+    endRange.setHours(23, 59, 59, 999);
+    
+    return filteredMeetings.filter((m) => {
+      const meetingDate = new Date(m.startAt);
+      return meetingDate >= startRange && meetingDate <= endRange;
+    });
+  }, [filteredMeetings, currentDate]);
 
   // Sunday to Saturday dates for active week
   const weekDates = useMemo(() => {
@@ -207,9 +240,20 @@ function MeetingsPage() {
     });
   }, [currentDate]);
 
+  // Center currentDate in 7-column day view grid
+  const dayViewDates = useMemo(() => {
+    const center = new Date(currentDate);
+    center.setHours(0, 0, 0, 0);
+    return Array.from({ length: 7 }, (_, i) => {
+      const d = new Date(center);
+      d.setDate(d.getDate() - 3 + i);
+      return d;
+    });
+  }, [currentDate]);
+
   // Current time marker position inside active week
   const isThisWeek = useMemo(() => {
-    const now = new Date("2026-05-28T17:25:08");
+    const now = new Date(2026, 5, 3, 17, 25, 8);
     return weekDates.some((d) => d.toDateString() === now.toDateString());
   }, [weekDates]);
 
@@ -218,25 +262,23 @@ function MeetingsPage() {
       {/* Upper header */}
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-800 flex items-center gap-2">
-            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#e05638]/10 text-[#e05638]">
-              <CalendarDays className="h-5 w-5" />
-            </span>
+          <h1 className="text-[28px] font-bold tracking-tight text-slate-800">
             Meetings Calendar
           </h1>
-          <p className="mt-1.5 text-xs text-slate-500 font-medium">
+          <p className="mt-1.5 text-sm text-slate-500 font-medium">
             Schedule and manage office visits and property manager meetings.
           </p>
         </div>
         <button
           onClick={() => {
+            setSelectedSlot({ date: new Date(2026, 5, 2), hour: 9 });
             setEditingMeeting(null);
             setDialogOpen(true);
           }}
           className="inline-flex items-center gap-2 rounded-xl bg-[#e05638] px-4 py-2.5 text-xs font-bold text-white shadow-md shadow-[#e05638]/15 hover:shadow-lg transition-all hover:bg-[#e05638]/95 cursor-pointer"
         >
-          <Plus className="h-4 w-4" />
-          Schedule Meeting
+          <Plus className="h-4 w-4 shrink-0" />
+          New Meeting
         </button>
       </div>
 
@@ -244,7 +286,7 @@ function MeetingsPage() {
       <div className="mt-6 flex flex-wrap items-center gap-4 py-4 px-4 bg-white rounded-2xl border border-slate-200/60 shadow-2xs">
         {/* Account Managers Selector */}
         <Select value={selectedManager} onValueChange={setSelectedManager}>
-          <SelectTrigger className={`w-52 h-9 text-xs rounded-xl bg-white border border-slate-200/80 shadow-2xs focus:ring-1 focus:ring-[#e05638]/20 focus:border-[#e05638] transition-all text-slate-700 font-semibold ${selectedManager !== "all" ? "border-[#e05638]/60 bg-[#e05638]/5 text-[#e05638]" : ""}`}>
+          <SelectTrigger className={`w-60 h-11 text-sm rounded-xl bg-white border border-slate-200 focus:ring-1 focus:ring-[#e05638]/20 focus:border-[#e05638] transition-all text-slate-800 font-semibold px-3 flex items-center justify-between gap-2 [&_svg]:opacity-100 [&_svg]:text-slate-700 shadow-2xs ${selectedManager !== "all" ? "border-[#e05638]/60 bg-[#e05638]/5 text-[#e05638]" : ""}`}>
             <SelectValue placeholder="All Account Managers" />
           </SelectTrigger>
           <SelectContent className="rounded-xl border-slate-200">
@@ -259,7 +301,7 @@ function MeetingsPage() {
 
         {/* Meeting Type Selector */}
         <Select value={selectedType} onValueChange={setSelectedType}>
-          <SelectTrigger className={`w-44 h-9 text-xs rounded-xl bg-white border border-slate-200/80 shadow-2xs focus:ring-1 focus:ring-[#e05638]/20 focus:border-[#e05638] transition-all text-slate-700 font-semibold ${selectedType !== "all" ? "border-[#e05638]/60 bg-[#e05638]/5 text-[#e05638]" : ""}`}>
+          <SelectTrigger className={`w-44 h-11 text-sm rounded-xl bg-white border border-slate-200 focus:ring-1 focus:ring-[#e05638]/20 focus:border-[#e05638] transition-all text-slate-800 font-semibold px-3 flex items-center justify-between gap-2 [&_svg]:opacity-100 [&_svg]:text-slate-700 shadow-2xs ${selectedType !== "all" ? "border-[#e05638]/60 bg-[#e05638]/5 text-[#e05638]" : ""}`}>
             <SelectValue placeholder="All Types" />
           </SelectTrigger>
           <SelectContent className="rounded-xl border-slate-200">
@@ -274,7 +316,7 @@ function MeetingsPage() {
 
         {/* Status Selector */}
         <Select value={selectedStatus} onValueChange={setSelectedStatus}>
-          <SelectTrigger className={`w-44 h-9 text-xs rounded-xl bg-white border border-slate-200/80 shadow-2xs focus:ring-1 focus:ring-[#e05638]/20 focus:border-[#e05638] transition-all text-slate-700 font-semibold ${selectedStatus !== "all" ? "border-[#e05638]/60 bg-[#e05638]/5 text-[#e05638]" : ""}`}>
+          <SelectTrigger className={`w-44 h-11 text-sm rounded-xl bg-white border border-slate-200 focus:ring-1 focus:ring-[#e05638]/20 focus:border-[#e05638] transition-all text-slate-800 font-semibold px-3 flex items-center justify-between gap-2 [&_svg]:opacity-100 [&_svg]:text-slate-700 shadow-2xs ${selectedStatus !== "all" ? "border-[#e05638]/60 bg-[#e05638]/5 text-[#e05638]" : ""}`}>
             <SelectValue placeholder="All Statuses" />
           </SelectTrigger>
           <SelectContent className="rounded-xl border-slate-200">
@@ -323,7 +365,7 @@ function MeetingsPage() {
             </h2>
           </div>
 
-          <div className="flex items-center rounded-xl bg-slate-100/80 p-0.5 border border-slate-200/40 shrink-0 select-none">
+          <div className="flex items-center rounded-lg bg-[#f6f6f6] p-1 gap-2 shrink-0 select-none">
             {(["month", "week", "day", "agenda"] as CalendarView[]).map((v) => {
               const active = view === v;
               const displayLabel = v.charAt(0).toUpperCase() + v.slice(1);
@@ -331,10 +373,10 @@ function MeetingsPage() {
                 <button
                   key={v}
                   onClick={() => setView(v)}
-                  className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
+                  className={`px-4 py-1.5 text-xs font-semibold rounded-[6px] transition-all cursor-pointer ${
                     active
-                      ? "bg-white text-slate-800 shadow-xs border border-slate-200/20 font-bold"
-                      : "text-slate-500 hover:text-slate-800"
+                      ? "bg-white text-slate-800 shadow-sm font-bold"
+                      : "text-slate-500 hover:text-slate-800 hover:bg-[#eaeaea]/40"
                   }`}
                 >
                   {displayLabel}
@@ -358,42 +400,54 @@ function MeetingsPage() {
             {view === "week" && (
               <div className="min-w-[850px] flex flex-col select-none relative">
                 {/* Column Headers */}
-                <div className="grid grid-cols-[80px_repeat(7,_1fr)] border-b border-slate-100 text-center bg-slate-50/40 py-3">
-                  <div className="text-[10px] font-bold text-slate-400 uppercase self-center font-semibold">GMT+5:30</div>
+                <div className="grid grid-cols-[80px_repeat(7,_1fr)] border-b border-slate-100 bg-white">
+                  {/* Corner spacing */}
+                  <div className="bg-white"></div>
                   {weekDates.map((date, idx) => {
-                    const isToday = date.toDateString() === new Date("2026-05-28").toDateString();
-                    const dayMeetings = filteredMeetings.filter(
-                      (m) => new Date(m.startAt).toDateString() === date.toDateString()
-                    );
+                    const isToday = date.toDateString() === new Date(2026, 5, 3).toDateString();
+                    const isSelectedCol = selectedSlot && selectedSlot.date.toDateString() === date.toDateString();
+                    const isHighlighted = highlightedColumn === date.toDateString();
+                    
+                    // Filter tasks for this day
+                    const dayTasks = allTasks.filter((t) => {
+                      if (!t.dueAt) return false;
+                      const due = new Date(t.dueAt);
+                      return due.toDateString() === date.toDateString();
+                    });
+                    
+                    let borderClasses = "";
+                    if (isSelectedCol) {
+                      borderClasses = "border-l border-r border-t border-dashed border-sky-400 z-10";
+                    }
                     
                     return (
-                      <div key={idx} className="flex flex-col items-center justify-center gap-1 border-r border-slate-100 last:border-0 relative">
-                        <span className={`text-[10px] font-bold tracking-wide uppercase ${isToday ? "text-[#e05638]" : "text-slate-400"}`}>
-                          {date.toLocaleString("default", { weekday: "short" })}
+                      <div
+                        key={idx}
+                        onClick={() => {
+                          setHighlightedColumn(prev => prev === date.toDateString() ? null : date.toDateString());
+                        }}
+                        className={`pl-4 pr-3 py-3.5 flex items-center justify-between relative cursor-pointer select-none ${isHighlighted ? "bg-[#e05638]/[0.03]" : "bg-white"} ${borderClasses}`}
+                      >
+                        <span className="text-xs font-semibold text-slate-700">
+                          {date.getDate().toString().padStart(2, "0")} {date.toLocaleString("default", { weekday: "short" })}
                         </span>
-                        <div className="flex items-center gap-1.5">
-                          <span className={`text-xs font-bold flex h-7 w-7 items-center justify-center rounded-full transition-all ${
-                            isToday ? "bg-[#e05638] text-white shadow-xs" : "text-slate-700"
-                          }`}>
-                            {date.getDate()}
+                        
+                        {dayTasks.length > 0 && (
+                          <span className="inline-flex items-center justify-center rounded-full bg-cyan-50 border border-cyan-100 text-cyan-600 px-2 py-0.5 text-[10px] font-bold">
+                            {dayTasks.length} {dayTasks.length === 1 ? "Task" : "Tasks"}
                           </span>
-                          {dayMeetings.length > 0 && (
-                            <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-blue-50 border border-blue-100 text-blue-600 shrink-0">
-                              {dayMeetings.length} visit{dayMeetings.length > 1 ? "s" : ""}
-                            </span>
-                          )}
-                        </div>
+                        )}
                       </div>
                     );
                   })}
                 </div>
 
                 {/* Week Slots Grid (Row-by-Row Layout) */}
-                <div className="relative flex flex-col divide-y divide-slate-100/60 bg-white">
+                <div className="relative flex flex-col bg-white">
                   {HOURS.map((h) => (
-                    <div key={h} className="grid grid-cols-[80px_repeat(7,_1fr)] h-16 group/row relative divide-x divide-slate-100/40">
+                    <div key={h} className="grid grid-cols-[80px_repeat(7,_1fr)] h-16 group/row relative bg-white">
                       {/* Hour label */}
-                      <div className="text-[10px] font-bold text-slate-400 text-right pr-3.5 pt-1.5 bg-slate-50/15 border-r border-slate-100 select-none">
+                      <div className="text-xs font-semibold text-slate-500 text-right pr-4 border-r border-slate-100 select-none flex items-center justify-end h-full">
                         {formatHour(h)}
                       </div>
                       
@@ -404,27 +458,47 @@ function MeetingsPage() {
                           return start.toDateString() === date.toDateString() && start.getHours() === h;
                         });
                         
+                        const isToday = date.toDateString() === new Date(2026, 5, 3).toDateString();
+                        const isSelectedCol = selectedSlot && selectedSlot.date.toDateString() === date.toDateString();
+                        const isSelectedCell = selectedSlot && selectedSlot.date.toDateString() === date.toDateString() && selectedSlot.hour === h;
+                        const isHighlighted = highlightedColumn === date.toDateString();
+                        
+                        let borderClasses = "border-r border-b border-slate-100";
+                        if (isSelectedCol) {
+                          borderClasses = "border-l border-r border-b border-dashed border-sky-400 z-10";
+                        }
+                        
                         return (
                           <div
                             key={dayIdx}
                             onClick={() => {
                               const selectedDate = new Date(date);
                               selectedDate.setHours(h, 0, 0, 0);
+                              setSelectedSlot({ date, hour: h });
                               setEditingMeeting(null);
                               setDialogOpen(true);
                             }}
-                            className="hover:bg-slate-50/40 relative p-1.5 transition-all cursor-pointer flex flex-col gap-1 justify-center min-w-0"
+                            className={`hover:bg-slate-50/40 relative p-1.5 transition-all cursor-pointer flex flex-col gap-1 justify-center min-w-0 ${isHighlighted ? "bg-[#e05638]/[0.03]" : ""} ${borderClasses}`}
                           >
                             {/* Schedule plus guide */}
                             <span className="absolute top-1 right-1 opacity-0 group-hover/row:opacity-100 transition-opacity bg-slate-200/50 hover:bg-slate-200 text-slate-500 p-0.5 rounded-md text-[8px] flex items-center justify-center shrink-0 pointer-events-none">
                               <Plus className="h-2.5 w-2.5" />
                             </span>
 
+                            {/* Render selected slot box */}
+                            {isSelectedCell && (
+                              <div
+                                style={{
+                                  backgroundImage: "repeating-linear-gradient(45deg, #f0f9ff, #f0f9ff 8px, #e0f2fe 8px, #e0f2fe 16px)",
+                                }}
+                                className="w-full h-full rounded-lg border border-sky-400 flex items-center justify-center p-1"
+                              >
+                                <div className="w-[85%] h-7 bg-white border border-sky-300 rounded-md shadow-2xs"></div>
+                              </div>
+                            )}
+
                             {/* Render meetings for this hour cell */}
-                            {dayMeetings.map((m) => {
-                              const start = new Date(m.startAt);
-                              const end = new Date(m.endAt);
-                              const typeStyles = meetingTypeColors[m.meetingType] ?? meetingTypeColors["Cold Visit"];
+                            {!isSelectedCell && dayMeetings.map((m) => {
                               const isCancelled = m.status === "cancelled" || m.status === "no_show";
                               
                               return (
@@ -432,20 +506,13 @@ function MeetingsPage() {
                                   key={m.id}
                                   onClick={(e) => {
                                     e.stopPropagation();
+                                    setSelectedSlot(null);
                                     setEditingMeeting(m);
                                     setDialogOpen(true);
                                   }}
-                                  className={`px-2 py-1.5 rounded-xl border border-l-[3px] flex flex-col justify-center shadow-xs hover:shadow-md transition-all cursor-pointer ${typeStyles.bg} ${typeStyles.border} min-w-0 overflow-hidden`}
+                                  className={`px-3 py-2.5 rounded-lg flex items-center justify-start shadow-xs hover:shadow-md transition-all cursor-pointer bg-[#e05638] text-white border-l-[3px] border-white pl-2 min-w-0 overflow-hidden w-full h-full text-xs font-semibold`}
                                 >
-                                  <div className="flex items-center justify-between gap-1">
-                                    <span className={`text-[8px] font-bold uppercase tracking-wider truncate ${isCancelled ? "line-through text-slate-400" : ""}`}>
-                                      {m.meetingType}
-                                    </span>
-                                    <span className={`rounded px-1.5 py-0.2 text-[7px] font-bold ${statusColors[m.status]}`}>
-                                      {statusDisplayNames[m.status]}
-                                    </span>
-                                  </div>
-                                  <span className={`text-[10px] font-bold mt-0.5 truncate text-slate-800 ${isCancelled ? "line-through text-slate-400" : ""}`}>
+                                  <span className={`truncate ${isCancelled ? "line-through opacity-70" : ""}`}>
                                     {m.title}
                                   </span>
                                 </div>
@@ -457,46 +524,6 @@ function MeetingsPage() {
                     </div>
                   ))}
 
-                  {/* Red Current Time Indicator over the active row */}
-                  {isThisWeek && (() => {
-                    const now = new Date("2026-05-28T17:25:08");
-                    const curHour = now.getHours();
-                    const curMin = now.getMinutes();
-                    const gridStartHour = 5;
-                    const gridEndHour = 20;
-
-                    if (curHour >= gridStartHour && curHour <= gridEndHour) {
-                      const offsetMin = (curHour - gridStartHour) * 60 + curMin;
-                      const topPx = (offsetMin / 60) * 64; // 64px per hour row
-                      const dayOfWeek = now.getDay();
-
-                      return (
-                        <div
-                          style={{
-                            position: "absolute",
-                            top: `${topPx}px`,
-                            left: "80px",
-                            right: "0",
-                            zIndex: 30,
-                          }}
-                          className="flex items-center pointer-events-none select-none"
-                        >
-                          <div 
-                            style={{
-                              position: "absolute",
-                              left: `${(dayOfWeek * 100) / 7}%`,
-                              width: `${100 / 7}%`,
-                            }}
-                            className="flex items-center"
-                          >
-                            <div className="h-2.5 w-2.5 rounded-full bg-red-500 -ml-1.25 shadow-sm pointer-events-auto" />
-                            <div className="flex-1 h-0.5 bg-red-500 shadow-xs" />
-                          </div>
-                        </div>
-                      );
-                    }
-                    return null;
-                  })()}
                 </div>
               </div>
             )}
@@ -533,7 +560,7 @@ function MeetingsPage() {
                     date.setDate(date.getDate() + i);
                     
                     const isCurrentMonth = date.getMonth() === month;
-                    const isToday = date.toDateString() === new Date("2026-05-28").toDateString();
+                    const isToday = date.toDateString() === new Date(2026, 5, 3).toDateString();
                     const dayNumber = date.getDate().toString().padStart(2, "0");
 
                     const dayMeetings = filteredMeetings.filter(
@@ -549,77 +576,83 @@ function MeetingsPage() {
                           setEditingMeeting(null);
                           setDialogOpen(true);
                         }}
-                        className={`h-36 p-3 border-r border-b border-slate-100 flex flex-col bg-white hover:bg-slate-50/30 cursor-pointer relative transition-colors`}
+                        className={`h-[156px] p-4 border-r border-b border-slate-100 flex flex-col bg-white hover:bg-slate-50/30 cursor-pointer relative transition-colors`}
                       >
-                        <span className={`text-[11px] font-bold h-6 w-6 flex items-center justify-center rounded-full tracking-wide select-none ${
-                          isToday ? "bg-[#e05638] text-white" : isCurrentMonth ? "text-slate-700" : "text-slate-300"
+                        <span className={`text-xs font-semibold select-none ${
+                          isToday 
+                            ? "bg-[#e05638] text-white h-6 w-6 rounded-full flex items-center justify-center -ml-1 -mt-0.5 shadow-xs" 
+                            : isCurrentMonth 
+                              ? "text-slate-700" 
+                              : "text-slate-300"
                         }`}>
                           {dayNumber}
                         </span>
 
-                        <div className="flex-1 overflow-y-auto mt-2 space-y-1.5 pr-0.5">
-                          {dayMeetings.slice(0, 2).map((m) => {
-                            const typeStyles = meetingTypeColors[m.meetingType] ?? meetingTypeColors["Cold Visit"];
-                            const isCancelled = m.status === "cancelled" || m.status === "no_show";
+                        <div className="flex-1 flex flex-col mt-3 min-h-0">
+                          <div className="space-y-2 overflow-y-auto pr-0.5">
+                            {dayMeetings.slice(0, 2).map((m) => {
+                              const typeStyles = meetingTypeColors[m.meetingType] ?? meetingTypeColors["Cold Visit"];
+                              const isCancelled = m.status === "cancelled" || m.status === "no_show";
 
-                            // Get attendees and PM users for displaying avatars
-                            const attendeeList = (m.attendees ?? []).map((a) => {
-                              if (typeof a === "object" && a !== null) return a;
-                              return usersQuery.data?.items.find((u) => u.id === a);
-                            }).filter(Boolean);
+                              // Get attendees and PM users for displaying avatars
+                              const attendeeList = (m.attendees ?? []).map((a) => {
+                                if (typeof a === "object" && a !== null) return a;
+                                return usersQuery.data?.items.find((u) => u.id === a);
+                              }).filter(Boolean);
 
-                            const pmUser = (() => {
-                              if (!m.propertyManager) return null;
-                              if (typeof m.propertyManager === "object") return m.propertyManager;
-                              return propertyManagersQuery.data?.items.find((pm) => pm.id === m.propertyManager);
-                            })();
+                              const pmUser = (() => {
+                                if (!m.propertyManager) return null;
+                                if (typeof m.propertyManager === "object") return m.propertyManager;
+                                return propertyManagersQuery.data?.items.find((pm) => pm.id === m.propertyManager);
+                              })();
 
-                            return (
-                              <div
-                                key={m.id}
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setEditingMeeting(m);
-                                  setDialogOpen(true);
-                                }}
-                                className={`px-2 py-1.5 rounded-lg border border-l-[3px] flex flex-col justify-center shadow-2xs hover:shadow-xs transition-all cursor-pointer ${typeStyles.bg} ${typeStyles.border} min-w-0 overflow-hidden`}
-                              >
-                                <div className="flex items-center justify-between w-full min-w-0 gap-1.5">
-                                  <span className={`text-[9px] font-semibold truncate flex-1 ${
-                                    isCancelled ? "line-through text-slate-400" : "text-slate-800"
-                                  }`}>
-                                    {m.title}
-                                  </span>
-                                  
-                                  {/* Avatars Stack & Status Dot */}
-                                  <div className="flex items-center gap-1 shrink-0">
-                                    <div className="flex -space-x-1.5 flex-row-reverse">
-                                      {pmUser && (
-                                        <img
-                                          src={pmUser.avatar || "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=100&h=100&q=80"}
-                                          alt={`${pmUser.firstName} ${pmUser.lastName}`}
-                                          className="h-4 w-4 rounded-full border border-white object-cover shadow-2xs shrink-0"
-                                        />
-                                      )}
-                                      {attendeeList.slice(0, 1).map((user: any, uIdx: number) => (
-                                        <img
-                                          key={uIdx}
-                                          src={user.avatar || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100"}
-                                          alt={user.name}
-                                          className="h-4 w-4 rounded-full border border-white object-cover shadow-2xs shrink-0"
-                                        />
-                                      ))}
+                              return (
+                                <div
+                                  key={m.id}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setEditingMeeting(m);
+                                    setDialogOpen(true);
+                                  }}
+                                  className={`px-2.5 py-1 rounded-r-lg border-l-[3px] flex flex-col justify-center transition-all cursor-pointer ${typeStyles.bg} ${typeStyles.border} min-w-0 overflow-hidden shadow-none`}
+                                >
+                                  <div className="flex items-center justify-between w-full min-w-0 gap-1.5">
+                                    <span className={`text-[10px] font-semibold truncate flex-1 ${
+                                      isCancelled ? "line-through text-slate-400" : "text-slate-800"
+                                    }`}>
+                                      {m.title}
+                                    </span>
+                                    
+                                    {/* Avatars Stack & Status Dot */}
+                                    <div className="flex items-center gap-1 shrink-0">
+                                      <div className="flex -space-x-1.5 flex-row-reverse">
+                                        {pmUser && (
+                                          <img
+                                            src={pmUser.avatar || "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=100&h=100&q=80"}
+                                            alt={`${pmUser.firstName} ${pmUser.lastName}`}
+                                            className="h-4 w-4 rounded-full border border-white object-cover shadow-2xs shrink-0"
+                                          />
+                                        )}
+                                        {attendeeList.slice(0, 1).map((user: any, uIdx: number) => (
+                                          <img
+                                            key={uIdx}
+                                            src={user.avatar || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100"}
+                                            alt={user.name}
+                                            className="h-4 w-4 rounded-full border border-white object-cover shadow-2xs shrink-0"
+                                          />
+                                        ))}
+                                      </div>
+                                      <span className={`w-1 h-1 rounded-full shrink-0 ${
+                                        m.status === "completed" ? "bg-emerald-500" :
+                                        m.status === "cancelled" ? "bg-rose-500" :
+                                        m.status === "no_show" ? "bg-slate-400" : "bg-amber-500"
+                                      }`} />
                                     </div>
-                                    <span className={`w-1 h-1 rounded-full shrink-0 ${
-                                      m.status === "completed" ? "bg-emerald-500" :
-                                      m.status === "cancelled" ? "bg-rose-500" :
-                                      m.status === "no_show" ? "bg-slate-400" : "bg-amber-500"
-                                    }`} />
                                   </div>
                                 </div>
-                              </div>
-                            );
-                          })}
+                              );
+                            })}
+                          </div>
                           
                           {dayMeetings.length > 2 && (
                             <div 
@@ -628,7 +661,7 @@ function MeetingsPage() {
                                 setView("day");
                                 setCurrentDate(date);
                               }}
-                              className="text-[9px] font-bold text-[#e05638] hover:underline mt-1 pl-1"
+                              className="text-[10px] font-bold text-[#e05638] hover:underline mt-auto pt-2 pl-0.5"
                             >
                               View more
                             </div>
@@ -644,127 +677,175 @@ function MeetingsPage() {
 
             {/* DAY VIEW */}
             {view === "day" && (
-              <div className="flex flex-col select-none max-w-xl mx-auto">
-                <div className="divide-y divide-slate-100 border-x border-b border-slate-100">
-                  {HOURS.map((h) => {
-                    const hourMeetings = filteredMeetings.filter((m) => {
-                      const start = new Date(m.startAt);
-                      return start.toDateString() === currentDate.toDateString() && start.getHours() === h;
+              <div className="min-w-[850px] flex flex-col select-none relative">
+                {/* Column Headers */}
+                <div className="grid grid-cols-[80px_repeat(7,_1fr)] border-b border-slate-100 bg-white">
+                  {/* Corner spacing */}
+                  <div className="bg-white"></div>
+                  {dayViewDates.map((date, idx) => {
+                    const isSelectedDay = idx === 3; // Selected day is in the center column
+                    
+                    // Filter tasks for this day
+                    const dayTasks = allTasks.filter((t) => {
+                      if (!t.dueAt) return false;
+                      const due = new Date(t.dueAt);
+                      return due.toDateString() === date.toDateString();
                     });
-
+                    
                     return (
-                      <div key={h} className="grid grid-cols-[80px_1fr] min-h-[72px] items-stretch divide-x divide-slate-100">
-                        <div className="p-3 text-[10px] font-bold text-slate-400 text-right bg-slate-50/20">
-                          {formatHour(h)}
-                        </div>
-                        <div
-                          onClick={() => {
-                            const selectedDate = new Date(currentDate);
-                            selectedDate.setHours(h, 0, 0, 0);
-                            setEditingMeeting(null);
-                            setDialogOpen(true);
-                          }}
-                          className="p-2 bg-white hover:bg-slate-50/40 relative flex flex-col gap-1.5 cursor-pointer justify-center"
-                        >
-                          {hourMeetings.map((m) => {
-                            const typeStyles = meetingTypeColors[m.meetingType] ?? meetingTypeColors["Cold Visit"];
-                            const isCancelled = m.status === "cancelled" || m.status === "no_show";
-
-                            return (
-                              <div
-                                key={m.id}
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setEditingMeeting(m);
-                                  setDialogOpen(true);
-                                }}
-                                className={`px-3 py-2 rounded-xl border flex flex-col ${typeStyles.bg} ${typeStyles.border} border-l-[3px] shadow-xs`}
-                              >
-                                <div className="flex items-center justify-between gap-1.5">
-                                  <span className={`text-[9px] font-bold uppercase tracking-wider ${isCancelled ? "line-through text-slate-400" : ""}`}>
-                                    {m.meetingType}
-                                  </span>
-                                  <span className={`rounded px-1.5 py-0.5 text-[8px] font-bold ${statusColors[m.status]}`}>
-                                    {statusDisplayNames[m.status]}
-                                  </span>
-                                </div>
-                                <span className={`text-[12px] font-bold mt-1 text-slate-800 ${isCancelled ? "line-through text-slate-400" : ""}`}>
-                                  {m.title}
-                                </span>
-                                {m.notes && (
-                                  <span className="text-[10px] text-slate-500 mt-0.5 italic">
-                                    {m.notes}
-                                  </span>
-                                )}
-                              </div>
-                            );
-                          })}
-                        </div>
+                      <div
+                        key={idx}
+                        className={`pl-4 pr-3 py-3.5 flex items-center justify-between relative bg-white`}
+                      >
+                        {isSelectedDay ? (
+                          <>
+                            <span className="text-xs font-semibold text-slate-700">
+                              {date.getDate().toString().padStart(2, "0")} {date.toLocaleString("default", { weekday: "short" })}
+                            </span>
+                            
+                            {dayTasks.length > 0 && (
+                              <span className="inline-flex items-center justify-center rounded-full bg-cyan-50 border border-cyan-100 text-cyan-600 px-2 py-0.5 text-[10px] font-bold">
+                                {dayTasks.length} {dayTasks.length === 1 ? "Task" : "Tasks"}
+                              </span>
+                            )}
+                          </>
+                        ) : (
+                          <div className="h-5"></div>
+                        )}
                       </div>
                     );
                   })}
+                </div>
+
+                {/* Day Slots Grid */}
+                <div className="relative flex flex-col bg-white">
+                  {HOURS.map((h) => (
+                    <div key={h} className="grid grid-cols-[80px_repeat(7,_1fr)] h-16 group/row relative bg-white">
+                      {/* Hour label */}
+                      <div className="text-xs font-semibold text-slate-500 text-right pr-4 border-r border-slate-100 select-none flex items-center justify-end h-full">
+                        {formatHour(h)}
+                      </div>
+                      
+                      {/* 7 Day Cells */}
+                      {dayViewDates.map((date, dayIdx) => {
+                        const isSelectedDay = dayIdx === 3;
+                        
+                        // We only show meetings for the selected day in the center column
+                        const dayMeetings = isSelectedDay ? filteredMeetings.filter((m) => {
+                          const start = new Date(m.startAt);
+                          return start.toDateString() === date.toDateString() && start.getHours() === h;
+                        }) : [];
+                        
+                        return (
+                          <div
+                            key={dayIdx}
+                            onClick={() => {
+                              if (isSelectedDay) {
+                                const selectedDate = new Date(date);
+                                selectedDate.setHours(h, 0, 0, 0);
+                                setEditingMeeting(null);
+                                setDialogOpen(true);
+                              }
+                            }}
+                            className={`relative p-1.5 flex flex-col gap-1 justify-center min-w-0 border-r border-b border-slate-100 ${isSelectedDay ? "hover:bg-slate-50/40 cursor-pointer" : ""}`}
+                          >
+                            {isSelectedDay && (
+                              <span className="absolute top-1 right-1 opacity-0 group-hover/row:opacity-100 transition-opacity bg-slate-200/50 hover:bg-slate-200 text-slate-500 p-0.5 rounded-md text-[8px] flex items-center justify-center shrink-0 pointer-events-none">
+                                <Plus className="h-2.5 w-2.5" />
+                              </span>
+                            )}
+
+                            {/* Render meetings for this hour cell */}
+                            {dayMeetings.map((m) => {
+                              const isCancelled = m.status === "cancelled" || m.status === "no_show";
+                              
+                              return (
+                                <div
+                                  key={m.id}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setEditingMeeting(m);
+                                    setDialogOpen(true);
+                                  }}
+                                  className={`px-3 py-2.5 rounded-lg flex items-center justify-start shadow-xs hover:shadow-md transition-all cursor-pointer bg-[#e05638] text-white border-l-[3px] border-white pl-2 min-w-0 overflow-hidden w-full h-full text-xs font-semibold`}
+                                >
+                                  <span className={`truncate ${isCancelled ? "line-through opacity-70" : ""}`}>
+                                    {m.title}
+                                  </span>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  ))}
                 </div>
               </div>
             )}
 
             {/* AGENDA VIEW */}
             {view === "agenda" && (
-              <div className="p-6 max-w-xl mx-auto space-y-4">
-                {filteredMeetings.length === 0 ? (
-                  <div className="text-center py-12 text-slate-400 text-xs font-semibold">
-                    No upcoming agendas for the selected filters.
+              <div className="w-full bg-white min-h-[400px] flex flex-col">
+                {agendaMeetings.length === 0 ? (
+                  <div className="flex-1 flex items-center justify-center">
+                    <span className="text-slate-500 text-sm font-medium">
+                      There are no events in this range.
+                    </span>
                   </div>
                 ) : (
-                  filteredMeetings
-                    .sort((a, b) => new Date(a.startAt).getTime() - new Date(b.startAt).getTime())
-                    .map((m) => {
-                      const start = new Date(m.startAt);
-                      const end = new Date(m.endAt);
-                      const typeStyles = meetingTypeColors[m.meetingType] ?? meetingTypeColors["Cold Visit"];
-                      const isCancelled = m.status === "cancelled" || m.status === "no_show";
+                  <div className="p-6 max-w-xl mx-auto space-y-4 w-full">
+                    {agendaMeetings
+                      .sort((a, b) => new Date(a.startAt).getTime() - new Date(b.startAt).getTime())
+                      .map((m) => {
+                        const start = new Date(m.startAt);
+                        const end = new Date(m.endAt);
+                        const typeStyles = meetingTypeColors[m.meetingType] ?? meetingTypeColors["Cold Visit"];
+                        const isCancelled = m.status === "cancelled" || m.status === "no_show";
 
-                      return (
-                        <div
-                          key={m.id}
-                          onClick={() => {
-                            setEditingMeeting(m);
-                            setDialogOpen(true);
-                          }}
-                          className={`flex items-start gap-4 p-4 rounded-xl border bg-white hover:shadow-md transition-all cursor-pointer border-l-[4px] ${typeStyles.border}`}
-                        >
-                          <div className="flex h-12 w-12 shrink-0 flex-col items-center justify-center rounded-xl bg-slate-50 border border-slate-100 text-slate-500">
-                            <span className="text-[9px] font-bold uppercase tracking-wider">
-                              {start.toLocaleString("default", { month: "short" })}
-                            </span>
-                            <span className="text-base font-bold text-slate-700 mt-0.5">
-                              {start.getDate()}
-                            </span>
-                          </div>
-                          
-                          <div className="min-w-0 flex-1">
-                            <div className="flex flex-wrap items-center gap-2">
-                              <h3 className={`text-sm font-bold text-slate-800 truncate ${isCancelled ? "line-through text-slate-400" : ""}`}>
-                                {m.title}
-                              </h3>
-                              <span className={`rounded-full px-2 py-0.5 text-[8px] font-bold uppercase tracking-wider ${statusColors[m.status]}`}>
-                                {statusDisplayNames[m.status]}
+                        return (
+                          <div
+                            key={m.id}
+                            onClick={() => {
+                              setEditingMeeting(m);
+                              setDialogOpen(true);
+                            }}
+                            className={`flex items-start gap-4 p-4 rounded-xl border bg-white hover:shadow-md transition-all cursor-pointer border-l-[4px] ${typeStyles.border}`}
+                          >
+                            <div className="flex h-12 w-12 shrink-0 flex-col items-center justify-center rounded-xl bg-slate-50 border border-slate-100 text-slate-500">
+                              <span className="text-[9px] font-bold uppercase tracking-wider">
+                                {start.toLocaleString("default", { month: "short" })}
+                              </span>
+                              <span className="text-base font-bold text-slate-700 mt-0.5">
+                                {start.getDate()}
                               </span>
                             </div>
                             
-                            <p className="text-[11px] text-slate-400 font-semibold mt-1 flex items-center gap-1">
-                              <Clock className="h-3.5 w-3.5 shrink-0 text-slate-300" />
-                              {start.toLocaleDateString("default", { weekday: "short", month: "short", day: "numeric" })} @ {start.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })} – {end.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}
-                            </p>
-                            
-                            {m.notes && (
-                              <p className="mt-2 text-xs text-slate-600 bg-slate-50 rounded-lg p-2.5 italic">
-                                {m.notes}
+                            <div className="min-w-0 flex-1">
+                              <div className="flex flex-wrap items-center gap-2">
+                                <h3 className={`text-sm font-bold text-slate-800 truncate ${isCancelled ? "line-through text-slate-400" : ""}`}>
+                                  {m.title}
+                                </h3>
+                                <span className={`rounded-full px-2 py-0.5 text-[8px] font-bold uppercase tracking-wider ${statusColors[m.status]}`}>
+                                  {statusDisplayNames[m.status]}
+                                </span>
+                              </div>
+                              
+                              <p className="text-[11px] text-slate-400 font-semibold mt-1 flex items-center gap-1">
+                                <Clock className="h-3.5 w-3.5 shrink-0 text-slate-300" />
+                                {start.toLocaleDateString("default", { weekday: "short", month: "short", day: "numeric" })} @ {start.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })} – {end.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}
                               </p>
-                            )}
+                              
+                              {m.notes && (
+                                <p className="mt-2 text-xs text-slate-600 bg-slate-50 rounded-lg p-2.5 italic">
+                                  {m.notes}
+                                </p>
+                              )}
+                            </div>
                           </div>
-                        </div>
-                      );
-                    })
+                        );
+                      })}
+                  </div>
                 )}
               </div>
             )}
@@ -775,7 +856,10 @@ function MeetingsPage() {
       {/* dialog template popup */}
       <NewMeetingDialog
         open={dialogOpen}
-        onOpenChange={setDialogOpen}
+        onOpenChange={(v) => {
+          setDialogOpen(v);
+          if (!v) setSelectedSlot(null);
+        }}
         meeting={editingMeeting}
         offices={officesQuery.data?.items ?? []}
         users={usersQuery.data?.items ?? []}
@@ -791,9 +875,32 @@ function MeetingsPage() {
   );
 }
 
+const CaretDownIconCustom = () => (
+  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg" className="custom-icon text-slate-500 h-3.5 w-3.5 shrink-0 opacity-70">
+    <path d="M9.75 4.5L6 8.25L2.25 4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+  </svg>
+);
+
+const ClockIconCustom = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="custom-icon text-slate-400 h-4.5 w-4.5 shrink-0">
+    <path d="M12 21C16.9706 21 21 16.9706 21 12C21 7.02944 16.9706 3 12 3C7.02944 3 3 7.02944 3 12C3 16.9706 7.02944 21 12 21Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M12 7V12H17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+  </svg>
+);
+
+const CalendarIconCustom = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="custom-icon text-slate-400 h-4.5 w-4.5 shrink-0">
+    <rect x="3" y="4" width="18" height="18" rx="2" ry="2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    <line x1="16" y1="2" x2="16" y2="6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    <line x1="8" y1="2" x2="8" y2="6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    <line x1="3" y1="10" x2="21" y2="10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
 // Dialouge Component
 function NewMeetingDialog({
   open,
+
   onOpenChange,
   meeting,
   offices,
@@ -856,13 +963,13 @@ function NewMeetingDialog({
       setError(null);
     } else {
       // Default creation defaults
-      setTitle("Visit - ");
+      setTitle("");
       setMeetingType("Cold Visit");
       setStatus("scheduled");
       setOffice("none");
       setPropertyManager("none");
       setAccountManager("none");
-      setDate(new Date("2026-05-28T09:00:00")); // default date
+      setDate(new Date(2026, 5, 3, 9, 0, 0)); // default date
       setStartTime("09:00 AM");
       setEndTime("10:00 AM");
       setNotes("");
@@ -967,19 +1074,16 @@ function NewMeetingDialog({
         onOpenChange(v);
       }}
     >
-      <DialogContent className="max-w-xl rounded-2xl border-0 p-0 max-h-[95vh] overflow-hidden flex flex-col bg-white shadow-2xl">
-        <DialogHeader className="p-6 pb-4 border-b border-slate-100/80 bg-slate-50/50 flex flex-row items-center justify-between">
-          <DialogTitle className="text-lg font-bold text-slate-800 flex items-center gap-2">
-            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#e05638]/10 text-[#e05638]">
-              <Sparkles className="h-4 w-4 shrink-0" />
-            </span>
+      <DialogContent className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 max-w-xl rounded-[20px] border border-slate-100 p-0 max-h-[95vh] overflow-hidden flex flex-col bg-white shadow-2xl">
+        <DialogHeader className="px-8 pt-8 pb-0 flex flex-row items-center justify-between bg-white border-0">
+          <DialogTitle className="text-[22px] font-bold text-slate-800 tracking-tight">
             {meeting ? "Edit Meeting" : "New Meeting"}
           </DialogTitle>
           {meeting && (
             <button
               type="button"
               onClick={() => onDelete(meeting.id)}
-              className="text-slate-400 hover:text-red-500 cursor-pointer p-1.5 hover:bg-slate-100 rounded-lg transition-all"
+              className="text-slate-400 hover:text-red-500 cursor-pointer p-1.5 hover:bg-slate-100 rounded-lg transition-all mr-6"
               aria-label="Delete meeting"
             >
               <Trash2 className="h-4.5 w-4.5" />
@@ -987,28 +1091,29 @@ function NewMeetingDialog({
           )}
         </DialogHeader>
 
-        <div className="flex-1 overflow-y-auto p-6 space-y-5 text-xs">
+        <div className="p-8 pt-6 space-y-6 text-sm flex-1 overflow-y-auto">
           {/* Title */}
-          <div className="space-y-1.5">
-            <Label className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Title</Label>
+          <div className="space-y-2">
+            <Label className="text-sm font-semibold text-slate-800">Title</Label>
             <Input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Visit - Office Name"
-              className="rounded-lg border-slate-200 text-xs h-9.5 px-3.5 focus:border-[#e05638] focus:ring-2 focus:ring-[#e05638]/10 transition-all font-medium text-slate-800 placeholder:text-slate-400"
+              className="rounded-xl border-slate-200 text-sm h-12 px-4 focus:border-[#e05638] focus:ring-2 focus:ring-[#e05638]/10 transition-all font-medium text-slate-800 placeholder:text-slate-400 bg-white"
               autoFocus
             />
           </div>
 
           {/* Meeting Type & Status */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-1.5">
-              <Label className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Meeting Type</Label>
+          <div className="grid grid-cols-2 gap-5">
+            <div className="space-y-2">
+              <Label className="text-sm font-semibold text-slate-800">Meeting Type</Label>
               <Select value={meetingType} onValueChange={(v) => setMeetingType(v as MeetingType)}>
-                <SelectTrigger className="rounded-lg border-slate-200 text-xs h-9.5 focus:ring-2 focus:ring-[#e05638]/10 focus:border-[#e05638] transition-all font-medium text-slate-700">
+                <SelectTrigger className="rounded-xl border-slate-200 text-sm h-12 px-4 focus:ring-2 focus:ring-[#e05638]/10 focus:border-[#e05638] transition-all font-medium text-slate-700 bg-white [&_svg:not(.custom-icon)]:hidden flex items-center justify-between w-full">
                   <SelectValue />
+                  <CaretDownIconCustom />
                 </SelectTrigger>
-                <SelectContent className="rounded-lg">
+                <SelectContent className="rounded-xl">
                   <SelectItem value="Property Manager Meeting" className="text-xs">Property Manager Meeting</SelectItem>
                   <SelectItem value="Cold Visit" className="text-xs">Cold Visit</SelectItem>
                   <SelectItem value="Follow-up" className="text-xs">Follow-up</SelectItem>
@@ -1018,13 +1123,14 @@ function NewMeetingDialog({
               </Select>
             </div>
             
-            <div className="space-y-1.5">
-              <Label className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Status</Label>
+            <div className="space-y-2">
+              <Label className="text-sm font-semibold text-slate-800">Status</Label>
               <Select value={status} onValueChange={(v) => setStatus(v as MeetingStatus)}>
-                <SelectTrigger className="rounded-lg border-slate-200 text-xs h-9.5 focus:ring-2 focus:ring-[#e05638]/10 focus:border-[#e05638] transition-all font-medium text-slate-700">
+                <SelectTrigger className="rounded-xl border-slate-200 text-sm h-12 px-4 focus:ring-2 focus:ring-[#e05638]/10 focus:border-[#e05638] transition-all font-medium text-slate-700 bg-white [&_svg:not(.custom-icon)]:hidden flex items-center justify-between w-full">
                   <SelectValue />
+                  <CaretDownIconCustom />
                 </SelectTrigger>
-                <SelectContent className="rounded-lg">
+                <SelectContent className="rounded-xl">
                   <SelectItem value="scheduled" className="text-xs">Scheduled</SelectItem>
                   <SelectItem value="completed" className="text-xs">Completed</SelectItem>
                   <SelectItem value="cancelled" className="text-xs">Cancelled</SelectItem>
@@ -1034,51 +1140,55 @@ function NewMeetingDialog({
             </div>
           </div>
 
-          {/* Agency Office */}
-          <div className="space-y-1.5">
-            <Label className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Agency Office</Label>
-            <Select value={office} onValueChange={setOffice}>
-              <SelectTrigger className="rounded-lg border-slate-200 text-xs h-9.5 focus:ring-2 focus:ring-[#e05638]/10 focus:border-[#e05638] transition-all font-medium text-slate-700">
-                <SelectValue placeholder="Select an office..." />
-              </SelectTrigger>
-              <SelectContent className="rounded-lg">
-                <SelectItem value="none" className="text-xs">Select an office...</SelectItem>
-                {offices.map((o) => (
-                  <SelectItem key={o.id} value={o.id} className="text-xs">
-                    {o.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+          {/* Agency Office & Property Manager */}
+          <div className="grid grid-cols-2 gap-5">
+            <div className="space-y-2">
+              <Label className="text-sm font-semibold text-slate-800">Agency Office</Label>
+              <Select value={office} onValueChange={setOffice}>
+                <SelectTrigger className="rounded-xl border-slate-200 text-sm h-12 px-4 focus:ring-2 focus:ring-[#e05638]/10 focus:border-[#e05638] transition-all font-medium text-slate-700 bg-white [&_svg:not(.custom-icon)]:hidden flex items-center justify-between w-full">
+                  <SelectValue placeholder="Select an office..." />
+                  <CaretDownIconCustom />
+                </SelectTrigger>
+                <SelectContent className="rounded-xl">
+                  <SelectItem value="none" className="text-xs">Select an office...</SelectItem>
+                  {offices.map((o) => (
+                    <SelectItem key={o.id} value={o.id} className="text-xs">
+                      {o.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label className="text-sm font-semibold text-slate-800">Property Manager</Label>
+              <Select value={propertyManager} onValueChange={setPropertyManager}>
+                <SelectTrigger className="rounded-xl border-slate-200 text-sm h-12 px-4 focus:ring-2 focus:ring-[#e05638]/10 focus:border-[#e05638] transition-all font-medium text-slate-700 bg-white [&_svg:not(.custom-icon)]:hidden flex items-center justify-between w-full">
+                  <SelectValue placeholder="General / Cold Visit" />
+                  <CaretDownIconCustom />
+                </SelectTrigger>
+                <SelectContent className="rounded-xl">
+                  <SelectItem value="none" className="text-xs">General / Cold Visit</SelectItem>
+                  {filteredPms.map((pm) => (
+                    <SelectItem key={pm.id} value={pm.id} className="text-xs">
+                      {pm.firstName} {pm.lastName} ({pm.role})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
-          {/* Property Manager */}
-          <div className="space-y-1.5">
-            <Label className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Property Manager</Label>
-            <Select value={propertyManager} onValueChange={setPropertyManager}>
-              <SelectTrigger className="rounded-lg border-slate-200 text-xs h-9.5 focus:ring-2 focus:ring-[#e05638]/10 focus:border-[#e05638] transition-all font-medium text-slate-700">
-                <SelectValue placeholder="General / Cold Visit" />
-              </SelectTrigger>
-              <SelectContent className="rounded-lg">
-                <SelectItem value="none" className="text-xs">General / Cold Visit</SelectItem>
-                {filteredPms.map((pm) => (
-                  <SelectItem key={pm.id} value={pm.id} className="text-xs">
-                    {pm.firstName} {pm.lastName} ({pm.role})
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Account Manager */}
-          <div className="space-y-1.5">
-            <Label className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Account Manager</Label>
+          {/* Account Manager (labeled Property Manager in mockup) */}
+          <div className="space-y-2">
+            <Label className="text-sm font-semibold text-slate-800">Property Manager</Label>
             <Select value={accountManager} onValueChange={setAccountManager}>
-              <SelectTrigger className="rounded-lg border-slate-200 text-xs h-9.5 focus:ring-2 focus:ring-[#e05638]/10 focus:border-[#e05638] transition-all font-medium text-slate-700">
-                <SelectValue placeholder="Select account manager..." />
+              <SelectTrigger className="rounded-xl border-slate-200 text-sm h-12 px-4 focus:ring-2 focus:ring-[#e05638]/10 focus:border-[#e05638] transition-all font-medium text-slate-700 bg-white [&_svg:not(.custom-icon)]:hidden flex items-center justify-between w-full">
+                <SelectValue placeholder="General / Cold Visit" />
+                <CaretDownIconCustom />
               </SelectTrigger>
-              <SelectContent className="rounded-lg">
-                <SelectItem value="none" className="text-xs">Select account manager...</SelectItem>
+              <SelectContent className="rounded-xl">
+                <SelectItem value="none" className="text-xs">General / Cold Visit</SelectItem>
                 {users.map((u) => (
                   <SelectItem key={u.id} value={u.id} className="text-xs">
                     {u.name}
@@ -1089,15 +1199,15 @@ function NewMeetingDialog({
           </div>
 
           {/* Date & Start/End Time */}
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-3 gap-5">
             {/* Date */}
-            <div className="space-y-1.5 col-span-1">
-              <Label className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Date</Label>
+            <div className="space-y-2 col-span-1">
+              <Label className="text-sm font-semibold text-slate-800">Date</Label>
               <Popover>
                 <PopoverTrigger asChild>
-                  <Button variant="outline" className="w-full justify-start rounded-lg border-slate-200 text-xs text-left h-9.5 text-slate-700 font-medium hover:bg-slate-50/50 transition-all cursor-pointer px-3">
-                    <CalendarDays className="mr-1.5 h-4 w-4 text-slate-400 shrink-0" />
-                    {date ? date.toLocaleDateString("en-GB") : <span className="text-slate-400">28-05-2026</span>}
+                  <Button variant="outline" className="w-full justify-between flex items-center rounded-xl border-slate-200 text-sm h-12 text-slate-700 font-medium hover:bg-slate-50 transition-all cursor-pointer px-4 bg-white">
+                    {date ? `${(date.getMonth() + 1).toString().padStart(2, "0")}/${date.getDate().toString().padStart(2, "0")}/${date.getFullYear()}` : <span className="text-slate-400">06/01/2026</span>}
+                    <CalendarIconCustom />
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0 rounded-xl" align="start">
@@ -1107,13 +1217,14 @@ function NewMeetingDialog({
             </div>
 
             {/* Start Time */}
-            <div className="space-y-1.5 col-span-1">
-              <Label className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Start Time</Label>
+            <div className="space-y-2 col-span-1">
+              <Label className="text-sm font-semibold text-slate-800">Start Time</Label>
               <Select value={startTime} onValueChange={setStartTime}>
-                <SelectTrigger className="rounded-lg border-slate-200 text-xs h-9.5 focus:ring-2 focus:ring-[#e05638]/10 focus:border-[#e05638] transition-all font-medium text-slate-700">
+                <SelectTrigger className="rounded-xl border-slate-200 text-sm h-12 px-4 focus:ring-2 focus:ring-[#e05638]/10 focus:border-[#e05638] transition-all font-medium text-slate-700 bg-white [&_svg:not(.custom-icon)]:hidden flex items-center justify-between w-full">
                   <SelectValue />
+                  <ClockIconCustom />
                 </SelectTrigger>
-                <SelectContent className="max-h-[220px] rounded-lg">
+                <SelectContent className="max-h-[220px] rounded-xl">
                   {TIME_PICKER_SLOTS.map((slot) => (
                     <SelectItem key={slot} value={slot} className="text-xs">
                       {slot}
@@ -1124,13 +1235,14 @@ function NewMeetingDialog({
             </div>
 
             {/* End Time */}
-            <div className="space-y-1.5 col-span-1">
-              <Label className="text-[11px] font-bold uppercase tracking-wider text-slate-500">End Time</Label>
+            <div className="space-y-2 col-span-1">
+              <Label className="text-sm font-semibold text-slate-800">End Time</Label>
               <Select value={endTime} onValueChange={setEndTime}>
-                <SelectTrigger className="rounded-lg border-slate-200 text-xs h-9.5 focus:ring-2 focus:ring-[#e05638]/10 focus:border-[#e05638] transition-all font-medium text-slate-700">
+                <SelectTrigger className="rounded-xl border-slate-200 text-sm h-12 px-4 focus:ring-2 focus:ring-[#e05638]/10 focus:border-[#e05638] transition-all font-medium text-slate-700 bg-white [&_svg:not(.custom-icon)]:hidden flex items-center justify-between w-full">
                   <SelectValue />
+                  <ClockIconCustom />
                 </SelectTrigger>
-                <SelectContent className="max-h-[220px] rounded-lg">
+                <SelectContent className="max-h-[220px] rounded-xl">
                   {TIME_PICKER_SLOTS.map((slot) => (
                     <SelectItem key={slot} value={slot} className="text-xs">
                       {slot}
@@ -1141,42 +1253,31 @@ function NewMeetingDialog({
             </div>
           </div>
 
-          {/* Agenda */}
-          <div className="space-y-1.5">
-            <Label className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Agenda</Label>
-            <textarea
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              placeholder="Meeting agenda and topics..."
-              rows={3}
-              className="w-full rounded-lg border border-slate-200 p-3 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#e05638]/10 focus:border-[#e05638] resize-none transition-all placeholder:text-slate-400 font-medium"
-            />
-          </div>
-
           {error && (
-            <div className="rounded-lg border border-red-100 bg-red-50 px-3.5 py-2 text-xs font-semibold text-red-600">
+            <div className="rounded-xl border border-red-100 bg-red-50 px-4 py-2.5 text-xs font-semibold text-red-600">
               {error}
             </div>
           )}
-        </div>
 
-        <div className="p-5 border-t border-slate-100 bg-slate-50/50 flex justify-end gap-3 shrink-0">
-          <Button
-            variant="outline"
-            type="button"
-            onClick={() => onOpenChange(false)}
-            className="rounded-lg cursor-pointer text-xs h-9 px-4 font-semibold text-slate-600 border-slate-200 bg-white hover:bg-slate-50 hover:text-slate-800 transition-all"
-          >
-            Cancel
-          </Button>
-          <Button
-            onClick={onSave}
-            disabled={create.isPending || update.isPending}
-            className="rounded-lg bg-[#e05638] text-white hover:bg-[#e05638]/90 cursor-pointer shadow-md hover:shadow-lg transition-all text-xs h-9 px-5.5 font-bold"
-          >
-            {(create.isPending || update.isPending) && <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin shrink-0" />}
-            {meeting ? "Save Changes" : "Schedule Meeting"}
-          </Button>
+          {/* Action Buttons */}
+          <div className="pt-4 flex justify-between gap-5">
+            <Button
+              variant="outline"
+              type="button"
+              onClick={() => onOpenChange(false)}
+              className="flex-1 rounded-xl cursor-pointer text-sm h-12 font-bold text-slate-700 border-slate-200 bg-white hover:bg-slate-50 transition-all"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={onSave}
+              disabled={create.isPending || update.isPending}
+              className="flex-1 rounded-xl bg-[#e05638] text-white hover:bg-[#e05638]/90 cursor-pointer shadow-md hover:shadow-lg transition-all text-sm h-12 font-bold"
+            >
+              {(create.isPending || update.isPending) && <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin shrink-0" />}
+              {meeting ? "Save Changes" : "Schedule Meeting"}
+            </Button>
+          </div>
         </div>
       </DialogContent>
     </Dialog>

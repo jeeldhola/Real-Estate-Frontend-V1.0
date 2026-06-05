@@ -29,6 +29,7 @@ import {
   Trash2,
   ChevronLeft,
   ChevronRight,
+  ChevronDown,
   Sparkles,
   Clock,
   User,
@@ -240,10 +241,10 @@ function MeetingsPage() {
       </div>
 
       {/* Filter controls row */}
-      <div className="mt-6 flex flex-wrap items-center gap-3">
+      <div className="mt-6 flex flex-wrap items-center gap-4 py-4 px-4 bg-white rounded-2xl border border-slate-200/60 shadow-2xs">
         {/* Account Managers Selector */}
         <Select value={selectedManager} onValueChange={setSelectedManager}>
-          <SelectTrigger className={`w-52 h-9 text-xs rounded-xl bg-white border border-slate-200/80 shadow-xs focus:ring-1 focus:ring-[#e05638]/20 focus:border-[#e05638] transition-all text-slate-700 font-semibold ${selectedManager !== "all" ? "border-[#e05638]/60 bg-[#e05638]/5 text-[#e05638]" : ""}`}>
+          <SelectTrigger className={`w-52 h-9 text-xs rounded-xl bg-white border border-slate-200/80 shadow-2xs focus:ring-1 focus:ring-[#e05638]/20 focus:border-[#e05638] transition-all text-slate-700 font-semibold ${selectedManager !== "all" ? "border-[#e05638]/60 bg-[#e05638]/5 text-[#e05638]" : ""}`}>
             <SelectValue placeholder="All Account Managers" />
           </SelectTrigger>
           <SelectContent className="rounded-xl border-slate-200">
@@ -258,7 +259,7 @@ function MeetingsPage() {
 
         {/* Meeting Type Selector */}
         <Select value={selectedType} onValueChange={setSelectedType}>
-          <SelectTrigger className={`w-44 h-9 text-xs rounded-xl bg-white border border-slate-200/80 shadow-xs focus:ring-1 focus:ring-[#e05638]/20 focus:border-[#e05638] transition-all text-slate-700 font-semibold ${selectedType !== "all" ? "border-[#e05638]/60 bg-[#e05638]/5 text-[#e05638]" : ""}`}>
+          <SelectTrigger className={`w-44 h-9 text-xs rounded-xl bg-white border border-slate-200/80 shadow-2xs focus:ring-1 focus:ring-[#e05638]/20 focus:border-[#e05638] transition-all text-slate-700 font-semibold ${selectedType !== "all" ? "border-[#e05638]/60 bg-[#e05638]/5 text-[#e05638]" : ""}`}>
             <SelectValue placeholder="All Types" />
           </SelectTrigger>
           <SelectContent className="rounded-xl border-slate-200">
@@ -273,7 +274,7 @@ function MeetingsPage() {
 
         {/* Status Selector */}
         <Select value={selectedStatus} onValueChange={setSelectedStatus}>
-          <SelectTrigger className={`w-44 h-9 text-xs rounded-xl bg-white border border-slate-200/80 shadow-xs focus:ring-1 focus:ring-[#e05638]/20 focus:border-[#e05638] transition-all text-slate-700 font-semibold ${selectedStatus !== "all" ? "border-[#e05638]/60 bg-[#e05638]/5 text-[#e05638]" : ""}`}>
+          <SelectTrigger className={`w-44 h-9 text-xs rounded-xl bg-white border border-slate-200/80 shadow-2xs focus:ring-1 focus:ring-[#e05638]/20 focus:border-[#e05638] transition-all text-slate-700 font-semibold ${selectedStatus !== "all" ? "border-[#e05638]/60 bg-[#e05638]/5 text-[#e05638]" : ""}`}>
             <SelectValue placeholder="All Statuses" />
           </SelectTrigger>
           <SelectContent className="rounded-xl border-slate-200">
@@ -287,51 +288,56 @@ function MeetingsPage() {
       </div>
 
       {/* Main Calendar Card Grid wrapper */}
-      <div className="mt-6 rounded-2xl border border-slate-200/60 bg-white shadow-xs overflow-hidden flex flex-col">
+      <div className="mt-6 rounded-2xl border border-slate-200/60 bg-white shadow-2xs overflow-hidden flex flex-col">
         {/* Calendar Nav toolbar header */}
-        <div className="flex flex-wrap items-center justify-between border-b border-slate-100 p-4 gap-3 bg-slate-50/25">
-          <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center justify-between border-b border-slate-100 p-4 gap-4 bg-slate-50/25">
+          <div className="flex items-center gap-4">
             <Button
               variant="outline"
               onClick={handleToday}
-              className="h-8.5 rounded-lg border-slate-200 text-xs text-slate-600 font-bold hover:bg-slate-50 transition-all"
+              className="h-9 rounded-xl border-slate-200 text-xs text-slate-700 font-semibold hover:bg-slate-50 transition-all px-3.5 flex items-center gap-1.5 bg-white shadow-2xs cursor-pointer"
             >
               Today
+              <ChevronDown className="h-3.5 w-3.5 text-slate-400 shrink-0" />
             </Button>
-            <div className="flex items-center rounded-lg border border-slate-200 bg-white overflow-hidden shrink-0">
+            
+            <div className="flex items-center gap-1 shrink-0">
               <button
                 type="button"
                 onClick={handleBack}
-                className="p-2 hover:bg-slate-50 text-slate-600 border-r border-slate-100 cursor-pointer"
+                className="p-1.5 hover:bg-slate-100 text-slate-500 rounded-lg cursor-pointer transition-all"
               >
-                <ChevronLeft className="h-3.5 w-3.5" />
+                <ChevronLeft className="h-4.5 w-4.5" />
               </button>
               <button
                 type="button"
                 onClick={handleNext}
-                className="p-2 hover:bg-slate-50 text-slate-600 cursor-pointer"
+                className="p-1.5 hover:bg-slate-100 text-slate-500 rounded-lg cursor-pointer transition-all"
               >
-                <ChevronRight className="h-3.5 w-3.5" />
+                <ChevronRight className="h-4.5 w-4.5" />
               </button>
             </div>
+
+            <h2 className="text-sm font-bold text-slate-800 tracking-tight select-none">
+              {dateRangeText}
+            </h2>
           </div>
 
-          <h2 className="text-sm font-bold text-slate-700 tracking-tight shrink-0 select-none">
-            {dateRangeText}
-          </h2>
-
-          <div className="flex items-center rounded-lg border border-slate-200 bg-white p-0.5 shrink-0 select-none">
+          <div className="flex items-center rounded-xl bg-slate-100/80 p-0.5 border border-slate-200/40 shrink-0 select-none">
             {(["month", "week", "day", "agenda"] as CalendarView[]).map((v) => {
               const active = view === v;
+              const displayLabel = v.charAt(0).toUpperCase() + v.slice(1);
               return (
                 <button
                   key={v}
                   onClick={() => setView(v)}
-                  className={`px-3 py-1.5 text-[10px] font-bold rounded-md uppercase tracking-wider transition-all cursor-pointer ${
-                    active ? "bg-[#e05638] text-white" : "text-slate-500 hover:text-slate-800 hover:bg-slate-50"
+                  className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
+                    active
+                      ? "bg-white text-slate-800 shadow-xs border border-slate-200/20 font-bold"
+                      : "text-slate-500 hover:text-slate-800"
                   }`}
                 >
-                  {v}
+                  {displayLabel}
                 </button>
               );
             })}
@@ -499,7 +505,7 @@ function MeetingsPage() {
             {view === "month" && (
               <div className="min-w-[850px] grid grid-cols-7 border-b border-slate-100 select-none">
                 {/* Headers */}
-                {["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"].map((d) => (
+                {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((d) => (
                   <div key={d} className="border-r border-slate-100 bg-slate-50/40 py-2.5 text-center text-[10px] font-bold text-slate-400 uppercase">
                     {d}
                   </div>
@@ -514,41 +520,59 @@ function MeetingsPage() {
                   const firstDayOfWeek = firstDay.getDay();
                   const totalDays = lastDay.getDate();
 
-                  const cells = [];
-                  // Empty slots before first day of month
-                  for (let i = 0; i < firstDayOfWeek; i++) {
-                    cells.push(<div key={`empty-${i}`} className="h-28 bg-slate-50/20 border-r border-b border-slate-100" />);
-                  }
+                  // Calculate total cells needed (35 or 42)
+                  const totalCells = (firstDayOfWeek + totalDays > 35) ? 42 : 35;
+                  
+                  // Start date of the calendar grid (might be in the previous month)
+                  const gridStartDate = new Date(year, month, 1);
+                  gridStartDate.setDate(gridStartDate.getDate() - firstDayOfWeek);
 
-                  // Actual month days
-                  for (let d = 1; d <= totalDays; d++) {
-                    const date = new Date(year, month, d);
+                  const cells = [];
+                  for (let i = 0; i < totalCells; i++) {
+                    const date = new Date(gridStartDate);
+                    date.setDate(date.getDate() + i);
+                    
+                    const isCurrentMonth = date.getMonth() === month;
                     const isToday = date.toDateString() === new Date("2026-05-28").toDateString();
+                    const dayNumber = date.getDate().toString().padStart(2, "0");
+
                     const dayMeetings = filteredMeetings.filter(
                       (m) => new Date(m.startAt).toDateString() === date.toDateString()
                     );
 
                     cells.push(
                       <div
-                        key={d}
+                        key={i}
                         onClick={() => {
                           const selectedDate = new Date(date);
                           selectedDate.setHours(9, 0, 0, 0);
                           setEditingMeeting(null);
                           setDialogOpen(true);
                         }}
-                        className={`h-28 p-2 border-r border-b border-slate-100 flex flex-col bg-white hover:bg-slate-50/30 cursor-pointer relative transition-colors`}
+                        className={`h-36 p-3 border-r border-b border-slate-100 flex flex-col bg-white hover:bg-slate-50/30 cursor-pointer relative transition-colors`}
                       >
                         <span className={`text-[11px] font-bold h-6 w-6 flex items-center justify-center rounded-full tracking-wide select-none ${
-                          isToday ? "bg-[#e05638] text-white" : "text-slate-600"
+                          isToday ? "bg-[#e05638] text-white" : isCurrentMonth ? "text-slate-700" : "text-slate-300"
                         }`}>
-                          {d}
+                          {dayNumber}
                         </span>
 
-                        <div className="flex-1 overflow-y-auto mt-1.5 space-y-1 pr-0.5">
-                          {dayMeetings.map((m) => {
+                        <div className="flex-1 overflow-y-auto mt-2 space-y-1.5 pr-0.5">
+                          {dayMeetings.slice(0, 2).map((m) => {
                             const typeStyles = meetingTypeColors[m.meetingType] ?? meetingTypeColors["Cold Visit"];
                             const isCancelled = m.status === "cancelled" || m.status === "no_show";
+
+                            // Get attendees and PM users for displaying avatars
+                            const attendeeList = (m.attendees ?? []).map((a) => {
+                              if (typeof a === "object" && a !== null) return a;
+                              return usersQuery.data?.items.find((u) => u.id === a);
+                            }).filter(Boolean);
+
+                            const pmUser = (() => {
+                              if (!m.propertyManager) return null;
+                              if (typeof m.propertyManager === "object") return m.propertyManager;
+                              return propertyManagersQuery.data?.items.find((pm) => pm.id === m.propertyManager);
+                            })();
 
                             return (
                               <div
@@ -558,27 +582,61 @@ function MeetingsPage() {
                                   setEditingMeeting(m);
                                   setDialogOpen(true);
                                 }}
-                                className={`px-2 py-0.5 rounded-lg border text-[9px] font-bold truncate ${typeStyles.bg} ${typeStyles.border} text-slate-800 ${
-                                  isCancelled ? "line-through text-slate-400" : ""
-                                }`}
+                                className={`px-2 py-1.5 rounded-lg border border-l-[3px] flex flex-col justify-center shadow-2xs hover:shadow-xs transition-all cursor-pointer ${typeStyles.bg} ${typeStyles.border} min-w-0 overflow-hidden`}
                               >
-                                {m.title}
+                                <div className="flex items-center justify-between w-full min-w-0 gap-1.5">
+                                  <span className={`text-[9px] font-semibold truncate flex-1 ${
+                                    isCancelled ? "line-through text-slate-400" : "text-slate-800"
+                                  }`}>
+                                    {m.title}
+                                  </span>
+                                  
+                                  {/* Avatars Stack & Status Dot */}
+                                  <div className="flex items-center gap-1 shrink-0">
+                                    <div className="flex -space-x-1.5 flex-row-reverse">
+                                      {pmUser && (
+                                        <img
+                                          src={pmUser.avatar || "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=100&h=100&q=80"}
+                                          alt={`${pmUser.firstName} ${pmUser.lastName}`}
+                                          className="h-4 w-4 rounded-full border border-white object-cover shadow-2xs shrink-0"
+                                        />
+                                      )}
+                                      {attendeeList.slice(0, 1).map((user: any, uIdx: number) => (
+                                        <img
+                                          key={uIdx}
+                                          src={user.avatar || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100"}
+                                          alt={user.name}
+                                          className="h-4 w-4 rounded-full border border-white object-cover shadow-2xs shrink-0"
+                                        />
+                                      ))}
+                                    </div>
+                                    <span className={`w-1 h-1 rounded-full shrink-0 ${
+                                      m.status === "completed" ? "bg-emerald-500" :
+                                      m.status === "cancelled" ? "bg-rose-500" :
+                                      m.status === "no_show" ? "bg-slate-400" : "bg-amber-500"
+                                    }`} />
+                                  </div>
+                                </div>
                               </div>
                             );
                           })}
+                          
+                          {dayMeetings.length > 2 && (
+                            <div 
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setView("day");
+                                setCurrentDate(date);
+                              }}
+                              className="text-[9px] font-bold text-[#e05638] hover:underline mt-1 pl-1"
+                            >
+                              View more
+                            </div>
+                          )}
                         </div>
                       </div>
                     );
                   }
-
-                  // Empty slots to round off grid row
-                  const remaining = 7 - (cells.length % 7);
-                  if (remaining < 7) {
-                    for (let i = 0; i < remaining; i++) {
-                      cells.push(<div key={`empty-end-${i}`} className="h-28 bg-slate-50/20 border-r border-b border-slate-100 last:border-r-0" />);
-                    }
-                  }
-
                   return cells;
                 })()}
               </div>

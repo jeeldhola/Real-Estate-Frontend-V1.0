@@ -2,11 +2,11 @@ import { createFileRoute, Link, useNavigate, useRouterState } from "@tanstack/re
 import { useEffect, useState, useRef, type FormEvent } from "react";
 import { useAuth } from "@/lib/auth";
 import { api, ApiError } from "@/lib/api";
-import { Loader2, Eye, EyeOff, Wrench, Clock, Headphones } from "lucide-react";
+import { Loader2, Eye, EyeOff, Wrench, Clock, Headphones, Headset } from "lucide-react";
 import { toast } from "sonner";
 
 // Asset imports
-import logoUrl from "@/assets/svg/sign-in/logo.svg";
+import logoUrl from "@/assets/svg/sign-in/hubKonnect-logo.png";
 import lowerPortionUrl from "@/assets/svg/sign-in/lower-portion.svg";
 import sidePortionUrl from "@/assets/svg/sign-in/side-portiuon.svg";
 
@@ -61,14 +61,14 @@ function LoginPage() {
     try {
       // Step 1: Validate credentials against backend and request live OTP dispatch
       const res = await api.post<{ requiresOtp: boolean }>("/api/auth/login", { email, password });
-      
+
       if (res.requiresOtp) {
         setOtp(["", "", "", "", "", ""]);
         setOtpError(null);
         setCountdown(59);
         setResendCount(0); // Reset resend count on new initial login flow
         setShowOtpScreen(true);
-        
+
         toast.success("OTP sent sucessfully");
       }
     } catch (err) {
@@ -121,7 +121,7 @@ function LoginPage() {
   const handleOtpChange = (val: string, index: number) => {
     const cleanVal = val.toUpperCase().replace(/[^A-Z0-9]/g, "");
     if (cleanVal === "" && val !== "") return;
-    
+
     const newOtp = [...otp];
     newOtp[index] = cleanVal.slice(-1);
     setOtp(newOtp);
@@ -162,18 +162,18 @@ function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-screen w-screen bg-white overflow-y-auto overflow-x-hidden">
+    <div className="flex min-h-screen w-screen bg-white overflow-y-auto overflow-x-hidden p-4">
       {/* Left Pane - Form and branding */}
-      <div className="w-full lg:w-1/2 flex flex-col justify-between p-8 sm:p-12 md:py-10 md:px-20 min-h-screen">
+      <div className="w-full lg:w-1/2 flex flex-col justify-between md:pt-10 md:px-20 min-h-screen">
         <div className="my-auto py-4">
           <div className="w-full max-w-[576px] mx-auto flex flex-col items-center gap-8">
             {/* Logo */}
             <div className="flex justify-center w-full">
-              <img 
-                src={logoUrl} 
-                alt="HubKonnect" 
-                style={{ width: "245.2px", height: "183.9px" }} 
-                className="object-contain" 
+              <img
+                src={logoUrl}
+                alt="HubKonnect"
+                style={{ width: "245.2px", height: "110px" }}
+                className="object-contain"
               />
             </div>
 
@@ -228,7 +228,8 @@ function LoginPage() {
                 <button
                   type="submit"
                   disabled={verifyingOtp}
-                  className="w-full bg-[#dd5437] hover:bg-[#c9452b] text-white font-semibold py-3 px-4 rounded-lg shadow-md transition-all active:scale-[0.98] disabled:opacity-60 disabled:pointer-events-none cursor-pointer text-sm flex items-center justify-center gap-2 mt-4"
+                  style={{ background: 'radial-gradient(67.22% 100% at 50% 0%, #FF6A33 0%, #D85A2B 80%)' }}
+                  className="w-full hover:opacity-90 text-white font-semibold py-3 px-4 rounded-lg shadow-md transition-all active:scale-[0.98] disabled:opacity-60 disabled:pointer-events-none cursor-pointer text-sm flex items-center justify-center gap-2 mt-4"
                 >
                   {verifyingOtp && <Loader2 className="h-4 w-4 animate-spin" />}
                   Verify & Sign In
@@ -269,10 +270,10 @@ function LoginPage() {
               <div className="w-full flex flex-col items-center gap-8">
                 {/* Welcome text */}
                 <div className="text-center space-y-2 w-full">
-                  <h1 className="text-3xl font-extrabold text-[#1c1c1c] tracking-tight">
+                  <h1 className="text-[32px] font-semibold text-[#1F1F1F]">
                     Welcome Back!
                   </h1>
-                  <p className="text-sm text-[#6e6e73]">
+                  <p className="text-[16px] text-[#6e6e73]">
                     Enter your credentials to access your account
                   </p>
                 </div>
@@ -282,7 +283,8 @@ function LoginPage() {
                   {/* Google OAuth Button */}
                   <button
                     type="button"
-                    className="w-full border border-gray-300 rounded-lg py-3 px-4 text-sm font-semibold text-gray-700 bg-white hover:bg-gray-50 flex items-center justify-center gap-2 cursor-pointer shadow-sm active:scale-[0.98] transition-all border-solid"
+                    className="w-full border rounded-lg py-3 px-4 text-base font-medium text-[#1F1F1F] bg-white hover:bg-gray-50 flex items-center justify-center gap-2 cursor-pointer active:scale-[0.98] transition-all border-solid"
+                    style={{ borderColor: "rgba(31, 31, 31, 0.16)" }}
                   >
                     <svg className="w-4 h-4" viewBox="0 0 24 24">
                       <path fill="#EA4335" d="M12 5.04c1.78 0 3.38.61 4.64 1.82l3.46-3.46C17.98 1.43 15.2 0 12 0 7.33 0 3.3 2.67 1.34 6.56l4.08 3.16C6.38 6.96 8.94 5.04 12 5.04z" />
@@ -306,7 +308,7 @@ function LoginPage() {
                   {/* Credentials form */}
                   <form onSubmit={startOtpFlow} className="space-y-4">
                     <div className="space-y-1.5">
-                      <label className="text-xs font-semibold uppercase tracking-wider text-gray-600">
+                      <label className="font-medium tracking-wider text-[#1F1F1F]">
                         Email
                       </label>
                       <input
@@ -316,16 +318,16 @@ function LoginPage() {
                         placeholder="youremail@company.com"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        className="w-full rounded-lg border border-gray-300 bg-white px-3.5 py-3 text-sm text-gray-900 placeholder-gray-400 outline-none transition-all focus:border-[#dd5437] focus:ring-2 focus:ring-[#dd5437]/10"
+                        className="w-full mt-3  rounded-lg border border-gray-300 bg-white px-3.5 py-3 text-sm text-gray-900 placeholder-gray-400 outline-none transition-all focus:border-[#dd5437] focus:ring-2 focus:ring-[#dd5437]/10"
                       />
                     </div>
 
                     <div className="space-y-1.5">
                       <div className="flex justify-between items-center">
-                        <label className="text-xs font-semibold uppercase tracking-wider text-gray-600">
+                        <label className="font-medium tracking-wider text-[#1F1F1F]">
                           Password
                         </label>
-                        <a href="#" className="text-xs font-semibold text-[#dd5437] hover:underline">
+                        <a href="#" className="text-sm font-medium text-[#D85A2B] hover:underline">
                           Forgot Password?
                         </a>
                       </div>
@@ -337,7 +339,7 @@ function LoginPage() {
                           placeholder="Enter your password"
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
-                          className="w-full rounded-lg border border-gray-300 bg-white pl-3.5 pr-10 py-3 text-sm text-gray-900 placeholder-gray-400 outline-none transition-all focus:border-[#dd5437] focus:ring-2 focus:ring-[#dd5437]/10"
+                          className="w-full mt-2 rounded-lg border border-gray-300 bg-white pl-3.5 pr-10 py-3 text-sm text-gray-900 placeholder-gray-400 outline-none transition-all focus:border-[#dd5437] focus:ring-2 focus:ring-[#dd5437]/10"
                         />
                         <button
                           type="button"
@@ -359,7 +361,8 @@ function LoginPage() {
                     <button
                       type="submit"
                       disabled={submitting}
-                      className="w-full bg-[#dd5437] hover:bg-[#c9452b] text-white font-semibold py-3 px-4 rounded-lg shadow-md transition-all active:scale-[0.98] disabled:opacity-60 disabled:pointer-events-none cursor-pointer text-sm flex items-center justify-center gap-2 !mt-8"
+                      style={{ background: 'radial-gradient(67.22% 100% at 50% 0%, #FF6A33 0%, #D85A2B 80%)' }}
+                      className="w-full h-12 hover:opacity-90 text-white font-semibold py-3 px-4 rounded-lg shadow-md transition-all active:scale-[0.98] disabled:opacity-60 disabled:pointer-events-none cursor-pointer text-sm flex items-center justify-center gap-2 !mt-8"
                     >
                       {submitting && <Loader2 className="h-4 w-4 animate-spin" />}
                       Sign In
@@ -370,56 +373,56 @@ function LoginPage() {
             )}
 
             {/* Signup offer */}
-            <p 
+            <p
               className="text-base text-center font-medium leading-[1.2] whitespace-nowrap pt-1 w-full"
               style={{ color: "rgba(31, 31, 31, 0.64)" }}
             >
               Are you a property manager and need an account? Call us on{" "}
-              <a href="tel:1300567637" className="text-[#dd5437] font-semibold hover:underline">
+              <a href="tel:1300567637" className="text-[#D85A2B] text-base font-semibold hover:underline">
                 1300 567 637
               </a>
             </p>
           </div>
 
           {/* Lower portion features */}
-          <div className="mt-12 grid grid-cols-3 gap-2 text-center max-w-[480px] mx-auto w-full select-none">
+          <div className="mt-12 grid grid-cols-3 gap-2 text-center  w-full select-none">
             {/* Feature 1: Expert Technicians */}
             <div className="flex flex-col items-center space-y-2.5">
-              <Wrench className="h-8 w-8 text-[#dd5437] stroke-[1.8px] hover:scale-110 transition-transform duration-200 cursor-pointer animate-in fade-in zoom-in-50 duration-300" />
+              <Wrench className="h-8 w-8 text-[#FF6A33] stroke-[1.8px] hover:scale-110 transition-transform duration-200 cursor-pointer animate-in fade-in zoom-in-50 duration-300" />
               <div className="space-y-0.5">
-                <h4 className="text-xs font-black text-slate-800 tracking-tight whitespace-nowrap">Expert Technicians</h4>
-                <p className="text-[10px] font-bold text-slate-400">Fully Licensed</p>
+                <h4 className="text-lg font-semibold text-[#1F1F1F] tracking-tight whitespace-nowrap">Expert Technicians</h4>
+                <p className="text-sm font-medium" style={{ color: "rgba(31, 31, 31, 0.64);" }}>Fully Licensed</p>
               </div>
             </div>
 
             {/* Feature 2: Reliable */}
             <div className="flex flex-col items-center space-y-2.5">
-              <Clock className="h-8 w-8 text-[#dd5437] stroke-[1.8px] hover:scale-110 transition-transform duration-200 cursor-pointer animate-in fade-in zoom-in-50 duration-300 delay-75" />
+              <Clock className="h-8 w-8 text-[#FF6A33] stroke-[1.8px] hover:scale-110 transition-transform duration-200 cursor-pointer animate-in fade-in zoom-in-50 duration-300 delay-75" />
               <div className="space-y-0.5">
-                <h4 className="text-xs font-black text-slate-800 tracking-tight">Reliable</h4>
-                <p className="text-[10px] font-bold text-slate-400">Always here when you need on</p>
+                <h4 className="text-lg font-semibold text-[#1F1F1F] tracking-tight whitespace-nowrap">Reliable</h4>
+                <p className="text-sm font-medium" style={{ color: "rgba(31, 31, 31, 0.64);" }}>Always here when you need on</p>
               </div>
             </div>
 
             {/* Feature 3: Support */}
             <div className="flex flex-col items-center space-y-2.5">
-              <Headphones className="h-8 w-8 text-[#dd5437] stroke-[1.8px] hover:scale-110 transition-transform duration-200 cursor-pointer animate-in fade-in zoom-in-50 duration-300 delay-150" />
+              <Headset className="h-8 w-8 text-[#FF6A33] stroke-[1.8px] hover:scale-110 transition-transform duration-200 cursor-pointer animate-in fade-in zoom-in-50 duration-300 delay-150" />
               <div className="space-y-0.5">
-                <h4 className="text-xs font-black text-slate-800 tracking-tight">Support</h4>
-                <p className="text-[10px] font-bold text-slate-400">We're just a call away</p>
+                <h4 className="text-lg font-semibold text-[#1F1F1F] tracking-tight whitespace-nowrap">Support</h4>
+                <p className="text-sm font-medium" style={{ color: "rgba(31, 31, 31, 0.64);" }}>We're just a call away</p>
               </div>
             </div>
           </div>
         </div>
 
         {/* Footer */}
-        <p className="text-center text-xs text-gray-400 mt-12 shrink-0">
+        <p className="text-center text-sm  mb-8 font-medium" style={{ color: "rgba(31, 31, 31, 0.64);" }}>
           2026 The Appliance Guys. All Rights Reserved
         </p>
       </div>
 
       {/* Right Pane - Feature image banner */}
-      <div className="hidden lg:block lg:w-1/2 h-screen fixed right-0 top-0 shrink-0">
+      <div className="hidden lg:block lg:w-1/2  right-0 ">
         <img
           src={sidePortionUrl}
           alt="One less thing to stress about - HubKonnect"

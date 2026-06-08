@@ -454,50 +454,7 @@ function AgencyOfficesPage() {
   return (
     <div className="min-h-full bg-white p-8">
       {/* Header */}
-      <div className="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
-        <div>
-          <h1 className="text-xl font-extrabold tracking-tight text-slate-900 sm:text-xl">
-            Agency Office Profiles
-          </h1>
-          <p className="mt-2 text-sm text-slate-500 font-medium">
-            Manage and track all agency office relationships across your portfolio.
-          </p>
-        </div>
-        <div className="flex flex-wrap items-center gap-3">
-          <button
-            onClick={() => setCustomizeOpen(true)}
-            className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white hover:bg-slate-50 cursor-pointer transition-all shadow-xs border-0 shrink-0"
-            aria-label="Customize columns"
-          >
-            <img src={FadersHorizontalIcon} alt="Sliders" className="h-5 w-5" />
-          </button>
 
-          <button
-            onClick={() => setMaxOpen(true)}
-            className="flex h-10 items-center gap-2 rounded-xl bg-gradient-to-r from-[#EA788F] via-[#C666A3] to-[#8B5CF6] px-4 py-2 text-xs font-extrabold text-white shadow-md hover:opacity-90 active:scale-[0.98] transition-all cursor-pointer shrink-0 border-0"
-            aria-label="Max"
-          >
-            <img src={SparkleIcon} alt="Sparkle" className="h-4 w-4 filter brightness-0 invert" />
-            <span>Max</span>
-          </button>
-
-          <button
-            onClick={() => setImportOpen(true)}
-            className="flex h-10 items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-extrabold text-slate-700 hover:bg-slate-50 transition-all cursor-pointer shadow-xs shrink-0"
-          >
-            <img src={DownloadSimpleIcon} alt="Download" className="h-4 w-4" />
-            <span>Import</span>
-          </button>
-
-          <button
-            onClick={() => setAddOpen(true)}
-            className="flex h-10 items-center gap-2 rounded-xl bg-[#dd5437] hover:bg-[#c9452b] px-4 py-2.5 text-xs font-extrabold text-white shadow-sm transition-all cursor-pointer border-0"
-          >
-            <img src={PlusIconIcon} alt="Plus" className="h-4 w-4 filter brightness-0 invert" />
-            <span>New Agency Office</span>
-          </button>
-        </div>
-      </div>
 
       {/* Stats Cards Section Container */}
       <div
@@ -506,6 +463,52 @@ function AgencyOfficesPage() {
           borderColor: "rgba(31, 31, 31, 0.08)",
         }}
       >
+        <div className="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
+          <div>
+            <h1 className="text-xl font-semibold tracking-tight text-[#1F1F1F] sm:text-xl">
+              Agency Office Profiles
+            </h1>
+            <p className="mt-2 text-sm font-medium" style={{ color: "rgba(31, 31, 31, 0.64)" }}>
+              Manage and track all agency office relationships across your portfolio.
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center gap-3">
+            <button
+              onClick={() => setCustomizeOpen(true)}
+              className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white hover:bg-slate-50 cursor-pointer transition-all shadow-xs border-0 shrink-0"
+              aria-label="Customize columns"
+            >
+              <img src={FadersHorizontalIcon} alt="Sliders" className="h-5 w-5" />
+            </button>
+
+            <button
+              onClick={() => setMaxOpen(true)}
+              className="flex h-10 items-center gap-2 rounded-xl bg-gradient-to-r from-[#EA788F] via-[#C666A3] to-[#8B5CF6] px-4 py-2 text-xs font-extrabold text-white shadow-md hover:opacity-90 active:scale-[0.98] transition-all cursor-pointer shrink-0 border-0"
+              aria-label="Max"
+            >
+              <img src={SparkleIcon} alt="Sparkle" className="h-4 w-4 filter brightness-0 invert" />
+              <span>Max</span>
+            </button>
+
+            <button
+              onClick={() => setImportOpen(true)}
+              className="flex h-10 items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-extrabold text-slate-700 hover:bg-slate-50 transition-all cursor-pointer shadow-xs shrink-0"
+            >
+              <img src={DownloadSimpleIcon} alt="Download" className="h-4 w-4" />
+              <span>Import</span>
+            </button>
+
+            <button
+              onClick={() => setAddOpen(true)}
+              className="flex h-10 items-center gap-2 rounded-xl bg-[#dd5437] hover:bg-[#c9452b] px-4 py-2.5 text-xs font-extrabold text-white shadow-sm transition-all cursor-pointer border-0"
+            >
+              <img src={PlusIconIcon} alt="Plus" className="h-4 w-4 filter brightness-0 invert" />
+              <span>New Agency Office</span>
+            </button>
+          </div>
+        </div>
+
+
         <div className={`grid gap-4 grid-cols-2 md:grid-cols-3 ${visibleStats.length === 6 ? "lg:grid-cols-6" :
           visibleStats.length === 5 ? "lg:grid-cols-5" :
             visibleStats.length === 4 ? "lg:grid-cols-4" :

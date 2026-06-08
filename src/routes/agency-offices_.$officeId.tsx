@@ -1,11 +1,11 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState, useEffect, useMemo, type ReactNode } from "react";
-import { 
-  ChevronLeft, 
-  Pencil, 
-  ExternalLink, 
-  Trash2, 
-  Loader2, 
+import {
+  ChevronLeft,
+  Pencil,
+  ExternalLink,
+  Trash2,
+  Loader2,
   Copy,
   Archive,
   ArchiveRestore,
@@ -91,14 +91,14 @@ function StatusPill({ status }: { status: string }) {
 
   const statusConfig: Record<string, { bg: string; text: string; dot: string }> = {
     Active: {
-      bg: "bg-[#2093A3]/8",
+      bg: "bg-[#2093A314]",
       text: "text-[#2093A3]",
       dot: "bg-[#2093A3]",
     },
     Inactive: {
-      bg: "bg-rose-500/8",
-      text: "text-rose-500",
-      dot: "bg-rose-500",
+      bg: "bg-[#EF444414]",
+      text: "text-[#EF4444]",
+      dot: "bg-[#EF4444]",
     },
     Lapsing: {
       bg: "bg-amber-500/8",
@@ -106,17 +106,17 @@ function StatusPill({ status }: { status: string }) {
       dot: "bg-amber-500",
     },
     Archived: {
-      bg: "bg-slate-500/8",
-      text: "text-slate-500",
-      dot: "bg-slate-500",
+      bg: "bg-[#1F1F1F14]",
+      text: "text-[#1F1F1F]",
+      dot: "bg-[#1F1F1F]",
     },
   };
 
   const config = statusConfig[status] || statusConfig.Active;
 
   return (
-    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold leading-none ${config.bg} ${config.text} select-none`}>
-      <span className={`w-1.5 h-1.5 rounded-full ${config.dot}`} />
+    <span className={`inline-flex items-center gap-1.5 px-2 py-[6px] rounded-[8px] text-xs font-medium leading-none ${config.bg} ${config.text} select-none`}>
+      <span className={`w-1 h-1 rounded-full ${config.dot}`} />
       {status}
     </span>
   );
@@ -131,7 +131,7 @@ function AgencyOfficeDetailPage() {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [confirmDeleteId, setConfirmDeleteId] = useState("");
   const navigate = useNavigate();
-  
+
   const { data: office, isLoading, isError, error } = useOffice(officeId);
   const deleteOffice = useDeleteOffice();
   const updateOffice = useUpdateOffice();
@@ -299,8 +299,8 @@ function AgencyOfficeDetailPage() {
       trendColor: "text-emerald-500",
       trendIcon: TrendingUp,
       icon: Receipt,
-      bg: "#FAF5F2",
-      borderColor: "rgba(221, 84, 55, 0.12)",
+      bg: "rgba(216, 90, 43, 0.04)",
+      borderColor: "rgba(31, 31, 31, 0.08)",
       fg: "text-[#dd5437]",
     },
     {
@@ -311,8 +311,8 @@ function AgencyOfficeDetailPage() {
       trendColor: "text-rose-500",
       trendIcon: TrendingDown,
       icon: Receipt,
-      bg: "#F0F7FF",
-      borderColor: "rgba(37, 99, 235, 0.12)",
+      bg: "linear-gradient(0deg, rgba(37, 99, 235, 0.04) 0%, rgba(37, 99, 235, 0.04) 100%), #FFF",
+      borderColor: "rgba(31, 31, 31, 0.08)",
       fg: "text-blue-600",
     },
     {
@@ -323,8 +323,8 @@ function AgencyOfficeDetailPage() {
       trendColor: "text-slate-400",
       trendIcon: null,
       icon: DollarSign,
-      bg: "#FDF8EA",
-      borderColor: "rgba(217, 119, 6, 0.12)",
+      bg: "rgba(217, 119, 6, 0.04)",
+      borderColor: "rgba(31, 31, 31, 0.08)",
       fg: "text-amber-600",
     },
     {
@@ -335,8 +335,8 @@ function AgencyOfficeDetailPage() {
       trendColor: "text-slate-400",
       trendIcon: null,
       icon: FileText,
-      bg: "#FFF5F5",
-      borderColor: "rgba(225, 29, 72, 0.12)",
+      bg: "rgba(239, 68, 68, 0.04)",
+      borderColor: "rgba(31, 31, 31, 0.08)",
       fg: "text-rose-600",
     },
     {
@@ -347,32 +347,33 @@ function AgencyOfficeDetailPage() {
       trendColor: "text-rose-500",
       trendIcon: TrendingDown,
       icon: UserCheck,
-      bg: "#F8F6FC",
-      borderColor: "rgba(139, 92, 246, 0.12)",
+      bg: "rgba(124, 58, 237, 0.04)",
+      borderColor: "rgba(31, 31, 31, 0.08)",
       fg: "text-purple-600",
     },
   ];
 
   return (
-    <div className="min-h-full bg-white p-8">
+    <div className="min-h-full bg-white p-4">
       {/* Header with Inline Back Arrow & Actions */}
-      <div className="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-center border-b border-slate-50 pb-5">
-        <div className="flex items-center gap-3.5 select-none">
+      <div className="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-center border rounded-[8px] p-4" style={{ borderColor: "rgba(31, 31, 31, 0.08)" }}>
+        <div className="flex items-center gap-2.5 select-none">
           <Link
             to="/agency-offices"
-            className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white hover:bg-slate-50 transition-colors shadow-2xs shrink-0 cursor-pointer"
+            className="flex items-center justify-center p-1 text-slate-500 hover:text-slate-800 transition-colors cursor-pointer mr-1"
           >
-            <ChevronLeft className="h-5 w-5 text-slate-500" />
+            <ChevronLeft className="h-5 w-5 stroke-[2.5]" />
           </Link>
-          <h1 className="text-2xl font-black text-slate-800 tracking-tight">{office.name}</h1>
-          <button 
+          <h1 className="text-xl font-semibold text-[#1F1F1F] tracking-tight">{office.name}</h1>
+          <button
             onClick={handleCopyName}
-            className="p-1.5 hover:bg-slate-100 rounded-lg text-slate-400 hover:text-slate-600 transition-colors cursor-pointer border-0 bg-transparent"
+            className="p-1 text-slate-400 hover:text-[#dd5437] transition-colors cursor-pointer border-0 bg-transparent flex items-center justify-center"
             title="Copy Agency Name"
           >
-            <Copy className="h-4 w-4" />
+            <Copy className="h-3.5 w-3.5" />
           </button>
-          <span className="rounded-xl border border-slate-100 bg-slate-50/60 px-3 py-1 text-xs font-bold text-slate-500 shadow-3xs">
+
+          <span className="ml-2 rounded-[16px] border border-[rgba(31,31,31,0.08)] bg-white px-2.5 py-[3px] text-[11px] font-semibold text-[#1F1F1F] shadow-xs flex items-center h-[26px]">
             #{office.id.slice(-4).toUpperCase()}
           </span>
           <StatusPill status={office.status} />
@@ -383,33 +384,33 @@ function AgencyOfficeDetailPage() {
           <button
             onClick={isArchived ? () => setIsActivateDialogOpen(true) : () => setIsArchiveDialogOpen(true)}
             disabled={updateOffice.isPending}
-            className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-bold text-slate-655 hover:bg-slate-50 shadow-3xs cursor-pointer transition-all disabled:opacity-50"
+            className="flex items-center gap-2 rounded-[8px] border border-[rgba(31,31,31,0.08)] bg-white px-3.5 py-2 text-sm font-medium text-[#1F1F1F] hover:bg-slate-50 transition-all disabled:opacity-50 cursor-pointer shadow-3xs h-[36px]"
           >
             {isArchived ? (
               <>
-                <ArchiveRestore className="h-3.5 w-3.5 text-slate-400" />
+                <ArchiveRestore className="h-4 w-4 text-[#1F1F1F]/70" />
                 Unarchive Agency Office
               </>
             ) : (
               <>
-                <Archive className="h-3.5 w-3.5 text-slate-400" />
+                <Archive className="h-4 w-4 text-[#1F1F1F]/70" />
                 Archive Agency Office
               </>
             )}
           </button>
-          
+
           <button
             onClick={() => {
               setConfirmDeleteId("");
               setIsDeleteDialogOpen(true);
             }}
             disabled={deleteOffice.isPending}
-            className="flex items-center gap-2 rounded-xl border border-rose-200 bg-white hover:bg-rose-50/50 px-4 py-2.5 text-xs font-bold text-rose-600 shadow-3xs cursor-pointer transition-all disabled:opacity-50"
+            className="flex items-center gap-2 rounded-[8px] border border-rose-200/50 bg-white hover:bg-rose-50 px-3.5 py-2 text-sm font-medium text-[#EF4444] transition-all disabled:opacity-50 cursor-pointer shadow-3xs h-[36px]"
           >
             {deleteOffice.isPending ? (
-              <Loader2 className="h-3.5 w-3.5 animate-spin text-rose-500" />
+              <Loader2 className="h-4 w-4 animate-spin text-[#EF4444]" />
             ) : (
-              <Trash2 className="h-3.5 w-3.5 text-rose-500" />
+              <Trash2 className="h-4 w-4 text-[#EF4444]" />
             )}
             Delete Agency Office
           </button>
@@ -417,7 +418,7 @@ function AgencyOfficeDetailPage() {
       </div>
 
       {/* 5-Column Invoices & Quotes Metric Cards Row */}
-      <div 
+      <div
         className="mb-6 p-4 border rounded-[16px] bg-white"
         style={{
           borderColor: "rgba(31, 31, 31, 0.08)",
@@ -432,7 +433,7 @@ function AgencyOfficeDetailPage() {
                 key={s.label}
                 className="flex justify-between items-start self-stretch p-4 border rounded-[16px] select-none transition-all hover:shadow-xs w-full bg-white"
                 style={{
-                  backgroundColor: s.bg,
+                  background: s.bg,
                   borderColor: s.borderColor,
                 }}
               >
@@ -442,9 +443,9 @@ function AgencyOfficeDetailPage() {
                     <div className={`flex h-6 w-6 items-center justify-center rounded-lg ${s.fg} bg-white/60 shadow-3xs`}>
                       <s.icon className="h-4 w-4" />
                     </div>
-                    <span className="text-xs font-bold text-slate-750">{s.label}</span>
+                    <span className="text-base font-semibold" style={{ color: "rgba(31, 31, 31, 0.80)" }}>{s.label}</span>
                   </div>
-                  <span className="text-2xl font-extrabold text-slate-850 tracking-tight leading-none mt-6">
+                  <span className="text-[32px] font-extrabold text-slate-850 tracking-tight leading-none mt-6">
                     {s.value}
                   </span>
                 </div>
@@ -490,14 +491,14 @@ function AgencyOfficeDetailPage() {
                         {s.trendIcon && (
                           <s.trendIcon className="h-3.5 w-3.5 shrink-0 stroke-[2.5px]" />
                         )}
-                        <span>{s.trend}</span>
+                        <span className="text-xs font-semibold">{s.trend}</span>
                       </div>
                     ) : (
                       <span className="text-xs font-bold text-slate-400">
                         —
                       </span>
                     )}
-                    <span className="text-[10px] font-bold text-slate-400 mt-0.5 select-none whitespace-nowrap leading-none">
+                    <span className="text-xs font-medium mt-0.5 select-none whitespace-nowrap leading-none" style={{ color: "rgba(31, 31, 31, 0.64)" }}>
                       {cardPeriodFilter}
                     </span>
                   </div>
@@ -508,127 +509,138 @@ function AgencyOfficeDetailPage() {
         </div>
       </div>
 
-      {/* Tabs Menu Header & Actions Row */}
-      <div className="mb-6 flex flex-col sm:flex-row justify-between sm:items-center gap-4">
-        {/* Left Side: Tabs Menu Header */}
-        <div className="flex bg-slate-100/60 rounded-lg p-1 border border-[#1F1F1F]/4 w-fit select-none">
-          {TABS.map((t) => (
-            <button
-              key={t}
-              onClick={() => setTab(t)}
-              className={`rounded-md px-5 py-2 text-xs font-extrabold transition-all cursor-pointer border-0 ${
-                tab === t
-                  ? "bg-white text-slate-800 shadow-sm"
-                  : "text-slate-400 hover:text-slate-655"
-              }`}
-            >
-              {t}
-            </button>
-          ))}
-        </div>
-        
-        {/* Right Side: Customize Pencil Action or Save/Cancel Actions */}
-        {isEditingOverview ? (
-          <div className="flex items-center gap-2.5 mr-1 animate-in fade-in duration-200 shrink-0">
-            {/* Trash button */}
-            <button 
-              onClick={() => setIsDeleteDialogOpen(true)}
-              className="rounded-xl border border-rose-200 bg-white p-2 text-rose-500 hover:bg-rose-50 transition-all shadow-3xs cursor-pointer border-0 flex items-center justify-center h-9 w-9"
-              title="Delete Permanently"
-            >
-              <Trash2 className="h-3.5 w-3.5 animate-pulse" />
-            </button>
-            
-            {/* Check/Save button */}
-            <button 
-              onClick={handleSaveOverview}
-              disabled={updateOffice.isPending}
-              className="rounded-xl bg-[#dd5437] hover:bg-[#c9492f] p-2 text-white transition-all shadow-3xs cursor-pointer border-0 flex items-center justify-center h-9 w-9 disabled:opacity-50"
-              title="Save Changes"
-            >
-              {updateOffice.isPending ? (
-                <Loader2 className="h-3.5 w-3.5 animate-spin" />
-              ) : (
-                <Check className="h-3.5 w-3.5 stroke-[3px]" />
-              )}
-            </button>
-            
-            {/* X/Cancel button */}
-            <button 
-              onClick={() => setIsEditingOverview(false)}
-              className="rounded-xl border border-slate-200 bg-white p-2 text-slate-500 hover:bg-slate-50 transition-all shadow-3xs cursor-pointer border-0 flex items-center justify-center h-9 w-9"
-              title="Cancel Editing"
-            >
-              <X className="h-3.5 w-3.5 stroke-[2.5px]" />
-            </button>
+
+      <div className="mb-6 p-4 border rounded-[16px] bg-white"
+        style={{
+          borderColor: "rgba(31, 31, 31, 0.08)",
+        }}>
+        <>
+
+          {/* Tabs Menu Header & Actions Row */}
+          <div className="mb-6 flex flex-col sm:flex-row justify-between sm:items-center gap-4">
+            {/* Left Side: Tabs Menu Header */}
+            <div className="flex bg-slate-100/60 rounded-lg p-1 gap-7 border border-[#1F1F1F]/4  select-none">
+              {TABS.map((t) => (
+                <button
+                  key={t}
+                  onClick={() => setTab(t)}
+                  className={`rounded-md px-5 py-2 text-sm font-medium transition-all cursor-pointer border-0 ${tab === t
+                    ? "bg-white text-[#1F1F1F] shadow-sm"
+                    : ""
+                    }`}
+                >
+                  {t}
+                </button>
+              ))}
+            </div>
+
+            {/* Right Side: Customize Pencil Action or Save/Cancel Actions */}
+            {isEditingOverview ? (
+              <div className="flex items-center gap-2.5 mr-1 animate-in fade-in duration-200 shrink-0">
+                {/* Trash button */}
+                <button
+                  onClick={() => setIsDeleteDialogOpen(true)}
+                  className="rounded-xl border border-rose-200 bg-white p-2 text-rose-500 hover:bg-rose-50 transition-all shadow-3xs cursor-pointer border-0 flex items-center justify-center h-9 w-9"
+                  title="Delete Permanently"
+                >
+                  <Trash2 className="h-3.5 w-3.5 animate-pulse" />
+                </button>
+
+                {/* Check/Save button */}
+                <button
+                  onClick={handleSaveOverview}
+                  disabled={updateOffice.isPending}
+                  className="rounded-xl bg-[#dd5437] hover:bg-[#c9492f] p-2 text-white transition-all shadow-3xs cursor-pointer border-0 flex items-center justify-center h-9 w-9 disabled:opacity-50"
+                  title="Save Changes"
+                >
+                  {updateOffice.isPending ? (
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  ) : (
+                    <Check className="h-3.5 w-3.5 stroke-[3px]" />
+                  )}
+                </button>
+
+                {/* X/Cancel button */}
+                <button
+                  onClick={() => setIsEditingOverview(false)}
+                  className="rounded-xl border border-slate-200 bg-white p-2 text-slate-500 hover:bg-slate-50 transition-all shadow-3xs cursor-pointer border-0 flex items-center justify-center h-9 w-9"
+                  title="Cancel Editing"
+                >
+                  <X className="h-3.5 w-3.5 stroke-[2.5px]" />
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => {
+                  setTab("Overview");
+                  setIsEditingOverview(true);
+                }}
+                className="rounded-xl border border-slate-200 bg-white p-2.5 text-slate-400 hover:bg-slate-50 hover:text-slate-600 transition-all shadow-3xs cursor-pointer mr-1 flex items-center justify-center h-9 w-9 shrink-0"
+                title="Edit Details"
+              >
+                <Pencil className="h-4 w-4 text-slate-500" />
+              </button>
+            )}
           </div>
-        ) : (
-          <button 
-            onClick={() => {
-              setTab("Overview");
-              setIsEditingOverview(true);
-            }}
-            className="rounded-xl border border-slate-200 bg-white p-2.5 text-slate-400 hover:bg-slate-50 hover:text-slate-600 transition-all shadow-3xs cursor-pointer mr-1 flex items-center justify-center h-9 w-9 shrink-0"
-            title="Edit Details"
-          >
-            <Pencil className="h-4 w-4 text-slate-500" />
-          </button>
-        )}
+
+          {/* Tab Render Switcher */}
+          {tab === "Overview" && (
+            <OverviewTab
+              office={office}
+              isEditing={isEditingOverview}
+              editTradingName={editTradingName}
+              setEditTradingName={setEditTradingName}
+              editLegalEntityName={editLegalEntityName}
+              setEditLegalEntityName={setEditLegalEntityName}
+              editAbn={editAbn}
+              setEditAbn={setEditAbn}
+              editZone={editZone}
+              setEditZone={setEditZone}
+              editAccountManager={editAccountManager}
+              setEditAccountManager={setEditAccountManager}
+              editInactivityAlert={editInactivityAlert}
+              setEditInactivityAlert={setEditInactivityAlert}
+              editAddress={editAddress}
+              setEditAddress={setEditAddress}
+              editSuburb={editSuburb}
+              setEditSuburb={setEditSuburb}
+              editState={editState}
+              setEditState={setEditState}
+              editPostcode={editPostcode}
+              setEditPostcode={setEditPostcode}
+              editPhone={editPhone}
+              setEditPhone={setEditPhone}
+              editEmail={editEmail}
+              setEditEmail={setEditEmail}
+              editWebsite={editWebsite}
+              setEditWebsite={setEditWebsite}
+              editPum={editPum}
+              setEditPum={setEditPum}
+              editEstimatedMonthlySpend={editEstimatedMonthlySpend}
+              setEditEstimatedMonthlySpend={setEditEstimatedMonthlySpend}
+              editPlatform={editPlatform}
+              setEditPlatform={setEditPlatform}
+              editPrincipal={editPrincipal}
+              setEditPrincipal={setEditPrincipal}
+              editHeadPm={editHeadPm}
+              setEditHeadPm={setEditHeadPm}
+              editApContact={editApContact}
+              setEditApContact={setEditApContact}
+            />
+          )}
+          {tab === "People" && <PeopleTab officeId={officeId} />}
+          {tab === "Meetings" && <MeetingsTab officeId={officeId} officeName={office.name} accountManagerName={accountManagerName(office.accountManager) ?? "Mitchell Wilcox"} />}
+          {tab === "Notes" && <NotesTab officeId={officeId} />}
+          {tab !== "Overview" && tab !== "People" && tab !== "Meetings" && tab !== "Notes" && (
+            <div className="rounded-3xl border border-slate-100 bg-white p-16 text-center text-slate-400 font-bold shadow-2xs">
+              {tab} content coming soon.
+            </div>
+          )}
+
+        </>
       </div>
 
-      {/* Tab Render Switcher */}
-      {tab === "Overview" && (
-        <OverviewTab 
-          office={office} 
-          isEditing={isEditingOverview}
-          editTradingName={editTradingName}
-          setEditTradingName={setEditTradingName}
-          editLegalEntityName={editLegalEntityName}
-          setEditLegalEntityName={setEditLegalEntityName}
-          editAbn={editAbn}
-          setEditAbn={setEditAbn}
-          editZone={editZone}
-          setEditZone={setEditZone}
-          editAccountManager={editAccountManager}
-          setEditAccountManager={setEditAccountManager}
-          editInactivityAlert={editInactivityAlert}
-          setEditInactivityAlert={setEditInactivityAlert}
-          editAddress={editAddress}
-          setEditAddress={setEditAddress}
-          editSuburb={editSuburb}
-          setEditSuburb={setEditSuburb}
-          editState={editState}
-          setEditState={setEditState}
-          editPostcode={editPostcode}
-          setEditPostcode={setEditPostcode}
-          editPhone={editPhone}
-          setEditPhone={setEditPhone}
-          editEmail={editEmail}
-          setEditEmail={setEditEmail}
-          editWebsite={editWebsite}
-          setEditWebsite={setEditWebsite}
-          editPum={editPum}
-          setEditPum={setEditPum}
-          editEstimatedMonthlySpend={editEstimatedMonthlySpend}
-          setEditEstimatedMonthlySpend={setEditEstimatedMonthlySpend}
-          editPlatform={editPlatform}
-          setEditPlatform={setEditPlatform}
-          editPrincipal={editPrincipal}
-          setEditPrincipal={setEditPrincipal}
-          editHeadPm={editHeadPm}
-          setEditHeadPm={setEditHeadPm}
-          editApContact={editApContact}
-          setEditApContact={setEditApContact}
-        />
-      )}
-      {tab === "People" && <PeopleTab officeId={officeId} />}
-      {tab === "Meetings" && <MeetingsTab officeId={officeId} officeName={office.name} accountManagerName={accountManagerName(office.accountManager) ?? "Mitchell Wilcox"} />}
-      {tab === "Notes" && <NotesTab officeId={officeId} />}
-      {tab !== "Overview" && tab !== "People" && tab !== "Meetings" && tab !== "Notes" && (
-        <div className="rounded-3xl border border-slate-100 bg-white p-16 text-center text-slate-400 font-bold shadow-2xs">
-          {tab} content coming soon.
-        </div>
-      )}
+
 
       {/* Archive Confirmation Popup Modal */}
       <Dialog open={isArchiveDialogOpen} onOpenChange={setIsArchiveDialogOpen}>
@@ -641,12 +653,12 @@ function AgencyOfficeDetailPage() {
               </button>
             </DialogClose>
           </div>
-          
+
           {/* Circular Badge with Orange Sparkles */}
           <div className="flex justify-center mt-2 relative">
             <div className="relative flex h-20 w-20 items-center justify-center rounded-full bg-[#fff8f6] ring-8 ring-[#fff8f6]/60 border border-orange-100/30 shadow-2xs">
               <Archive className="h-8 w-8 text-[#dd5437]" />
-              
+
               {/* Floating Sparkles & Dots around the circle */}
               {/* Top Left Star */}
               <span className="absolute -top-1 -left-3 text-[#dd5437] text-[10px] opacity-70 animate-pulse select-none">✦</span>
@@ -654,7 +666,7 @@ function AgencyOfficeDetailPage() {
               <span className="absolute top-5 -left-6 text-[#dd5437]/60 text-[12px] leading-none select-none">•</span>
               {/* Bottom Left Star */}
               <span className="absolute bottom-2 -left-2 text-[#dd5437] text-[8px] opacity-60 select-none">✦</span>
-              
+
               {/* Top Right Dot */}
               <span className="absolute -top-2 right-2 text-[#dd5437]/50 text-[12px] leading-none select-none">•</span>
               {/* Mid Right Star */}
@@ -678,8 +690,8 @@ function AgencyOfficeDetailPage() {
                 Cancel
               </button>
             </DialogClose>
-            
-            <button 
+
+            <button
               onClick={handleConfirmArchive}
               disabled={updateOffice.isPending}
               className="w-full h-11 bg-[#dd5437] hover:bg-[#c24328] disabled:opacity-50 text-white font-bold text-xs rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-sm outline-none border-0"
@@ -706,12 +718,12 @@ function AgencyOfficeDetailPage() {
               </button>
             </DialogClose>
           </div>
-          
+
           {/* Circular Badge with Teal Sparkles */}
           <div className="flex justify-center mt-2 relative">
             <div className="relative flex h-20 w-20 items-center justify-center rounded-full bg-[#f4faf8] ring-8 ring-[#f4faf8]/60 border border-teal-100/30 shadow-2xs">
               <ArchiveRestore className="h-8 w-8 text-[#0f766e]" />
-              
+
               {/* Floating Sparkles & Dots around the circle */}
               {/* Top Left Star */}
               <span className="absolute -top-1 -left-3 text-[#0f766e] text-[10px] opacity-70 animate-pulse select-none">✦</span>
@@ -719,7 +731,7 @@ function AgencyOfficeDetailPage() {
               <span className="absolute top-5 -left-6 text-[#0f766e]/60 text-[12px] leading-none select-none">•</span>
               {/* Bottom Left Star */}
               <span className="absolute bottom-2 -left-2 text-[#0f766e] text-[8px] opacity-60 select-none">✦</span>
-              
+
               {/* Top Right Dot */}
               <span className="absolute -top-2 right-2 text-[#0f766e]/50 text-[12px] leading-none select-none">•</span>
               {/* Mid Right Star */}
@@ -743,8 +755,8 @@ function AgencyOfficeDetailPage() {
                 Cancel
               </button>
             </DialogClose>
-            
-            <button 
+
+            <button
               onClick={handleConfirmActivate}
               disabled={updateOffice.isPending}
               className="w-full h-11 bg-[#0f766e] hover:bg-[#0d6860] disabled:opacity-50 text-white font-bold text-xs rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-sm outline-none border-0"
@@ -771,12 +783,12 @@ function AgencyOfficeDetailPage() {
               </button>
             </DialogClose>
           </div>
-          
+
           {/* Circular Badge with Red Sparkles */}
           <div className="flex justify-center mt-2 relative">
             <div className="relative flex h-20 w-20 items-center justify-center rounded-full bg-[#fff1ef] ring-8 ring-[#fff1ef]/60 border border-rose-100/30 shadow-2xs">
               <Trash2 className="h-8 w-8 text-[#ef4444]" />
-              
+
               {/* Floating Sparkles & Dots around the circle */}
               {/* Top Left Star */}
               <span className="absolute -top-1 -left-3 text-[#ef4444] text-[10px] opacity-70 animate-pulse select-none">✦</span>
@@ -784,7 +796,7 @@ function AgencyOfficeDetailPage() {
               <span className="absolute top-5 -left-6 text-[#ef4444]/60 text-[12px] leading-none select-none">•</span>
               {/* Bottom Left Star */}
               <span className="absolute bottom-2 -left-2 text-[#ef4444] text-[8px] opacity-60 select-none">✦</span>
-              
+
               {/* Top Right Dot */}
               <span className="absolute -top-2 right-2 text-[#ef4444]/50 text-[12px] leading-none select-none">•</span>
               {/* Mid Right Star */}
@@ -806,8 +818,8 @@ function AgencyOfficeDetailPage() {
             <p className="text-xs font-semibold text-slate-440 tracking-wider text-center select-none uppercase">
               To confirm, please type the ID Number (#{office.id.slice(-4).toUpperCase()}) below:
             </p>
-            <input 
-              type="text" 
+            <input
+              type="text"
               value={confirmDeleteId}
               onChange={(e) => setConfirmDeleteId(e.target.value)}
               className="w-full h-11 px-4 text-sm font-semibold text-slate-700 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-[#ef4444]/50 focus:outline-none transition-all text-center placeholder-slate-400"
@@ -821,8 +833,8 @@ function AgencyOfficeDetailPage() {
                 Cancel
               </button>
             </DialogClose>
-            
-            <button 
+
+            <button
               onClick={handleConfirmDelete}
               disabled={deleteOffice.isPending || (confirmDeleteId.trim() !== "#" + office.id.slice(-4).toUpperCase() && confirmDeleteId.trim().toUpperCase() !== office.id.slice(-4).toUpperCase())}
               className="w-full h-11 text-white font-bold text-xs rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-sm outline-none border-0 disabled:bg-[#fcdad5] disabled:text-[#f8a899] bg-[#ef4444] hover:bg-[#dc2626] disabled:cursor-not-allowed select-none"
@@ -844,7 +856,7 @@ function AgencyOfficeDetailPage() {
 interface OverviewTabProps {
   office: Office;
   isEditing: boolean;
-  
+
   editTradingName: string;
   setEditTradingName: (val: string) => void;
   editLegalEntityName: string;
@@ -871,14 +883,14 @@ interface OverviewTabProps {
   setEditEmail: (val: string) => void;
   editWebsite: string;
   setEditWebsite: (val: string) => void;
-  
+
   editPum: number;
   setEditPum: (val: number) => void;
   editEstimatedMonthlySpend: number;
   setEditEstimatedMonthlySpend: (val: number) => void;
   editPlatform: string;
   setEditPlatform: (val: string) => void;
-  
+
   editPrincipal: string;
   setEditPrincipal: (val: string) => void;
   editHeadPm: string;
@@ -932,7 +944,7 @@ function OverviewTab({
   if (isEditing) {
     return (
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-12 items-start text-left animate-in fade-in-50 duration-300">
-        
+
         {/* Business Details Column (Takes 7/12 cols) */}
         <div className="lg:col-span-7 rounded-3xl border border-slate-100 bg-white p-6 shadow-2xs">
           <div className="mb-5 flex items-center justify-between border-b border-slate-50 pb-3">
@@ -946,13 +958,13 @@ function OverviewTab({
               # ID Number #{o.id.slice(-4).toUpperCase()}
             </div>
           </div>
-          
+
           <div className="grid grid-cols-2 gap-x-5 gap-y-4">
             {/* Trading Name */}
             <div className="space-y-1.5 col-span-2 md:col-span-1">
               <label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Trading Name</label>
-              <input 
-                type="text" 
+              <input
+                type="text"
                 value={editTradingName}
                 onChange={(e) => setEditTradingName(e.target.value)}
                 className="w-full h-10 px-4 text-xs font-bold text-slate-700 bg-slate-50/40 border border-slate-200 rounded-xl focus:bg-white focus:border-[#dd5437] focus:outline-none transition-all shadow-3xs"
@@ -962,8 +974,8 @@ function OverviewTab({
             {/* Legal Entity Name */}
             <div className="space-y-1.5 col-span-2 md:col-span-1">
               <label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Legal Entity Name</label>
-              <input 
-                type="text" 
+              <input
+                type="text"
                 value={editLegalEntityName}
                 onChange={(e) => setEditLegalEntityName(e.target.value)}
                 className="w-full h-10 px-4 text-xs font-bold text-slate-700 bg-slate-50/40 border border-slate-200 rounded-xl focus:bg-white focus:border-[#dd5437] focus:outline-none transition-all shadow-3xs"
@@ -973,8 +985,8 @@ function OverviewTab({
             {/* ABN */}
             <div className="space-y-1.5 col-span-2 md:col-span-1">
               <label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">ABN</label>
-              <input 
-                type="text" 
+              <input
+                type="text"
                 value={editAbn}
                 onChange={(e) => setEditAbn(e.target.value)}
                 className="w-full h-10 px-4 text-xs font-bold text-slate-700 bg-slate-50/40 border border-slate-200 rounded-xl focus:bg-white focus:border-[#dd5437] focus:outline-none transition-all shadow-3xs"
@@ -984,8 +996,8 @@ function OverviewTab({
             {/* Zone */}
             <div className="space-y-1.5 col-span-2 md:col-span-1">
               <label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Zone</label>
-              <input 
-                type="text" 
+              <input
+                type="text"
                 value={editZone}
                 onChange={(e) => setEditZone(e.target.value)}
                 className="w-full h-10 px-4 text-xs font-bold text-slate-700 bg-slate-50/40 border border-slate-200 rounded-xl focus:bg-white focus:border-[#dd5437] focus:outline-none transition-all shadow-3xs"
@@ -996,7 +1008,7 @@ function OverviewTab({
             <div className="space-y-1.5 col-span-2 md:col-span-1">
               <label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Account Manager</label>
               <div className="relative">
-                <select 
+                <select
                   value={editAccountManager}
                   onChange={(e) => setEditAccountManager(e.target.value)}
                   className="w-full h-10 pl-4 pr-10 text-xs font-bold text-slate-700 bg-slate-50/40 border border-slate-200 rounded-xl focus:bg-white focus:border-[#dd5437] focus:outline-none transition-all shadow-3xs appearance-none cursor-pointer"
@@ -1014,7 +1026,7 @@ function OverviewTab({
             <div className="space-y-1.5 col-span-2 md:col-span-1">
               <label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Inactivity Alert</label>
               <div className="relative">
-                <select 
+                <select
                   value={editInactivityAlert}
                   onChange={(e) => setEditInactivityAlert(e.target.value as any)}
                   className="w-full h-10 pl-4 pr-10 text-xs font-bold text-slate-700 bg-slate-50/40 border border-slate-200 rounded-xl focus:bg-white focus:border-[#dd5437] focus:outline-none transition-all shadow-3xs appearance-none cursor-pointer"
@@ -1032,8 +1044,8 @@ function OverviewTab({
             {/* Office Address */}
             <div className="space-y-1.5 col-span-2">
               <label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Office Address</label>
-              <input 
-                type="text" 
+              <input
+                type="text"
                 value={editAddress}
                 onChange={(e) => setEditAddress(e.target.value)}
                 className="w-full h-10 px-4 text-xs font-bold text-slate-700 bg-slate-50/40 border border-slate-200 rounded-xl focus:bg-white focus:border-[#dd5437] focus:outline-none transition-all shadow-3xs"
@@ -1044,8 +1056,8 @@ function OverviewTab({
             <div className="col-span-2 grid grid-cols-4 gap-4">
               <div className="space-y-1.5 col-span-2">
                 <label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Suburb</label>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   value={editSuburb}
                   onChange={(e) => setEditSuburb(e.target.value)}
                   className="w-full h-10 px-4 text-xs font-bold text-slate-700 bg-slate-50/40 border border-slate-200 rounded-xl focus:bg-white focus:border-[#dd5437] focus:outline-none transition-all shadow-3xs"
@@ -1053,8 +1065,8 @@ function OverviewTab({
               </div>
               <div className="space-y-1.5 col-span-1">
                 <label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">State</label>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   value={editState}
                   onChange={(e) => setEditState(e.target.value)}
                   className="w-full h-10 px-4 text-xs font-bold text-slate-700 bg-slate-50/40 border border-slate-200 rounded-xl focus:bg-white focus:border-[#dd5437] focus:outline-none transition-all shadow-3xs"
@@ -1062,8 +1074,8 @@ function OverviewTab({
               </div>
               <div className="space-y-1.5 col-span-1">
                 <label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Post Code</label>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   value={editPostcode}
                   onChange={(e) => setEditPostcode(e.target.value)}
                   className="w-full h-10 px-4 text-xs font-bold text-slate-700 bg-slate-50/40 border border-slate-200 rounded-xl focus:bg-white focus:border-[#dd5437] focus:outline-none transition-all shadow-3xs"
@@ -1082,8 +1094,8 @@ function OverviewTab({
             {/* Phone */}
             <div className="space-y-1.5 col-span-2 md:col-span-1">
               <label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Office Phone</label>
-              <input 
-                type="text" 
+              <input
+                type="text"
                 value={editPhone}
                 onChange={(e) => setEditPhone(e.target.value)}
                 className="w-full h-10 px-4 text-xs font-bold text-slate-700 bg-slate-50/40 border border-slate-200 rounded-xl focus:bg-white focus:border-[#dd5437] focus:outline-none transition-all shadow-3xs"
@@ -1093,8 +1105,8 @@ function OverviewTab({
             {/* Email */}
             <div className="space-y-1.5 col-span-2 md:col-span-1">
               <label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">General Office Email</label>
-              <input 
-                type="text" 
+              <input
+                type="text"
                 value={editEmail}
                 onChange={(e) => setEditEmail(e.target.value)}
                 className="w-full h-10 px-4 text-xs font-bold text-slate-700 bg-slate-50/40 border border-slate-200 rounded-xl focus:bg-white focus:border-[#dd5437] focus:outline-none transition-all shadow-3xs"
@@ -1104,8 +1116,8 @@ function OverviewTab({
             {/* Website */}
             <div className="space-y-1.5 col-span-2">
               <label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Website</label>
-              <input 
-                type="text" 
+              <input
+                type="text"
                 value={editWebsite}
                 onChange={(e) => setEditWebsite(e.target.value)}
                 className="w-full h-10 px-4 text-xs font-bold text-slate-700 bg-slate-50/40 border border-slate-200 rounded-xl focus:bg-white focus:border-[#dd5437] focus:outline-none transition-all shadow-3xs"
@@ -1113,7 +1125,7 @@ function OverviewTab({
             </div>
           </div>
         </div>
-        
+
         {/* Key Contacts & Metrics Column (Takes 5/12 cols) */}
         <div className="lg:col-span-5 rounded-3xl border border-slate-100 bg-white p-6 shadow-2xs">
           <div className="mb-5 flex items-center gap-3.5 border-b border-slate-50 pb-3">
@@ -1122,13 +1134,13 @@ function OverviewTab({
             </div>
             <h2 className="text-md font-black text-slate-800 tracking-wide">Key Contacts & Metrics</h2>
           </div>
-          
+
           <div className="space-y-4">
             {/* Principal / License */}
             <div className="space-y-1.5">
               <label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Principal / License</label>
               <div className="relative">
-                <select 
+                <select
                   value={editPrincipal}
                   onChange={(e) => setEditPrincipal(e.target.value)}
                   className="w-full h-10 pl-4 pr-10 text-xs font-bold text-slate-700 bg-slate-50/40 border border-slate-200 rounded-xl focus:bg-white focus:border-[#dd5437] focus:outline-none transition-all shadow-3xs appearance-none cursor-pointer"
@@ -1145,7 +1157,7 @@ function OverviewTab({
             <div className="space-y-1.5">
               <label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Head of Property Management</label>
               <div className="relative">
-                <select 
+                <select
                   value={editHeadPm}
                   onChange={(e) => setEditHeadPm(e.target.value)}
                   className="w-full h-10 pl-4 pr-10 text-xs font-bold text-slate-700 bg-slate-50/40 border border-slate-200 rounded-xl focus:bg-white focus:border-[#dd5437] focus:outline-none transition-all shadow-3xs appearance-none cursor-pointer"
@@ -1162,7 +1174,7 @@ function OverviewTab({
             <div className="space-y-1.5">
               <label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Accounts Payable Contact</label>
               <div className="relative">
-                <select 
+                <select
                   value={editApContact}
                   onChange={(e) => setEditApContact(e.target.value)}
                   className="w-full h-10 pl-4 pr-10 text-xs font-bold text-slate-700 bg-slate-50/40 border border-slate-200 rounded-xl focus:bg-white focus:border-[#dd5437] focus:outline-none transition-all shadow-3xs appearance-none cursor-pointer"
@@ -1178,8 +1190,8 @@ function OverviewTab({
             {/* Platform & System */}
             <div className="space-y-1.5">
               <label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Platform & System</label>
-              <input 
-                type="text" 
+              <input
+                type="text"
                 value={editPlatform}
                 onChange={(e) => setEditPlatform(e.target.value)}
                 className="w-full h-10 px-4 text-xs font-bold text-slate-700 bg-slate-50/40 border border-slate-200 rounded-xl focus:bg-white focus:border-[#dd5437] focus:outline-none transition-all shadow-3xs"
@@ -1189,8 +1201,8 @@ function OverviewTab({
             {/* PUM (Properties Under Management) */}
             <div className="space-y-1.5">
               <label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Total Properties Under Management</label>
-              <input 
-                type="number" 
+              <input
+                type="number"
                 value={editPum}
                 onChange={(e) => setEditPum(Number(e.target.value) || 0)}
                 className="w-full h-10 px-4 text-xs font-bold text-slate-700 bg-slate-50/40 border border-slate-200 rounded-xl focus:bg-white focus:border-[#dd5437] focus:outline-none transition-all shadow-3xs"
@@ -1200,8 +1212,8 @@ function OverviewTab({
             {/* Estimated Spend */}
             <div className="space-y-1.5">
               <label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Estimated Monthly Spend</label>
-              <input 
-                type="number" 
+              <input
+                type="number"
                 value={editEstimatedMonthlySpend}
                 onChange={(e) => setEditEstimatedMonthlySpend(Number(e.target.value) || 0)}
                 className="w-full h-10 px-4 text-xs font-bold text-slate-700 bg-slate-50/40 border border-slate-200 rounded-xl focus:bg-white focus:border-[#dd5437] focus:outline-none transition-all shadow-3xs"
@@ -1215,7 +1227,7 @@ function OverviewTab({
 
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-12 items-start">
-      
+
       {/* Business Details Column (Takes 7/12 cols ~58%) */}
       <div className="lg:col-span-7 rounded-3xl border border-slate-100 bg-white p-6 shadow-2xs">
         <div className="mb-5 flex items-center gap-3.5 pb-2">
@@ -1224,7 +1236,7 @@ function OverviewTab({
           </div>
           <h2 className="text-md font-bold text-slate-800 tracking-tight text-left">Business Details</h2>
         </div>
-        
+
         <div className="grid grid-cols-1 gap-x-6 gap-y-4 md:grid-cols-2">
           <Field label="ID Number" value={`#${o.id.slice(-4).toUpperCase()}`} icon={Hash} />
           <Field label="Trading Name" value={o.tradingName ?? o.name} icon={Tag} />
@@ -1267,9 +1279,9 @@ function OverviewTab({
             }
           />
           <Field label="Last Note" value="15 May 2026" icon={FileText} />
-          <Field 
-            label="Team Page" 
-            icon={Users} 
+          <Field
+            label="Team Page"
+            icon={Users}
             value={
               <a href="https://jacksonrowe.com.au/our-team" target="_blank" rel="noopener noreferrer" className="text-[#dd5437] font-bold hover:underline transition-colors">
                 https://jacksonrowe.com.au/our-team
@@ -1287,37 +1299,37 @@ function OverviewTab({
           </div>
           <h2 className="text-md font-bold text-slate-800 tracking-tight text-left">Key Contacts & Metrics</h2>
         </div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
-          <Field 
-            label="Principal / License" 
+          <Field
+            label="Principal / License"
             icon={UserCheck}
             value={
               <div className="flex items-center gap-1">
                 <span className="text-[#dd5437] font-bold hover:underline cursor-pointer">Andrew Webset</span>
                 <ExternalLink className="h-3 w-3 text-[#dd5437]/75 hover:text-[#dd5437] cursor-pointer" />
               </div>
-            } 
+            }
           />
-          <Field 
-            label="Head of Property Management" 
+          <Field
+            label="Head of Property Management"
             icon={UserCheck}
             value={
               <div className="flex items-center gap-1">
                 <span className="text-[#dd5437] font-bold hover:underline cursor-pointer">Peter Frank</span>
                 <ExternalLink className="h-3 w-3 text-[#dd5437]/75 hover:text-[#dd5437] cursor-pointer" />
               </div>
-            } 
+            }
           />
-          <Field 
-            label="Accounts Payable Contact" 
+          <Field
+            label="Accounts Payable Contact"
             icon={UserCheck}
             value={
               <div className="flex items-center gap-1">
                 <span className="text-[#dd5437] font-bold hover:underline cursor-pointer">Simon Lee</span>
                 <ExternalLink className="h-3 w-3 text-[#dd5437]/75 hover:text-[#dd5437] cursor-pointer" />
               </div>
-            } 
+            }
           />
           <Field label="Number of Property Managers" value="3" icon={Users} />
         </div>
@@ -1333,7 +1345,7 @@ function OverviewTab({
               <div className="text-base font-extrabold text-slate-800 mt-1.5 leading-none">{o.pum ?? 600}</div>
             </div>
           </div>
-          
+
           <div className="rounded-2xl border border-slate-100 bg-[#fff8f6]/40 p-4 text-left flex flex-col justify-between h-[112px] hover:shadow-xs transition-shadow">
             <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-orange-100/70 text-[#dd5437]">
               <DollarSign className="h-4.5 w-4.5" />
@@ -1343,7 +1355,7 @@ function OverviewTab({
               <div className="text-base font-extrabold text-slate-800 mt-1.5 leading-none">{o.estimatedMonthlySpend != null ? `$${o.estimatedMonthlySpend}` : "$600"}</div>
             </div>
           </div>
-          
+
           <div className="rounded-2xl border border-slate-100 bg-[#fff8f6]/40 p-4 text-left flex flex-col justify-between h-[112px] hover:shadow-xs transition-shadow">
             <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-orange-100/70 text-[#dd5437]">
               <Monitor className="h-4.5 w-4.5" />
@@ -1445,7 +1457,7 @@ function PeopleTab({ officeId }: PeopleTabProps) {
       communications: "—",
       phone: pm.phone || "—",
       email: pm.email || "—",
-      avatar: idx % 3 === 0 
+      avatar: idx % 3 === 0
         ? "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150"
         : idx % 3 === 1
           ? "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150"
@@ -1504,8 +1516,8 @@ function PeopleTab({ officeId }: PeopleTabProps) {
             Manage the property managers associated with this agency office.
           </p>
         </div>
-        
-        <button 
+
+        <button
           onClick={handleBulkEmail}
           className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-655 hover:bg-slate-50 shadow-3xs cursor-pointer transition-all h-9 shrink-0 outline-none"
         >
@@ -1590,10 +1602,10 @@ function PeopleTab({ officeId }: PeopleTabProps) {
                   const isSelected = selectedIds.includes(p.id);
                   const rowBorderClass = isSelected ? "border-[#dd5437]" : "border-slate-100/70";
                   const rowBgClass = isSelected ? "bg-[#dd5437]/[0.03]" : "bg-white hover:bg-slate-50/40";
-                  
+
                   return (
-                    <tr 
-                      key={p.id} 
+                    <tr
+                      key={p.id}
                       className={`group transition-all ${rowBgClass}`}
                     >
                       {/* Checkbox */}
@@ -1615,10 +1627,10 @@ function PeopleTab({ officeId }: PeopleTabProps) {
                       {/* Name with Avatar */}
                       <td className={`px-4 py-3.5 border-y ${rowBorderClass}`}>
                         <div className="flex items-center gap-3">
-                          <img 
-                            src={p.avatar} 
-                            alt={p.name} 
-                            className="h-8 w-8 rounded-full object-cover border border-slate-100 shadow-2xs shrink-0" 
+                          <img
+                            src={p.avatar}
+                            alt={p.name}
+                            className="h-8 w-8 rounded-full object-cover border border-slate-100 shadow-2xs shrink-0"
                           />
                           <span className="font-extrabold text-xs text-slate-700">{p.name}</span>
                         </div>
@@ -1656,7 +1668,7 @@ function PeopleTab({ officeId }: PeopleTabProps) {
                         {p.phone !== "—" ? (
                           <div className="flex items-center gap-2 text-xs font-bold text-slate-700 group/item">
                             <span>{p.phone}</span>
-                            <button 
+                            <button
                               onClick={() => handleCopyText(p.phone, "Phone")}
                               className="p-1 hover:bg-slate-100 rounded text-slate-400 hover:text-slate-600 transition-colors opacity-0 group-hover/item:opacity-100 cursor-pointer border-0 bg-transparent"
                               title="Copy Phone"
@@ -1674,7 +1686,7 @@ function PeopleTab({ officeId }: PeopleTabProps) {
                         {p.email !== "—" ? (
                           <div className="flex items-center gap-2 text-xs font-bold text-slate-700 group/item">
                             <span>{p.email}</span>
-                            <button 
+                            <button
                               onClick={() => handleCopyText(p.email, "Email")}
                               className="p-1 hover:bg-slate-100 rounded text-slate-400 hover:text-slate-600 transition-colors opacity-0 group-hover/item:opacity-100 cursor-pointer border-0 bg-transparent"
                               title="Copy Email"
@@ -1689,8 +1701,8 @@ function PeopleTab({ officeId }: PeopleTabProps) {
 
                       {/* Actions Menu */}
                       <td className={`px-4 py-3 text-center border-y border-r rounded-r-2xl ${rowBorderClass}`}>
-                        <Popover 
-                          open={activeActionsId === p.id} 
+                        <Popover
+                          open={activeActionsId === p.id}
                           onOpenChange={(op) => setActiveActionsId(op ? p.id : null)}
                         >
                           <PopoverTrigger asChild>
@@ -1699,7 +1711,7 @@ function PeopleTab({ officeId }: PeopleTabProps) {
                             </button>
                           </PopoverTrigger>
                           <PopoverContent className="w-32 p-1 bg-white border border-slate-200 shadow-md rounded-xl animate-in fade-in-50" align="end">
-                            <a 
+                            <a
                               href={`mailto:${p.email}`}
                               className="flex w-full items-center gap-2 px-3 py-2 text-xs font-bold text-slate-600 hover:bg-slate-50 transition-colors rounded-lg cursor-pointer"
                               onClick={() => setActiveActionsId(null)}
@@ -1731,7 +1743,7 @@ interface MeetingsTabProps {
 function MeetingsTab({ officeId, officeName, accountManagerName }: MeetingsTabProps) {
   const { data: meetingData, isLoading: meetingsLoading } = useMeetings({ office: officeId });
   const createMeeting = useCreateMeeting();
-  
+
   const [isBookDialogOpen, setIsBookDialogOpen] = useState(false);
   const [newMeeting, setNewMeeting] = useState({
     title: `Visit - ${officeName}`,
@@ -1743,7 +1755,7 @@ function MeetingsTab({ officeId, officeName, accountManagerName }: MeetingsTabPr
 
   const meetings = useMemo(() => {
     const dbItems = meetingData?.items ?? [];
-    
+
     // Seed standard mockup meetings to match mockup screenshot
     const mockups = [
       {
@@ -1780,14 +1792,14 @@ function MeetingsTab({ officeId, officeName, accountManagerName }: MeetingsTabPr
     // Convert db items
     const mapped = dbItems.map((m) => {
       const typeStr = m.meetingType;
-      const statusStr = m.status === "scheduled" 
-        ? "Scheduled" 
-        : m.status === "completed" 
-          ? "Completed" 
-          : m.status === "cancelled" 
-            ? "Cancelled" 
+      const statusStr = m.status === "scheduled"
+        ? "Scheduled"
+        : m.status === "completed"
+          ? "Completed"
+          : m.status === "cancelled"
+            ? "Cancelled"
             : "No Show";
-      
+
       return {
         id: m.id,
         title: m.title,
@@ -1810,7 +1822,7 @@ function MeetingsTab({ officeId, officeName, accountManagerName }: MeetingsTabPr
       toast.error("Please fill in start and end times");
       return;
     }
-    
+
     try {
       await createMeeting.mutateAsync({
         title: newMeeting.title,
@@ -1842,7 +1854,7 @@ function MeetingsTab({ officeId, officeName, accountManagerName }: MeetingsTabPr
         <div>
           <h2 className="text-lg font-bold text-slate-800 tracking-tight">Meetings ({meetings.length})</h2>
         </div>
-        
+
         <button
           onClick={() => setIsBookDialogOpen(true)}
           className="flex items-center gap-2 rounded-lg bg-[#dd5437] hover:bg-[#dd5437]/90 text-white font-bold text-xs py-2.5 px-4 shadow-sm shadow-[#dd5437]/20 transition-colors cursor-pointer border-0 outline-none"
@@ -1895,8 +1907,8 @@ function MeetingsTab({ officeId, officeName, accountManagerName }: MeetingsTabPr
               ) : (
                 meetings.map((m) => {
                   return (
-                    <tr 
-                      key={m.id} 
+                    <tr
+                      key={m.id}
                       className="border-b border-slate-100/80 last:border-b-0 bg-white hover:bg-slate-50/30 transition-colors"
                     >
                       {/* Title */}
@@ -1940,7 +1952,7 @@ function MeetingsTab({ officeId, officeName, accountManagerName }: MeetingsTabPr
               <X className="h-4 w-4 text-slate-500" />
             </button>
           </DialogClose>
-          
+
           <div className="mb-4">
             <h2 className="text-lg font-black text-slate-800 tracking-tight">Book a New Meeting</h2>
             <p className="text-xs text-slate-400 font-semibold mt-1">Schedule a new visit or follow-up with this office.</p>
@@ -1949,8 +1961,8 @@ function MeetingsTab({ officeId, officeName, accountManagerName }: MeetingsTabPr
           <form onSubmit={handleCreateMeeting} className="space-y-4">
             <div className="space-y-1.5">
               <label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Meeting Title</label>
-              <input 
-                type="text" 
+              <input
+                type="text"
                 required
                 value={newMeeting.title}
                 onChange={(e) => setNewMeeting({ ...newMeeting, title: e.target.value })}
@@ -1961,7 +1973,7 @@ function MeetingsTab({ officeId, officeName, accountManagerName }: MeetingsTabPr
 
             <div className="space-y-1.5">
               <label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Meeting Type</label>
-              <select 
+              <select
                 value={newMeeting.type}
                 onChange={(e) => setNewMeeting({ ...newMeeting, type: e.target.value as any })}
                 className="w-full h-10 px-3.5 text-xs font-bold text-slate-700 bg-slate-50/60 border border-slate-200 rounded-xl focus:bg-white focus:border-[#dd5437] focus:outline-none transition-all"
@@ -1975,8 +1987,8 @@ function MeetingsTab({ officeId, officeName, accountManagerName }: MeetingsTabPr
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1.5">
                 <label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Start Date & Time</label>
-                <input 
-                  type="datetime-local" 
+                <input
+                  type="datetime-local"
                   required
                   value={newMeeting.startAt}
                   onChange={(e) => setNewMeeting({ ...newMeeting, startAt: e.target.value })}
@@ -1985,8 +1997,8 @@ function MeetingsTab({ officeId, officeName, accountManagerName }: MeetingsTabPr
               </div>
               <div className="space-y-1.5">
                 <label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">End Date & Time</label>
-                <input 
-                  type="datetime-local" 
+                <input
+                  type="datetime-local"
                   required
                   value={newMeeting.endAt}
                   onChange={(e) => setNewMeeting({ ...newMeeting, endAt: e.target.value })}
@@ -1997,7 +2009,7 @@ function MeetingsTab({ officeId, officeName, accountManagerName }: MeetingsTabPr
 
             <div className="space-y-1.5">
               <label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Notes</label>
-              <textarea 
+              <textarea
                 value={newMeeting.notes}
                 onChange={(e) => setNewMeeting({ ...newMeeting, notes: e.target.value })}
                 className="w-full p-4 text-xs font-bold text-slate-700 bg-slate-50/60 border border-slate-200 rounded-xl focus:bg-white focus:border-[#dd5437] focus:outline-none transition-all min-h-[80px] max-h-[140px]"
@@ -2011,8 +2023,8 @@ function MeetingsTab({ officeId, officeName, accountManagerName }: MeetingsTabPr
                   Cancel
                 </button>
               </DialogClose>
-              
-              <button 
+
+              <button
                 type="submit"
                 disabled={createMeeting.isPending}
                 className="w-full py-3.5 bg-[#dd5437] hover:bg-[#dd5437]/90 disabled:opacity-50 text-white font-bold text-xs rounded-2xl transition-all flex items-center justify-center gap-2 cursor-pointer shadow-sm shadow-[#dd5437]/20 border-0 outline-none"
@@ -2051,19 +2063,19 @@ function NotesTab({ officeId }: { officeId: string }) {
   const [notes, setNotes] = useState<NoteItem[]>([]);
   const [isAiLoading, setIsAiLoading] = useState(false);
   const [aiSummary, setAiSummary] = useState<string | null>(null);
-  
+
   // Modal dialog states
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [selectedNote, setSelectedNote] = useState<NoteItem | null>(null);
-  
+
   // Form states
   const [newNoteContent, setNewNoteContent] = useState("");
   const [newNoteBadge, setNewNoteBadge] = useState("Engagement");
   const [newNoteFile, setNewNoteFile] = useState("");
-  
+
   const [editNoteContent, setEditNoteContent] = useState("");
-  
+
   // Collapse/Expand state for edit history, keyed by note ID
   const [expandedHistory, setExpandedHistory] = useState<Record<string, boolean>>({});
 
@@ -2207,7 +2219,7 @@ function NotesTab({ officeId }: { officeId: string }) {
     }) + " (edited just now)";
 
     const previousHistory = selectedNote.editHistory ?? [];
-    
+
     // Add current version to edit history list
     const newHistoryItem = {
       title: previousHistory.length > 0 ? "Previous version" : "Original note",
@@ -2303,19 +2315,19 @@ function NotesTab({ officeId }: { officeId: string }) {
           notes.map((n) => {
             const hasHistory = n.editHistory && n.editHistory.length > 0;
             const isHistoryOpen = !!expandedHistory[n.id];
-            
+
             return (
-              <div 
-                key={n.id} 
+              <div
+                key={n.id}
                 className="rounded-xl border border-slate-100 bg-white p-4 shadow-3xs hover:shadow-2xs transition-shadow duration-300 text-left"
               >
                 {/* Note Header */}
                 <div className="flex items-center justify-between pb-3">
                   <div className="flex items-center gap-2.5">
-                    <img 
-                      src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=120&h=120&fit=crop" 
+                    <img
+                      src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=120&h=120&fit=crop"
                       alt={n.author}
-                      className="h-8 w-8 rounded-full object-cover border border-slate-100 shadow-3xs shrink-0 select-none" 
+                      className="h-8 w-8 rounded-full object-cover border border-slate-100 shadow-3xs shrink-0 select-none"
                     />
                     <div className="flex items-center gap-2">
                       <span className="font-bold text-xs text-slate-800">{n.author}</span>
@@ -2409,7 +2421,7 @@ function NotesTab({ officeId }: { officeId: string }) {
               <X className="h-4 w-4 text-slate-500" />
             </button>
           </DialogClose>
-          
+
           <div className="mb-4">
             <h2 className="text-lg font-black text-slate-800 tracking-tight">Add a New Note Log</h2>
             <p className="text-xs text-slate-400 font-semibold mt-1">Record a recent client update, visit details, or engagement.</p>
@@ -2418,7 +2430,7 @@ function NotesTab({ officeId }: { officeId: string }) {
           <form onSubmit={handleAddNote} className="space-y-4">
             <div className="space-y-1.5">
               <label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Badge Tag</label>
-              <select 
+              <select
                 value={newNoteBadge}
                 onChange={(e) => setNewNoteBadge(e.target.value)}
                 className="w-full h-10 px-3.5 text-xs font-bold text-slate-700 bg-slate-50/60 border border-slate-200 rounded-xl focus:bg-white focus:border-[#dd5437] focus:outline-none transition-all"
@@ -2432,8 +2444,8 @@ function NotesTab({ officeId }: { officeId: string }) {
 
             <div className="space-y-1.5">
               <label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">File Attachment (Optional)</label>
-              <input 
-                type="text" 
+              <input
+                type="text"
                 value={newNoteFile}
                 onChange={(e) => setNewNoteFile(e.target.value)}
                 className="w-full h-10 px-4 text-xs font-bold text-slate-700 bg-slate-50/60 border border-slate-200 rounded-xl focus:bg-white focus:border-[#dd5437] focus:outline-none transition-all"
@@ -2443,7 +2455,7 @@ function NotesTab({ officeId }: { officeId: string }) {
 
             <div className="space-y-1.5">
               <label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Note Content</label>
-              <textarea 
+              <textarea
                 required
                 value={newNoteContent}
                 onChange={(e) => setNewNoteContent(e.target.value)}
@@ -2458,8 +2470,8 @@ function NotesTab({ officeId }: { officeId: string }) {
                   Cancel
                 </button>
               </DialogClose>
-              
-              <button 
+
+              <button
                 type="submit"
                 className="w-full py-3.5 bg-[#dd5437] hover:bg-[#c9492f] text-white font-bold text-xs rounded-2xl transition-all flex items-center justify-center gap-2 cursor-pointer shadow-sm shadow-[#dd5437]/20 border-0 outline-none"
               >
@@ -2479,7 +2491,7 @@ function NotesTab({ officeId }: { officeId: string }) {
               <X className="h-4 w-4 text-slate-500" />
             </button>
           </DialogClose>
-          
+
           <div className="mb-4">
             <h2 className="text-lg font-black text-slate-800 tracking-tight">Edit Note Log</h2>
             <p className="text-xs text-slate-400 font-semibold mt-1">Make changes to your log. Old version will be preserved in history.</p>
@@ -2488,7 +2500,7 @@ function NotesTab({ officeId }: { officeId: string }) {
           <form onSubmit={handleEditNote} className="space-y-4">
             <div className="space-y-1.5">
               <label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Note Content</label>
-              <textarea 
+              <textarea
                 required
                 value={editNoteContent}
                 onChange={(e) => setEditNoteContent(e.target.value)}
@@ -2503,8 +2515,8 @@ function NotesTab({ officeId }: { officeId: string }) {
                   Cancel
                 </button>
               </DialogClose>
-              
-              <button 
+
+              <button
                 type="submit"
                 className="w-full py-3.5 bg-[#dd5437] hover:bg-[#c9492f] text-white font-bold text-xs rounded-2xl transition-all flex items-center justify-center gap-2 cursor-pointer shadow-sm shadow-[#dd5437]/20 border-0 outline-none"
               >

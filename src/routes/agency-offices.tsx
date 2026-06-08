@@ -14,6 +14,12 @@ import {
 } from "@/components/ui/sheet";
 import { Switch } from "@/components/ui/switch";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import {
   Loader2,
@@ -60,6 +66,7 @@ import MinusSquareIcon from "@/icons/MinusSquare.svg";
 import PlusIconIcon from "@/icons/Plus Icon.svg";
 import SparkleIcon from "@/icons/Sparkle.svg";
 import TableIconIcon from "@/icons/Table Icon.svg";
+import TrayArrowUpIcon from "@/icons/TrayArrowUp.svg";
 import TrendDownIcon from "@/icons/TrendDown.svg";
 import TrendUpIcon from "@/icons/TrendUp.svg";
 import UserCircleMinusIcon from "@/icons/UserCircleMinus.svg";
@@ -242,8 +249,8 @@ function AgencyOfficesPage() {
       label: "Total Offices",
       value: summaryQuery.data?.total ?? 18,
       icon: BuildingIcon,
-      bg: "#FAF5F2",
-      borderColor: "rgba(221, 84, 55, 0.12)",
+      bg: "rgba(216, 90, 43, 0.04)",
+      borderColor: "rgba(31, 31, 31, 0.08)",
       fg: "text-[#dd5437]",
       trendType: "up" as const,
       trendVal: "12%",
@@ -254,8 +261,8 @@ function AgencyOfficesPage() {
       label: "Active Offices",
       value: summaryQuery.data?.Active ?? 18,
       icon: CheckCircleIcon,
-      bg: "#F0F7FF",
-      borderColor: "rgba(37, 99, 235, 0.12)",
+      bg: "linear-gradient(0deg, rgba(37, 99, 235, 0.04) 0%, rgba(37, 99, 235, 0.04) 100%), #FFF",
+      borderColor: "rgba(31, 31, 31, 0.08)",
       fg: "text-blue-600",
       trendType: "down" as const,
       trendVal: "12%",
@@ -266,8 +273,8 @@ function AgencyOfficesPage() {
       label: "Lapsing Offices",
       value: summaryQuery.data?.Lapsing ?? 0,
       icon: ClockIcon,
-      bg: "#FDF8EA",
-      borderColor: "rgba(217, 119, 6, 0.12)",
+      bg: "rgba(217, 119, 6, 0.04)",
+      borderColor: "rgba(31, 31, 31, 0.08)",
       fg: "text-amber-600",
       trendType: "neutral" as const,
       trendVal: "—",
@@ -278,8 +285,8 @@ function AgencyOfficesPage() {
       label: "Inactive Office",
       value: summaryQuery.data?.Inactive ?? 0,
       icon: XCircleIcon,
-      bg: "#FFF5F5",
-      borderColor: "rgba(225, 29, 72, 0.12)",
+      bg: "rgba(239, 68, 68, 0.04)",
+      borderColor: "rgba(31, 31, 31, 0.08)",
       fg: "text-rose-600",
       trendType: "neutral" as const,
       trendVal: "—",
@@ -290,8 +297,8 @@ function AgencyOfficesPage() {
       label: "Unassigned Offices",
       value: allOfficesQuery.data?.items.filter(o => !o.accountManager).length ?? 11,
       icon: UserCircleMinusIcon,
-      bg: "#F8F6FC",
-      borderColor: "rgba(139, 92, 246, 0.12)",
+      bg: "rgba(124, 58, 237, 0.04)",
+      borderColor: "rgba(31, 31, 31, 0.08)",
       fg: "text-purple-600",
       trendType: "down" as const,
       trendVal: "8.3%",
@@ -475,7 +482,7 @@ function AgencyOfficesPage() {
           <div className="flex flex-wrap items-center gap-3">
             <button
               onClick={() => setCustomizeOpen(true)}
-              className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white hover:bg-slate-50 cursor-pointer transition-all shadow-xs border-0 shrink-0"
+              className="flex h-10 w-10 items-center justify-center rounded-[8px] border border-slate-200 bg-white hover:bg-slate-50 cursor-pointer transition-all shadow-xs border-0 shrink-0"
               aria-label="Customize columns"
             >
               <img src={FadersHorizontalIcon} alt="Sliders" className="h-5 w-5" />
@@ -483,7 +490,7 @@ function AgencyOfficesPage() {
 
             <button
               onClick={() => setMaxOpen(true)}
-              className="flex h-10 items-center gap-2 rounded-xl bg-gradient-to-r from-[#EA788F] via-[#C666A3] to-[#8B5CF6] px-4 py-2 text-xs font-extrabold text-white shadow-md hover:opacity-90 active:scale-[0.98] transition-all cursor-pointer shrink-0 border-0"
+              className="flex h-10 items-center gap-2 rounded-[8px] bg-gradient-to-r from-[#EA788F] via-[#C666A3] to-[#8B5CF6] px-4 py-2 text-xs font-extrabold text-white shadow-md hover:opacity-90 active:scale-[0.98] transition-all cursor-pointer shrink-0 border-0"
               aria-label="Max"
             >
               <img src={SparkleIcon} alt="Sparkle" className="h-4 w-4 filter brightness-0 invert" />
@@ -492,7 +499,7 @@ function AgencyOfficesPage() {
 
             <button
               onClick={() => setImportOpen(true)}
-              className="flex h-10 items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-extrabold text-slate-700 hover:bg-slate-50 transition-all cursor-pointer shadow-xs shrink-0"
+              className="flex h-10 items-center gap-2 rounded-[8px] border border-slate-200 bg-white px-4 py-2 text-xs font-extrabold text-slate-700 hover:bg-slate-50 transition-all cursor-pointer shadow-xs shrink-0"
             >
               <img src={DownloadSimpleIcon} alt="Download" className="h-4 w-4" />
               <span>Import</span>
@@ -500,7 +507,8 @@ function AgencyOfficesPage() {
 
             <button
               onClick={() => setAddOpen(true)}
-              className="flex h-10 items-center gap-2 rounded-xl bg-[#dd5437] hover:bg-[#c9452b] px-4 py-2.5 text-xs font-extrabold text-white shadow-sm transition-all cursor-pointer border-0"
+              className="flex h-10 items-center gap-2 rounded-[8px] px-4 py-2.5 text-xs font-extrabold text-white shadow-sm transition-all cursor-pointer border-0 hover:opacity-90"
+              style={{ background: "radial-gradient(67.22% 100% at 50% 0%, #FF6A33 0%, #D85A2B 80%)" }}
             >
               <img src={PlusIconIcon} alt="Plus" className="h-4 w-4 filter brightness-0 invert" />
               <span>New Agency Office</span>
@@ -522,7 +530,7 @@ function AgencyOfficesPage() {
                 key={s.label}
                 className="flex justify-between items-start self-stretch p-4 border rounded-[16px] select-none transition-all hover:shadow-xs w-full"
                 style={{
-                  backgroundColor: s.bg,
+                  background: s.bg,
                   borderColor: s.borderColor,
                 }}
               >
@@ -530,9 +538,9 @@ function AgencyOfficesPage() {
                 <div className="flex flex-col justify-between items-start h-full min-h-[76px]">
                   <div className="flex items-center gap-2">
                     <img src={s.icon} alt={s.label} className="h-6 w-6 object-contain" />
-                    <span className="text-xs font-bold text-slate-750">{s.label}</span>
+                    <span className="text-base font-semibold" style={{ color: "rgba(31, 31, 31, 0.80)" }}>{s.label}</span>
                   </div>
-                  <span className="text-3xl font-extrabold text-slate-850 tracking-tight leading-none mt-6">
+                  <span className="text-[32px] font-extrabold text-slate-850 tracking-tight leading-none mt-6">
                     {s.value}
                   </span>
                 </div>
@@ -545,7 +553,7 @@ function AgencyOfficesPage() {
                         <img
                           src={CaretDownIcon}
                           alt="Caret"
-                          className={`h-4 w-4 transition-transform duration-200 ${isTotalOffices ? "rotate-180" : ""}`}
+                          className={`h-6 w-6 transition-transform duration-200 ${isTotalOffices ? "rotate-180" : ""}`}
                         />
                       </button>
                     </PopoverTrigger>
@@ -586,14 +594,14 @@ function AgencyOfficesPage() {
                             className="h-4 w-4 shrink-0"
                           />
                         )}
-                        <span>{s.trendVal}</span>
+                        <span className="text-xs font-semibold">{s.trendVal}</span>
                       </div>
                     ) : (
                       <span className="text-xs font-bold text-slate-400">
                         —
                       </span>
                     )}
-                    <span className="text-[10px] font-bold text-slate-400 mt-0.5 select-none whitespace-nowrap leading-none">
+                    <span className="text-xs font-medium mt-0.5 select-none whitespace-nowrap leading-none" style={{ color: "rgba(31, 31, 31, 0.64)" }}>
                       {cardTrendFilter}
                     </span>
                   </div>
@@ -606,7 +614,7 @@ function AgencyOfficesPage() {
 
       {/* Filters bar */}
       <div
-        className="mb-4 flex items-center justify-between gap-4 w-full bg-white p-4 border rounded-[16px] overflow-x-auto scrollbar-none"
+        className="mb-6 flex items-center justify-between gap-4 w-full bg-white p-4 border rounded-[16px] overflow-x-auto scrollbar-none"
         style={{
           borderColor: "rgba(31, 31, 31, 0.08)",
         }}
@@ -622,7 +630,7 @@ function AgencyOfficesPage() {
                 setSearch(e.target.value);
                 setPage(1);
               }}
-              className="w-full h-full rounded-xl border border-slate-200/80 bg-white pl-10 pr-14 text-xs font-bold text-slate-700 outline-none focus:border-[#dd5437]/50 focus:ring-1 focus:ring-[#dd5437]/10 transition-all placeholder:text-slate-400"
+              className="w-full h-full rounded-xl border border-slate-200/80 bg-[#F6F6F6] pl-10 pr-14 text-xs font-bold text-slate-700 outline-none  focus:ring-1 focus:ring-[#dd5437]/10 transition-all placeholder:[rgb(31,31,31)/0.64]"
             />
             <div className="absolute right-3.5 top-1/2 -translate-y-1/2 flex items-center gap-1 rounded-md border border-slate-200 bg-white px-1.5 py-0.5 text-[9px] font-bold text-slate-400 shadow-3xs select-none">
               K <img src={CommandIcon} alt="Cmd" className="h-2.5 w-2.5 opacity-60" />
@@ -679,24 +687,24 @@ function AgencyOfficesPage() {
         </div>
 
         {/* Right Side: Grid / Map toggles */}
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex items-center gap-2 shrink-0 bg-[#F6F6F6] p-[6px] rounded-[8px]">
           <button
             onClick={() => setView("list")}
-            className={`flex h-10 w-10 items-center justify-center rounded-xl cursor-pointer transition-all shrink-0 ${view === "list"
-              ? "bg-[#FAF5F2] border border-[#F5EAE2] text-[#dd5437] font-bold shadow-xs"
-              : "bg-white border border-slate-200 text-slate-400 hover:text-slate-655 hover:border-slate-300"
+            className={`flex h-8 w-8 items-center justify-center rounded-[8px] cursor-pointer transition-all shrink-0 ${view === "list"
+              ? "bg-white  text-[#dd5437] font-bold shadow-xs"
+              : "text-slate-400 hover:text-slate-655 hover:border-slate-300"
               }`}
           >
-            <img src={TableIconIcon} alt="Table View" className={`h-4.5 w-4.5 ${view === "list" ? "" : "opacity-60"}`} />
+            <img src={TableIconIcon} alt="Table View" />
           </button>
           <button
             onClick={() => setView("map")}
-            className={`flex h-10 w-10 items-center justify-center rounded-xl cursor-pointer transition-all shrink-0 ${view === "map"
-              ? "bg-[#FAF5F2] border border-[#F5EAE2] text-[#dd5437] font-bold shadow-xs"
-              : "bg-white border border-slate-200 text-slate-400 hover:text-slate-655 hover:border-slate-300"
+            className={`flex h-8 w-10 items-center justify-center rounded-[8px] cursor-pointer transition-all shrink-0 ${view === "map"
+              ? "bg-white  text-[#dd5437] font-bold shadow-xs"
+              : " text-black hover:text-slate-655 hover:border-slate-300"
               }`}
           >
-            <img src={MapTrifoldIcon} alt="Map View" className={`h-4.5 w-4.5 ${view === "map" ? "" : "opacity-60"}`} />
+            <img src={MapTrifoldIcon} alt="Map View" />
           </button>
         </div>
       </div>
@@ -743,7 +751,7 @@ function AgencyOfficesPage() {
                               <img src={CaretUpDownIcon} alt="Sort" className="h-3.5 w-3.5 opacity-60 shrink-0" />
                             </div>
                           ) : (
-                            <span>{h}</span>
+                            <span>{""}</span>
                           )}
                         </th>
                       );
@@ -797,61 +805,51 @@ function AgencyOfficesPage() {
 
           {/* Pagination Bar */}
           <div
-            className="mt-4 flex flex-col items-center justify-between gap-4 border bg-white px-6 py-4 rounded-[16px] sm:flex-row shadow-none"
+            className="mt-4 flex flex-col items-center justify-between gap-4  bg-white px-6 py-4  sm:flex-row shadow-none"
             style={{
               borderColor: "rgba(31, 31, 31, 0.08)",
             }}
           >
             {/* Left: Range info */}
-            <div className="text-xs font-bold text-slate-400">
+            <div className="text-sm font-medium text-[#1F1F1F]">
               Showing {total === 0 ? 0 : (page - 1) * limit + 1} to {Math.min(page * limit, total)} of{" "}
               {total} offices
             </div>
 
             {/* Center: Page numbers */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5">
               <button
                 onClick={() => setPage(1)}
                 disabled={page === 1}
-                className="flex h-7.5 w-7.5 items-center justify-center rounded-lg border border-slate-200 text-slate-400 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-all bg-white"
+                className="flex h-8 w-8 items-center justify-center rounded-[8px] border border-[rgba(31,31,31,0.08)] text-slate-400 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-all bg-white"
               >
                 <img src={CaretDoubleLeftIcon} alt="First" className="h-4 w-4" />
               </button>
               <button
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page === 1}
-                className="flex h-7.5 w-7.5 items-center justify-center rounded-lg border border-slate-200 text-slate-400 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-all bg-white"
+                className="flex h-8 w-8 items-center justify-center rounded-[8px] border border-[rgba(31,31,31,0.08)] text-slate-400 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-all bg-white"
               >
                 <img src={CaretLeftIcon} alt="Previous" className="h-4 w-4" />
               </button>
 
-              <span className="text-xs font-bold text-slate-550">Page</span>
-              <input
-                type="number"
-                value={page}
-                min={1}
-                max={totalPages}
-                onChange={(e) => {
-                  const val = Number(e.target.value);
-                  if (val >= 1 && val <= totalPages) {
-                    setPage(val);
-                  }
-                }}
-                className="h-7.5 w-10 text-center rounded-lg border border-slate-205 bg-white text-xs font-black text-slate-700 outline-none focus:border-[#dd5437]"
-              />
-              <span className="text-xs font-bold text-slate-550">of {totalPages}</span>
+              <span className="text-sm font-medium text-[#1F1F1F] mx-1">Page</span>
+              <div className="flex h-8 w-8 items-center justify-center rounded-[8px] border border-[rgba(31,31,31,0.08)] bg-[#F4F4F5] text-sm font-medium text-[#1F1F1F]">
+                {page}
+              </div>
+              <span className="text-sm font-medium text-[#1F1F1F] mx-1">of {totalPages}</span>
 
               <button
                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                 disabled={page === totalPages}
-                className="flex h-7.5 w-7.5 items-center justify-center rounded-lg border border-slate-200 text-slate-400 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-all bg-white"
+                className="flex h-8 w-8 items-center justify-center rounded-[8px] border border-[rgba(31,31,31,0.08)] text-slate-400 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-all bg-white"
               >
                 <img src={CaretRightIcon} alt="Next" className="h-4 w-4" />
               </button>
               <button
                 onClick={() => setPage(totalPages)}
                 disabled={page === totalPages}
-                className="flex h-7.5 w-7.5 items-center justify-center rounded-lg border border-slate-200 text-slate-400 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-all bg-white"
+                className="flex h-8 w-8 items-center justify-center rounded-[8px] border border-[rgba(31,31,31,0.08)] text-slate-400 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-all bg-white"
               >
                 <img src={CaretDoubleRightIcon} alt="Last" className="h-4 w-4" />
               </button>
@@ -859,7 +857,7 @@ function AgencyOfficesPage() {
 
             {/* Right: Limit Selector */}
             <div className="flex items-center gap-2">
-              <span className="text-xs font-bold text-slate-400">Row per page</span>
+              <span className="text-sm font-medium text-[#1F1F1F]">Row per page</span>
               <div className="relative">
                 <select
                   value={limit}
@@ -887,14 +885,17 @@ function AgencyOfficesPage() {
 
       {/* Floating Bulk Action Bar */}
       {selected.size > 0 && (
-        <div className="fixed bottom-6 left-1/2 z-50 flex -translate-x-1/2 items-center gap-4 rounded-3xl border border-slate-200/80 bg-white p-3 px-6 shadow-xl shadow-slate-200/25 animate-in slide-in-from-bottom-5 fade-in duration-200">
-          <div className="text-xs font-bold text-slate-650 whitespace-nowrap">
+        <div className="fixed bottom-6 left-1/2 z-50 flex -translate-x-1/2 items-center gap-6 rounded-[16px] border border-[#1F1F1F14] bg-white p-3 px-6 shadow-[0px_4px_32px_0px_rgba(31,31,31,0.08)] animate-in slide-in-from-bottom-5 fade-in duration-200"
+          style={{ boxShadow: "0 4px 32px 0 rgba(31, 31, 31, 0.08)" }}
+        >
+          <div className="text-sm font-medium text-[#1F1F1F] whitespace-nowrap">
             {selected.size} selected
           </div>
 
           <button
             onClick={handleExportCSV}
-            className="flex items-center gap-2 rounded-xl bg-[#dd5437] hover:bg-[#c9452b] px-4 py-2.5 text-xs font-bold text-white shadow-xs transition-all cursor-pointer border-0"
+            className="flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-medium text-white shadow-xs transition-all cursor-pointer border-0"
+            style={{ background: "linear-gradient(90deg, #D85A2B 0%, #FF6A33 100%", boxShadow: "0 4px 32px 0 rgba(31, 31, 31, 0.08)" }}
           >
             <img src={DownloadSimpleIcon} alt="Export" className="h-3.5 w-3.5 filter brightness-0 invert" />
             <span>Export CSV</span>
@@ -902,7 +903,7 @@ function AgencyOfficesPage() {
 
           <button
             onClick={handleBulkEmail}
-            className="flex items-center gap-2 rounded-xl border border-slate-205 bg-white px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 transition-all cursor-pointer shadow-3xs"
+            className="flex items-center gap-2 rounded-xl border border-slate-205 bg-white px-4 py-2.5 text-xs font-medium text-[#1F1F1F] hover:bg-slate-50 transition-all cursor-pointer shadow-3xs"
           >
             <img src={EnvelopeSimpleIcon} alt="Mail" className="h-4 w-4" />
             <span>Bulk Email</span>
@@ -912,7 +913,7 @@ function AgencyOfficesPage() {
             onClick={() => {
               toast.info("Bulk Assign Account Manager clicked");
             }}
-            className="flex items-center gap-2 rounded-xl border border-slate-205 bg-white px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 transition-all cursor-pointer shadow-3xs"
+            className="flex items-center gap-2 rounded-xl border border-slate-205 bg-white px-4 py-2.5 text-xs font-medium text-[#1F1F1F] hover:bg-slate-50 transition-all cursor-pointer shadow-3xs"
           >
             <img src={UserCircleCheckIcon} alt="Assign" className="h-4 w-4" />
             <span>Assign Account Manager</span>
@@ -920,7 +921,7 @@ function AgencyOfficesPage() {
 
           <button
             onClick={() => setSelected(new Set())}
-            className="text-xs font-extrabold text-[#dd5437] hover:text-[#c9452b] transition-all cursor-pointer bg-transparent border-0 hover:underline px-2"
+            className="text-sm font-medium text-[#dd5437] hover:text-[#c9452b] transition-all cursor-pointer bg-transparent border-0 hover:underline px-2"
           >
             Clear
           </button>
@@ -1116,16 +1117,16 @@ function OfficeMap({ offices }: { offices: Office[] }) {
         >
           <button
             onClick={() => setSelectedOffice(null)}
-            className="absolute top-4 right-4 text-[#1F1F1F]/64 hover:text-[#1F1F1F] transition-colors cursor-pointer border-0 bg-transparent p-1 rounded-full hover:bg-slate-50 flex items-center justify-center"
+            className="absolute top-4 right-4 text-[#1F1F1F] hover:text-[#1F1F1F] transition-colors cursor-pointer border-0 bg-transparent p-1 rounded-full hover:bg-slate-50 flex items-center justify-center"
           >
-            <X className="h-5 w-5" />
+            <X className="h-6 w-6" />
           </button>
 
           <div className="flex flex-col pr-8">
-            <h4 className="text-base font-extrabold text-[#1F1F1F] leading-tight">
+            <h4 className="text-lg font-semibold text-[#1F1F1F] leading-tight">
               {selectedOffice.name}
             </h4>
-            <span className="text-xs text-[#1F1F1F]/64 font-medium mt-1 leading-snug">
+            <span className="text-sm font-medium mt-1 leading-snug" style={{ color: "rgba(31, 31, 31, 0.64)" }}>
               {selectedOffice.address || "No address listed"}
             </span>
           </div>
@@ -1138,43 +1139,43 @@ function OfficeMap({ offices }: { offices: Office[] }) {
 
           <div className="grid grid-cols-2 gap-x-6 gap-y-4">
             <div>
-              <span className="block text-[11px] font-medium text-[#1F1F1F]/64 mb-0.5">Phone</span>
-              <span className="text-xs font-bold text-[#1F1F1F]">{selectedOffice.phone || "—"}</span>
+              <span className="block text-[10px] font-medium" style={{ color: "rgba(31, 31, 31, 0.64)" }}>Phone</span>
+              <span className="text-xs font-medium text-[#1F1F1F]">{selectedOffice.phone || "—"}</span>
             </div>
             <div>
-              <span className="block text-[11px] font-medium text-[#1F1F1F]/64 mb-0.5">Address</span>
-              <span className="text-xs font-bold text-[#1F1F1F] truncate block" title={selectedOffice.address}>
+              <span className="block text-[11px] font-medium" style={{ color: "rgba(31, 31, 31, 0.64)" }}>Address</span>
+              <span className="text-xs font-medium text-[#1F1F1F] truncate block" title={selectedOffice.address}>
                 {selectedOffice.address || "—"}
               </span>
             </div>
             <div>
-              <span className="block text-[11px] font-medium text-[#1F1F1F]/64 mb-0.5">Suburb</span>
-              <span className="text-xs font-bold text-[#1F1F1F]">{selectedOffice.suburb || "—"}</span>
+              <span className="block text-[11px] font-medium" style={{ color: "rgba(31, 31, 31, 0.64)" }}>Suburb</span>
+              <span className="text-xs font-medium text-[#1F1F1F]">{selectedOffice.suburb || "—"}</span>
             </div>
             <div>
-              <span className="block text-[11px] font-medium text-[#1F1F1F]/64 mb-0.5">State</span>
-              <span className="text-xs font-bold text-[#1F1F1F]">{selectedOffice.state || "—"}</span>
+              <span className="block text-[11px] font-medium" style={{ color: "rgba(31, 31, 31, 0.64)" }}>State</span>
+              <span className="text-xs font-medium text-[#1F1F1F]">{selectedOffice.state || "—"}</span>
             </div>
             <div>
-              <span className="block text-[11px] font-medium text-[#1F1F1F]/64 mb-0.5">Account Manager</span>
-              <span className="text-xs font-bold text-[#1F1F1F]">
+              <span className="block text-[11px] font-medium" style={{ color: "rgba(31, 31, 31, 0.64)" }}>Account Manager</span>
+              <span className="text-xs font-medium text-[#1F1F1F]">
                 {accountManagerName(selectedOffice.accountManager) || "Unassigned"}
               </span>
             </div>
             <div>
-              <span className="block text-[11px] font-medium text-[#1F1F1F]/64 mb-0.5">Total Properties</span>
-              <span className="text-xs font-bold text-[#1F1F1F]">{selectedOffice.pum ?? 0}</span>
+              <span className="block text-[11px] font-medium" style={{ color: "rgba(31, 31, 31, 0.64)" }}>Total Properties</span>
+              <span className="text-xs font-medium text-[#1F1F1F]">{selectedOffice.pum ?? 0}</span>
             </div>
             <div className="col-span-2">
-              <span className="block text-[11px] font-medium text-[#1F1F1F]/64 mb-0.5">Inactivity Alert Threshold</span>
-              <span className="text-xs font-bold text-[#1F1F1F]">14 days</span>
+              <span className="block text-[11px] font-medium" style={{ color: "rgba(31, 31, 31, 0.64)" }}>Inactivity Alert Threshold</span>
+              <span className="text-xs font-medium text-[#1F1F1F]">14 days</span>
             </div>
           </div>
 
           <button
             onClick={() => navigate({ to: "/agency-offices/$officeId", params: { officeId: selectedOffice.id } })}
-            style={{ background: 'radial-gradient(circle, #FF6A33 0%, #D85A2B 100%)' }}
-            className="w-full mt-4 rounded-xl py-3 text-xs font-black text-white text-center cursor-pointer transition-all border-0 shadow-md hover:brightness-105 active:scale-[0.98]"
+            style={{ background: 'radial-gradient(67.22% 100% at 50% 0%, #FF6A33 0%, #D85A2B 80%)' }}
+            className="w-full mt-4 rounded-[8px] py-3 text-xs font-black text-white text-center cursor-pointer transition-all border-0 shadow-md hover:brightness-105 active:scale-[0.98]"
           >
             View Details
           </button>
@@ -1188,14 +1189,14 @@ function OfficeMap({ offices }: { offices: Office[] }) {
 function StatusPill({ status }: { status: OfficeStatus }) {
   const statusConfig: Record<OfficeStatus, { bg: string; text: string; dot: string }> = {
     Active: {
-      bg: "bg-[#2093A3]/8",
+      bg: "bg-[#2093A314]",
       text: "text-[#2093A3]",
       dot: "bg-[#2093A3]",
     },
     Inactive: {
-      bg: "bg-rose-500/8",
-      text: "text-rose-500",
-      dot: "bg-rose-500",
+      bg: "bg-[#EF444414]",
+      text: "text-[#EF4444]",
+      dot: "bg-[#EF4444]",
     },
     Lapsing: {
       bg: "bg-amber-500/8",
@@ -1203,20 +1204,40 @@ function StatusPill({ status }: { status: OfficeStatus }) {
       dot: "bg-amber-500",
     },
     Archived: {
-      bg: "bg-slate-500/8",
-      text: "text-slate-500",
-      dot: "bg-slate-500",
+      bg: "bg-[#1F1F1F14]",
+      text: "text-[#1F1F1F]",
+      dot: "bg-[#1F1F1F]",
     },
   };
 
   const config = statusConfig[status] || statusConfig.Active;
 
   return (
-    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold leading-none ${config.bg} ${config.text} select-none`}>
-      <span className={`w-1.5 h-1.5 rounded-full ${config.dot}`} />
+    <span className={`inline-flex items-center gap-1.5 px-2 py-[6px] rounded-[8px] text-xs font-medium leading-none ${config.bg} ${config.text} select-none`}>
+      <span className={`w-1 h-1 rounded-full ${config.dot}`} />
       {status}
     </span>
   );
+}
+
+// Selected Background helper to draw grouped card borders and insets across tds seamlessly
+function SelectedBg({ selected, isGroupStart, isGroupEnd, position, isArchived }: { selected: boolean, isGroupStart: boolean, isGroupEnd: boolean, position: "first" | "middle" | "last", isArchived?: boolean }) {
+  if (!selected) return null;
+
+  const borderY = `${isGroupStart ? "border-t border-t-[#EDD9CE]" : ""} ${isGroupEnd ? "border-b border-b-[#EDD9CE]" : ""}`;
+  const base = `absolute -top-[1px] -bottom-[1px] -z-10 pointer-events-none transition-all duration-200`;
+
+  const bgStyle = isArchived
+    ? { background: "linear-gradient(0deg, rgba(216, 90, 43, 0.04) 0%, rgba(216, 90, 43, 0.04) 100%), #FFF" }
+    : undefined;
+
+  if (position === "first") {
+    return <div className={`${base} right-0 left-2 border-l border-l-[#EDD9CE] ${borderY} ${isGroupStart ? "rounded-tl-[12px]" : ""} ${isGroupEnd ? "rounded-bl-[12px]" : ""}`} style={bgStyle} />;
+  }
+  if (position === "last") {
+    return <div className={`${base} left-0 right-2 border-r border-r-[#EDD9CE] ${borderY} ${isGroupStart ? "rounded-tr-[12px]" : ""} ${isGroupEnd ? "rounded-br-[12px]" : ""}`} style={bgStyle} />;
+  }
+  return <div className={`${base} left-0 right-0 ${borderY}`} style={bgStyle} />;
 }
 
 // OfficeRow — simplified, no left accent, grouped card borders only
@@ -1245,34 +1266,26 @@ function OfficeRow({
   };
 
   const isArchived = o.status === "Archived";
-  const rowBg = selected ? "bg-[#FAF5F2]" : "bg-white hover:bg-[#FAFAFA]";
 
-  // Top border: show card border only on group start, hide on inner rows
-  const borderTop = selected
-    ? isGroupStart
-      ? "border-t border-t-[#EDD9CE]"
-      : "border-t border-t-transparent"
-    : "border-t border-t-transparent";
+  const showBg = selected || isArchived;
+  const effGroupStart = isArchived ? true : isGroupStart;
+  const effGroupEnd = isArchived ? true : isGroupEnd;
 
-  // Bottom border: show card border on every selected row
-  // (inner rows' bottom = next row's top which is transparent, so only last row's bottom shows)
-  const borderBottom = selected
-    ? "border-b border-b-[#EDD9CE]"
-    : "border-b border-b-transparent";
+  const rowBg = showBg ? "bg-transparent" : "bg-white hover:bg-[#FAFAFA]";
+  const tdBorderTop = "border-t border-t-transparent";
+  const tdBorderBottom = "border-b border-b-transparent";
 
-  // No left accent — clean look matching image 2
-  const tdClass = `px-4 py-3.5 ${borderTop} ${borderBottom} ${rowBg}`;
-  // First td has no special left border either
+  const tdClass = `px-4 py-3.5 relative z-10 ${tdBorderTop} ${tdBorderBottom} ${rowBg}`;
   const firstTdClass = tdClass;
 
   return (
     <tr
       onClick={onOpen}
-      className={`group cursor-pointer transition-all duration-200 ${isArchived ? "opacity-75" : selected ? "relative z-10" : ""
-        }`}
+      className={`group cursor-pointer transition-all duration-200 ${showBg ? "relative z-20" : ""}`}
     >
       {/* Checkbox */}
       <td className={firstTdClass} onClick={(e) => e.stopPropagation()}>
+        <SelectedBg selected={showBg} isArchived={isArchived} isGroupStart={effGroupStart} isGroupEnd={effGroupEnd} position="first" />
         <button
           onClick={onToggle}
           className="mx-auto flex h-[18px] w-[18px] items-center justify-center cursor-pointer focus:outline-none border-0 bg-transparent"
@@ -1287,13 +1300,15 @@ function OfficeRow({
 
       {/* Office Name */}
       <td className={tdClass}>
-        <span className={`font-bold text-slate-800 text-sm group-hover:text-[#dd5437] transition-colors ${isArchived ? "line-through text-slate-500 font-medium" : ""}`}>
+        <SelectedBg selected={showBg} isArchived={isArchived} isGroupStart={effGroupStart} isGroupEnd={effGroupEnd} position="middle" />
+        <span className="font-medium text-[#1F1F1F] text-sm group-hover:text-[#dd5437] transition-colors">
           {o.name}
         </span>
       </td>
 
       {/* Status */}
       <td className={`${tdClass} text-center`}>
+        <SelectedBg selected={showBg} isArchived={isArchived} isGroupStart={effGroupStart} isGroupEnd={effGroupEnd} position="middle" />
         <div className="inline-flex justify-center items-center w-full">
           <StatusPill status={o.status} />
         </div>
@@ -1301,8 +1316,9 @@ function OfficeRow({
 
       {/* Phone */}
       <td className={`${tdClass} text-center`}>
+        <SelectedBg selected={showBg} isArchived={isArchived} isGroupStart={effGroupStart} isGroupEnd={effGroupEnd} position="middle" />
         {o.phone ? (
-          <div className="inline-flex items-center justify-center gap-2 text-xs font-bold text-slate-655 w-full">
+          <div className="inline-flex items-center justify-center gap-2 text-sm font-medium text-[#1F1F1F] w-full">
             <span>{o.phone}</span>
             <button
               onClick={(e) => handleCopy(e, o.phone!)}
@@ -1317,29 +1333,33 @@ function OfficeRow({
       </td>
 
       {/* Suburb */}
-      <td className={`${tdClass} text-center text-xs font-bold text-slate-655`}>
+      <td className={`${tdClass} text-center text-sm font-medium text-[#1F1F1F]`}>
+        <SelectedBg selected={showBg} isArchived={isArchived} isGroupStart={effGroupStart} isGroupEnd={effGroupEnd} position="middle" />
         {o.suburb ?? <Dash />}
       </td>
 
       {/* Account Manager */}
-      <td className={`${tdClass} text-center text-xs font-bold`}>
+      <td className={`${tdClass} text-center text-sm font-medium text-[#1F1F1F]`}>
+        <SelectedBg selected={showBg} isArchived={isArchived} isGroupStart={effGroupStart} isGroupEnd={effGroupEnd} position="middle" />
         {(() => {
           const name = accountManagerName(o.accountManager);
           if (name) return <span className="text-slate-750">{name}</span>;
           if (o.accountManager) return <span className="text-slate-750 font-bold">Assigned</span>;
-          return <span className="text-slate-400 text-xs">Unassigned</span>;
+          return <span className="text-slate-400 text-sm font-medium">Unassigned</span>;
         })()}
       </td>
 
       {/* PUM */}
-      <td className={`${tdClass} text-center text-xs font-extrabold text-slate-750`}>
+      <td className={`${tdClass} text-center text-sm font-medium text-[#1F1F1F]`}>
+        <SelectedBg selected={showBg} isArchived={isArchived} isGroupStart={effGroupStart} isGroupEnd={effGroupEnd} position="middle" />
         {o.pum ?? <Dash />}
       </td>
 
       {/* IAT */}
-      <td className={`${tdClass} text-center text-xs font-bold`}>
+      <td className={`${tdClass} text-center text-sm font-medium text-[#1F1F1F]`}>
+        <SelectedBg selected={showBg} isArchived={isArchived} isGroupStart={effGroupStart} isGroupEnd={effGroupEnd} position="middle" />
         {o.inactivityAlert && o.inactivityAlert !== "none" ? (
-          <span className={o.inactivityAlert === "ai" ? "font-extrabold text-blue-600" : "text-slate-655"}>
+          <span className={o.inactivityAlert === "ai" ? "font-medium text-blue-600" : "text-slate-655"}>
             {o.inactivityAlert === "ai" ? "AI Alert" : `${o.inactivityAlert} days`}
           </span>
         ) : (
@@ -1349,7 +1369,45 @@ function OfficeRow({
 
       {/* Actions */}
       <td className={tdClass} onClick={(e) => e.stopPropagation()}>
-        {/* ...popover unchanged... */}
+        <SelectedBg selected={showBg} isArchived={isArchived} isGroupStart={effGroupStart} isGroupEnd={effGroupEnd} position="last" />
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button className="mx-auto flex h-8 w-8 items-center justify-center rounded-lg hover:bg-slate-100 transition-colors cursor-pointer border-0 bg-transparent outline-none">
+              <img src={DotsThreeIcon} alt="Actions" className="h-[18px] w-[18px] opacity-60 hover:opacity-100 transition-opacity" />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-36 rounded-2xl p-1.5 shadow-lg border border-slate-200 bg-white">
+            <DropdownMenuItem
+              className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold text-slate-700 cursor-pointer hover:bg-slate-50 focus:bg-slate-50 outline-none border-0"
+              onClick={(e) => {
+                e.stopPropagation();
+                toast.info("Opening email draft...");
+              }}
+            >
+              <img src={EnvelopeSimpleIcon} alt="Email" className="h-4 w-4" />
+              <span>Email</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold text-slate-700 cursor-pointer hover:bg-slate-50 focus:bg-slate-50 outline-none border-0"
+              onClick={(e) => {
+                e.stopPropagation();
+                // updateOffice.mutate({ id: o.id, patch: { status: isArchived ? "Active" : "Archived" } });
+              }}
+            >
+              {isArchived ? (
+                <>
+                  <img src={TrayArrowUpIcon} alt="Unarchive" className="h-4 w-4" />
+                  <span>Unarchive</span>
+                </>
+              ) : (
+                <>
+                  <img src={ArchiveIcon} alt="Archive" className="h-4 w-4" />
+                  <span>Archive</span>
+                </>
+              )}
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </td>
     </tr>
   );
@@ -1491,102 +1549,117 @@ function ImportFileDialog({ open, onOpenChange }: ImportFileDialogProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-[440px] rounded-3xl border border-slate-100 bg-white p-6 shadow-xl overflow-hidden focus-visible:outline-none">
-        {/* Title */}
-        <div className="flex items-center justify-between pb-4">
-          <h2 className="text-xl font-bold text-slate-800 tracking-tight">Import File</h2>
+      <DialogContent
+        className="fixed top-4 right-4 left-auto translate-x-0 translate-y-0 w-full sm:max-w-[460px] bg-white shadow-2xl flex flex-col p-0 overflow-hidden focus-visible:outline-none z-[500] transition-all duration-300 [&>button]:hidden rounded-[24px]"
+        style={{
+          border: "1px solid rgba(31, 31, 31, 0.08)",
+          transform: "none"
+        }}
+      >
+        <div className="px-6 py-5 pb-3 flex flex-row items-center justify-between space-y-0">
+          <DialogTitle className="text-xl font-semibold text-[#1F1F1F] tracking-tight">Import File</DialogTitle>
+          <button
+            type="button"
+            onClick={() => onOpenChange(false)}
+            className="text-[#1F1F1F] hover:bg-slate-50 p-1 transition-all cursor-pointer border-0 rounded-full bg-transparent flex items-center justify-center"
+          >
+            <X className="h-6 w-6 stroke-[1.5]" />
+          </button>
         </div>
 
-        {/* Drag and Drop Container */}
-        <div
-          onDragOver={handleDragOver}
-          onDragLeave={handleDragLeave}
-          onDrop={handleDrop}
-          className={`relative flex flex-col items-center justify-center rounded-3xl border-2 border-dashed p-8 transition-all ${isDragging
-            ? "border-[#dd5437] bg-[#dd5437]/5"
-            : "border-[#dd5437]/40 hover:border-[#dd5437]/70 bg-white"
-            }`}
-          style={{ borderColor: "#dd5437", borderStyle: "dashed" }}
-        >
-          <input
-            type="file"
-            ref={fileInputRef}
-            onChange={handleFileChange}
-            accept=".pdf,.doc,.docx,.txt"
-            className="hidden"
-          />
+        <div className="flex-1 overflow-y-auto p-6 pt-0 space-y-4">
+          {/* Drag and Drop Container */}
+          <div
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+            className={`relative flex flex-col items-center bg-[#F9F9F9] justify-center rounded-[8px] border p-8 transition-all h-[240px] ${isDragging
+              ? "border-[#dd5437] bg-[#dd5437]/5"
+              : "border-[#dd5437]/40 hover:border-[#dd5437]/70"
+              }`}
+            style={{ borderStyle: "dashed" }}
+          >
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileChange}
+              accept=".pdf,.doc,.docx,.txt"
+              className="hidden"
+            />
 
-          {/* Circular Upload Icon */}
-          <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-[#dd5437]/10 text-[#dd5437] transition-transform hover:scale-105 duration-200">
-            <Upload className="h-6 w-6 stroke-[2.5]" />
-          </div>
-
-          <p className="text-center text-xs font-semibold text-slate-500">
-            Drag and drop file here of{" "}
-            <span
-              onClick={handleChooseFileClick}
-              className="text-[#dd5437] font-bold underline cursor-pointer hover:text-[#c9452b] transition-colors"
+            {/* Circular Upload Icon */}
+            <div className="mb-4 flex h-14 w-14 bg-white items-center justify-center rounded-full transition-transform hover:scale-105 duration-200"
             >
-              Choose File
-            </span>
-          </p>
-        </div>
-
-        {/* Support specifications row */}
-        <div className="mt-2.5 flex items-center justify-between text-[10px] font-bold tracking-wide uppercase text-slate-400">
-          <span>Supported format: pdf, doc, txt</span>
-          <span>Maximum size: 10 MB</span>
-        </div>
-
-        {/* Active Upload Card */}
-        {file && (
-          <div className="mt-4 flex items-center justify-between rounded-2xl border border-slate-100 bg-slate-50/50 p-4 transition-all hover:shadow-2xs">
-            <div className="flex items-center gap-3">
-              {/* peach circle and document icon */}
-              <div className="flex h-10 w-10 items-center justify-center rounded-full border border-slate-200/50 bg-[#dd5437]/10 text-[#dd5437]">
-                <FileText className="h-5 w-5 stroke-[2]" />
-              </div>
-              <div className="flex flex-col text-left">
-                <span className="text-xs font-bold text-slate-800 truncate max-w-[200px]">
-                  {file.name}
-                </span>
-                <span className="text-[10px] font-bold text-slate-400">
-                  {file.size}
-                </span>
-              </div>
+              <Upload className="h-6 w-6 stroke-[2]" style={{ color: "#D85A2B" }} />
             </div>
 
-            {/* Close button to clear */}
-            <button
-              onClick={handleClearFile}
-              className="flex h-7 w-7 items-center justify-center rounded-full text-slate-400 hover:bg-slate-200/40 hover:text-slate-700 transition-colors cursor-pointer border-0 bg-transparent"
-            >
-              <X className="h-4 w-4" />
-            </button>
+            <p className="text-center text-sm font-medium text-[#1F1F1F]" >
+              Drag and drop file here of{" "}
+              <span
+                onClick={handleChooseFileClick}
+                className="text-[#dd5437] text-sm font-medium underline cursor-pointer hover:text-[#c9452b] transition-colors"
+              >
+                Choose File
+              </span>
+            </p>
           </div>
-        )}
 
-        {/* File Name input field */}
-        {file && (
-          <div className="mt-4 text-left">
-            <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-              File Name
-            </label>
-            <input
-              type="text"
-              value={fileName}
-              onChange={(e) => setFileName(e.target.value)}
-              placeholder="Enter file name"
-              className="w-full rounded-xl border border-slate-200/80 bg-white py-2.5 px-4 text-xs font-semibold text-slate-700 outline-none focus:border-[#dd5437] focus:ring-2 focus:ring-[#dd5437]/20 transition-all placeholder:text-slate-400 shadow-3xs"
-            />
+          {/* Support specifications row */}
+          <div className="flex items-center justify-between text-xs font-medium text-[#888]" >
+            <span>Supported format: pdf, doc, txt</span>
+            <span>Maximum size: 10 MB</span>
           </div>
-        )}
+
+          {/* Active Upload Card */}
+          {file && (
+            <div className="flex items-center justify-between rounded-[8px] border border-[rgba(31,31,31,0.08)] bg-[#F9F9F9] p-3 transition-all hover:shadow-2xs">
+              <div className="flex items-center gap-3">
+                {/* document icon */}
+                <div className="flex h-10 w-10 items-center justify-center bg-white rounded-full"
+                  style={{ color: "#dd5437" }}
+                >
+                  <FileText className="h-5 w-5 stroke-[1.5]" />
+                </div>
+                <div className="flex flex-col text-left">
+                  <span className="text-sm font-medium text-[#1F1F1F] truncate max-w-[200px]">
+                    {file.name}
+                  </span>
+                  <span className="text-xs font-medium text-[#1F1F1F] pt-2" >
+                    {file.size}
+                  </span>
+                </div>
+              </div>
+
+              {/* Close button to clear */}
+              <button
+                onClick={handleClearFile}
+                className="flex h-6 w-6 items-center justify-center rounded-full text-[#1F1F1F] hover:bg-slate-50 transition-colors cursor-pointer border-0 bg-transparent"
+              >
+                <X className="h-5 w-5 stroke-[1.5]" />
+              </button>
+            </div>
+          )}
+
+          {/* File Name input field */}
+          {file && (
+            <div className="mt-6 text-left">
+              <label className="block text-sm font-medium text-[#1F1F1F] mb-2 text-left">
+                File Name
+              </label>
+              <div
+                className="w-full h-10 rounded-[8px] border border-[#1F1F1F29] bg-white py-2.5 px-3.5 text-sm font-medium text-[#888888] flex items-center"
+              >
+                {fileName || "Enter file name"}
+              </div>
+            </div>
+          )}
+        </div>
 
         {/* Actions Button Footer */}
-        <div className="mt-6 flex gap-3.5">
+        <div className="p-4 px-6 pb-6 bg-white flex gap-4">
           <button
             onClick={() => onOpenChange(false)}
-            className="flex-1 rounded-2xl border border-slate-200 bg-white py-3 text-xs font-extrabold text-slate-600 hover:bg-slate-50 transition-all cursor-pointer shadow-3xs border-0 text-center"
+            className="flex-1 rounded-[8px] border border-[#1F1F1F14] bg-white py-3 text-sm font-medium text-[#1F1F1F] hover:bg-slate-50 transition-all cursor-pointer text-center"
           >
             Cancel
           </button>
@@ -1594,7 +1667,8 @@ function ImportFileDialog({ open, onOpenChange }: ImportFileDialogProps) {
           <button
             onClick={handleUploadSubmit}
             disabled={isUploading}
-            className="flex-1 flex items-center justify-center gap-2 rounded-2xl bg-[#dd5437] hover:bg-[#c9452b] py-3 text-xs font-extrabold text-white shadow-md active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer border-0"
+            style={{ background: "radial-gradient(67.22% 100% at 50% 0%, #FF6A33 0%, #D85A2B 80%)" }}
+            className="flex-1 flex items-center justify-center gap-2 rounded-[8px] py-3 text-sm font-medium text-white shadow-md active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer border-0"
           >
             {isUploading ? (
               <>
@@ -1730,9 +1804,9 @@ function AddLocationSheet({ open, onOpenChange }: AddLocationSheetProps) {
     }
   };
 
-  const labelCls = "block text-xs font-semibold text-[#1F1F1F]/70 mb-1.5 text-left";
-  const inputCls = "w-full rounded-xl border border-slate-200/80 bg-white py-2.5 px-3.5 text-xs font-semibold text-[#1F1F1F] outline-none focus:border-[#dd5437] focus:ring-2 focus:ring-[#dd5437]/20 transition-all placeholder:text-[#888888]";
-  const selectCls = "w-full rounded-xl border border-slate-200/80 bg-white py-2.5 px-3.5 text-xs font-semibold text-[#1F1F1F] outline-none focus:border-[#dd5437] focus:ring-2 focus:ring-[#dd5437]/20 transition-all cursor-pointer appearance-none";
+  const labelCls = "block text-sm font-medium text-[#1F1F1F] mb-2 text-left";
+  const inputCls = "w-full h-10 rounded-[8px] border border-[#1F1F1F29] placeholder:text-[#888] placeholder-text-sm bg-white py-2.5 px-3.5 text-xs font-semibold text-[#1F1F1F] outline-none focus:border-[#dd5437] focus:ring-2 focus:ring-[#dd5437]/20 transition-all";
+  const selectCls = "w-full h-10 rounded-[8px] border border-[#1F1F1F29]  placeholder-text-sm bg-white py-2.5 px-3.5 text-xs font-semibold text-[#1F1F1F] outline-none focus:border-[#dd5437] focus:ring-2 focus:ring-[#dd5437]/20 transition-all cursor-pointer appearance-none";
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -1749,7 +1823,7 @@ function AddLocationSheet({ open, onOpenChange }: AddLocationSheetProps) {
       >
         {/* Header */}
         <SheetHeader className="px-6 py-5 pb-3 flex flex-row items-center justify-between space-y-0">
-          <SheetTitle className="text-xl font-bold text-[#1F1F1F] tracking-tight">Add Location</SheetTitle>
+          <SheetTitle className="text-xl font-semibold text-[#1F1F1F] tracking-tight">Add Location</SheetTitle>
           <button
             type="button"
             onClick={() => onOpenChange(false)}
@@ -1761,11 +1835,11 @@ function AddLocationSheet({ open, onOpenChange }: AddLocationSheetProps) {
         </SheetHeader>
 
         {/* Scrollable Form Body */}
-        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-6 pt-2 space-y-6">
+        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-6 pt-0 space-y-6">
 
           {/* Business Details */}
           <div className="space-y-4 text-left">
-            <h3 className="text-base font-extrabold text-[#1F1F1F]">Business Details</h3>
+            <h3 className="text-lg  font-semibold text-[#1F1F1F]">Business Details</h3>
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className={labelCls}>Agency Name</label>
@@ -1848,9 +1922,9 @@ function AddLocationSheet({ open, onOpenChange }: AddLocationSheetProps) {
                   <select
                     value={form.accountManager}
                     onChange={(e) => updateField("accountManager", e.target.value)}
-                    className={selectCls}
+                    className={`${selectCls} ${form.accountManager ? "!text-[#1F1F1F]" : "!text-[#888]"}`}
                   >
-                    <option value="">None</option>
+                    <option value="" className="">None</option>
                     {users.map((u) => (
                       <option key={u.id} value={u.id}>
                         {u.name}
@@ -1949,7 +2023,7 @@ function AddLocationSheet({ open, onOpenChange }: AddLocationSheetProps) {
                   <select
                     value={form.principalLicense}
                     onChange={(e) => updateField("principalLicense", e.target.value)}
-                    className={selectCls}
+                    className={`${selectCls} ${form.principalLicense ? "!text-[#1F1F1F]" : "!text-[#888]"}`}
                   >
                     <option value="">None</option>
                     <option value="assigned">Assigned</option>
@@ -1963,7 +2037,7 @@ function AddLocationSheet({ open, onOpenChange }: AddLocationSheetProps) {
                   <select
                     value={form.hopm}
                     onChange={(e) => updateField("hopm", e.target.value)}
-                    className={selectCls}
+                    className={`${selectCls} ${form.hopm ? "!text-[#1F1F1F]" : "!text-[#888]"}`}
                   >
                     <option value="">None</option>
                     <option value="assigned">Assigned</option>
@@ -1980,7 +2054,7 @@ function AddLocationSheet({ open, onOpenChange }: AddLocationSheetProps) {
                   <select
                     value={form.accountsPayable}
                     onChange={(e) => updateField("accountsPayable", e.target.value)}
-                    className={selectCls}
+                    className={`${selectCls} ${form.accountsPayable ? "!text-[#1F1F1F]" : "!text-[#888]"}`}
                   >
                     <option value="">None</option>
                     <option value="assigned">Assigned</option>
@@ -2164,11 +2238,11 @@ function CustomizeWidgetsSheet({ open, onOpenChange, activeWidgets, onSave }: {
           borderRadius: "24px",
           border: "1px solid rgba(31, 31, 31, 0.08)",
         }}
-        className="w-full sm:max-w-[460px] bg-white shadow-2xl flex flex-col p-0 overflow-hidden focus-visible:outline-none z-[500] transition-all duration-300 [&>button]:hidden"
+        className="w-full sm:max-w-[352px] bg-white shadow-2xl flex flex-col p-0 overflow-hidden focus-visible:outline-none z-[500] transition-all duration-300 [&>button]:hidden"
       >
         {/* Header */}
-        <SheetHeader className="px-6 py-5 pb-3 flex flex-row items-center justify-between space-y-0">
-          <SheetTitle className="text-xl font-bold text-[#1F1F1F] tracking-tight">Customize Widgets</SheetTitle>
+        <SheetHeader className="px-4 py-5 pb-3 flex flex-row items-center justify-between space-y-0">
+          <SheetTitle className="text-xl font-semibold  text-[#1F1F1F] tracking-tight">Customize Widgets</SheetTitle>
           <button
             type="button"
             onClick={() => onOpenChange(false)}
@@ -2180,20 +2254,22 @@ function CustomizeWidgetsSheet({ open, onOpenChange, activeWidgets, onSave }: {
         </SheetHeader>
 
         {/* Scrollable List Body */}
-        <div className="flex-1 overflow-y-auto p-6 pt-2 space-y-5">
-          <div className="flex items-center justify-between text-xs font-bold text-slate-700 uppercase tracking-wide">
+        <div className="flex-1 overflow-y-auto p-4 pt-0 space-y-5">
+          <div className="flex items-center justify-between text-xs font-medium text-[#1F1F1F] uppercase ">
             <span>Active Widgets ({activeCount}/5)</span>
           </div>
 
           {/* Warning Banner when at capacity */}
           {activeCount === 5 && (
-            <div className="rounded-xl border border-orange-100 bg-[#fff8f6] p-3.5 text-[11px] font-semibold text-[#c9452b] text-left leading-normal animate-in fade-in-50 duration-200">
+            <div className="max-w-[320px] rounded-[8px] border border-orange-100 bg-[#fff8f6] p-3.5 text-[10px] font-medium text-left leading-normal animate-in fade-in-50 duration-200"
+              style={{ backgroundColor: "rgba(216, 90, 43, 0.04)", color: "rgba(31, 31, 31, 0.64)" }}
+            >
               You have reached the maximum limit. Turn off a widget to enable another.
             </div>
           )}
 
           {/* Widgets List */}
-          <div className="rounded-2xl border border-[#1F1F1F]/8 bg-white p-3 space-y-1">
+          <div className="space-y-1">
             {WIDGET_OPTIONS.map((opt) => {
               const isChecked = !!localWidgets[opt];
               const isMaxReached = activeCount === 5;
@@ -2202,11 +2278,11 @@ function CustomizeWidgetsSheet({ open, onOpenChange, activeWidgets, onSave }: {
               return (
                 <div
                   key={opt}
-                  className={`flex items-center justify-between py-3.5 px-3 border-b border-[#1F1F1F]/4 last:border-0 transition-all duration-200 ${isDisabled ? "opacity-40" : ""
+                  className={`flex items-center justify-between py-3.5  pr-2 transition-all duration-200 ${isDisabled ? "opacity-40" : ""
                     }`}
                 >
                   <div className="flex items-center gap-3">
-                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-slate-300 cursor-grab shrink-0">
+                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-[#1F1F1F] cursor-grab shrink-0">
                       <circle cx="6.5" cy="4.5" r="1.5" fill="currentColor" />
                       <circle cx="6.5" cy="9" r="1.5" fill="currentColor" />
                       <circle cx="6.5" cy="13.5" r="1.5" fill="currentColor" />
@@ -2214,7 +2290,7 @@ function CustomizeWidgetsSheet({ open, onOpenChange, activeWidgets, onSave }: {
                       <circle cx="11.5" cy="9" r="1.5" fill="currentColor" />
                       <circle cx="11.5" cy="13.5" r="1.5" fill="currentColor" />
                     </svg>
-                    <span className="text-xs font-bold text-slate-700/90">{opt}</span>
+                    <span className="text-sm font-medium text-[#1F1F1F]">{opt}</span>
                   </div>
                   <Switch
                     checked={isChecked}
@@ -2232,13 +2308,13 @@ function CustomizeWidgetsSheet({ open, onOpenChange, activeWidgets, onSave }: {
         <div className="p-4 px-6 pb-6 bg-white flex gap-4">
           <button
             onClick={handleReset}
-            className="flex-1 rounded-xl border border-[#1F1F1F]/16 bg-white py-3 text-xs font-black text-slate-655 hover:bg-slate-50 transition-all cursor-pointer text-center"
+            className="flex-1 rounded-xl border border-[#1F1F1F14] bg-white py-3 text-sm font-medium text-[#1F1F1F] hover:bg-slate-50 transition-all cursor-pointer text-center"
           >
             Reset to Default
           </button>
           <button
             onClick={handleSave}
-            className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-[#dd5437] hover:bg-[#c9452b] py-3 text-xs font-black text-white shadow-md active:scale-[0.98] transition-all cursor-pointer border-0"
+            className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-[#dd5437] hover:bg-[#c9452b] py-3 text-sm font-medium text-white shadow-md active:scale-[0.98] transition-all cursor-pointer border-0"
           >
             Save
           </button>
